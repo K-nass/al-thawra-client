@@ -123,7 +123,7 @@ const sidebarItems: SidebarItemInterface[] = [
 export default function DashboardSidebar() {
   const [isVisible, setIsVisible] = useState(false);
   return (
-    <div className="w-1/5 p-5 bg-slate-800 text-slate-300 flex flex-col">
+    <div className="w-1/6 p-5 bg-[#222E33] text-slate-300 flex flex-col">
       <h1 className="text-xl font-bold text-white">Admin Panel</h1>
       <DashboardProfileCard />
       <ul className="flex flex-col gap-2 mt-3">
