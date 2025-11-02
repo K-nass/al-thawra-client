@@ -1,0 +1,140 @@
+interface ShardedInitialStateInterface {
+  categoryId: string;
+  language: "English" | "Arabic";
+  title: string;
+  slug: string | null;
+  metaDescription: string | null;
+  metaKeywords: string | null;
+  optionalURL: string | null;
+  scheduledAt: string | null;
+  status: "Draft" | "Scheduled" | "Published";
+  visibility: boolean;
+  showOnlyToRegisteredUsers: boolean;
+  tagIds: string[];
+  addToRecommended: boolean;
+}
+
+export const shardedInitialState: ShardedInitialStateInterface = {
+  categoryId: "",
+  language: "English",
+  title: "",
+  slug: null,
+  metaDescription: null,
+  metaKeywords: null,
+  optionalURL: null,
+  scheduledAt: null,
+  status: "Draft",
+  visibility: true,
+  showOnlyToRegisteredUsers: true,
+  tagIds: [""],
+  addToRecommended: true,
+};
+
+export interface ArticleInitialStateInterface extends ShardedInitialStateInterface {
+  addToBreaking: boolean;
+  addToFeatured: boolean;
+  addToSlider: boolean;
+  content: string;
+  imageUrl: string;
+  imageDescription: string[] | null;
+  additionalImageUrls: string[] | null;
+  fileUrls: string[] | null;
+}
+export const articleInitialState: ArticleInitialStateInterface = {
+  ...shardedInitialState,
+  addToBreaking: true,
+  addToFeatured: true,
+  addToSlider: true,
+  content: "",
+  imageUrl: "",
+  imageDescription: null,
+  additionalImageUrls: [""],
+  fileUrls: [""],
+};
+
+interface AudioInitialStateInterface {
+  addToBreaking: boolean;
+  addToFeatured: boolean;
+  addToSlider: boolean;
+  audioUrl: boolean;
+  thumbnailUrl: string | null;
+}
+export const audioInitialState: AudioInitialStateInterface = {
+  ...shardedInitialState,
+  addToBreaking: true,
+  addToFeatured: true,
+  addToSlider: true,
+  audioUrl: true,
+  thumbnailUrl: "",
+};
+
+interface Item {
+  title: string;
+  imageUrl: string;
+  imageDescription: string;
+  content: string;
+}
+interface GalleryInitialStateInterface {
+  imageUrl: string;
+  imageDescription: string | null;
+  items: Item[];
+  showItemNumbersInPostDetailsPage: true;
+}
+export const galleryInitialState: GalleryInitialStateInterface = {
+  ...shardedInitialState,
+  imageUrl: "",
+  imageDescription: "",
+  items: [
+    {
+      title: "",
+      imageUrl: "",
+      imageDescription: "",
+      content: "",
+    },
+  ],
+  showItemNumbersInPostDetailsPage: true,
+};
+
+interface SortedListInitialStateInterface {
+  imageUrl: string;
+  imageDescription: string | null;
+  items: Item[];
+  showNumbers: boolean;
+}
+export const sortedListInitialState: SortedListInitialStateInterface = {
+  imageUrl: "",
+  imageDescription: "",
+  items: [
+    {
+      title: "",
+      imageUrl: "",
+      imageDescription: "",
+      content: "",
+    },
+  ],
+  showNumbers: true,
+};
+
+interface VideoInitialStateInterface {
+  addToBreaking: boolean;
+  addToFeatured: boolean;
+  addToSlider: boolean;
+  content: string;
+  duration: string | null;
+  videoUrl: string | null;
+  videoFileUrls: string[] | null;
+  videoEmbedCode: string | null;
+  videoThumbnailUrl: string;
+}
+export const videoInitialState: VideoInitialStateInterface = {
+  ...shardedInitialState,
+  addToBreaking: true,
+  addToFeatured: true,
+  addToSlider: true,
+  content: "",
+  duration: "",
+  videoUrl: "string",
+  videoFileUrls: [""],
+  videoEmbedCode: "",
+  videoThumbnailUrl: "",
+};

@@ -25,15 +25,16 @@ export default function DashboardHome() {
   function fetchLatestContactMessages() {
     return axios.get("http://localhost:5000/messages");
   }
-  const { data: pendingComments, isLoading: loadingComments } = useQuery({
+  
+  const { data: pendingComments, isLoading: loadingComments, isError: isErrorPendingComments, error: pendingCommentsError } = useQuery({
     queryKey: ["pendingComments"],
     queryFn: fetchPendingComments,
   });
-  const { data: latestContactMessages, isLoading: loadingMessages } = useQuery({
+
+  const { data: latestContactMessages, isLoading: loadingMessages, isError: isErrorLatestContactMessages, error: latestContactMessagesError } = useQuery({
     queryKey: ["latestContactMessages"],
     queryFn: fetchLatestContactMessages,
   });
-
   return (
     <div className="flex-1 p-6 overflow-y-auto bg-[#F3F6F8]">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -49,6 +50,8 @@ export default function DashboardHome() {
           cols={["Id", "Name", "Comment", "Date"]}
           data={pendingComments?.data}
           isLoading={loadingComments}
+          isError={isErrorPendingComments}
+          error={pendingCommentsError?.message}
         />
         <DataTableSection
           label="Latest Contact Messages"
@@ -56,6 +59,8 @@ export default function DashboardHome() {
           cols={["Id", "Name", "Message", "Date"]}
           data={latestContactMessages?.data}
           isLoading={loadingMessages}
+          isError={isErrorLatestContactMessages}
+          error={latestContactMessagesError?.message}
         />
       </div>
 

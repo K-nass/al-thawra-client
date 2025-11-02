@@ -1,7 +1,13 @@
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import type { ArticleInitialStateInterface } from "./usePostReducer/postData";
 
-export default function ImageUpload() {
+interface ImageUploadProps {
+  state: ArticleInitialStateInterface,
+    handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, newTags?: string[]) => void,
+}
+
+export default function ImageUpload({ state, handleChange }:ImageUploadProps) {
   return (
     <div className="bg-white  p-4 rounded-lg shadow-sm border border-slate-200  space-y-4">
       <h3 className="text-base font-semibold  ">Image</h3>

@@ -8,7 +8,9 @@ interface DataTableSectionInterFace {
   description: string;
   cols: string[];
   data: CommentInterface[] | MessageInterface[];
-  isLoading:boolean
+  isLoading: boolean,
+  isError: boolean
+  error?:string
 }
 
 export default function DataTableSection({
@@ -16,7 +18,9 @@ export default function DataTableSection({
   description,
   cols,
   data,
-  isLoading
+  isLoading,
+  isError,
+  error
 }: DataTableSectionInterFace) {
   return (
     <div className="bg-white  rounded-lg shadow">
@@ -31,15 +35,20 @@ export default function DataTableSection({
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+            {isLoading && !isError ? (
               <tr>
                 <td colSpan={cols.length} className="text-center py-30">
                   <Loader />
                 </td>
               </tr>
             ) : (
-              data.map((item) => <TableRow key={item.id} item={item} />)
+              data?.map((item) => <TableRow key={item.id} item={item} />)
             )}
+            {isError && <tr>
+              <td colSpan={cols.length} className="text-center py-30">
+                <p className="text-red-400 text-2xl font-bold">{error}</p>
+              </td>
+            </tr>}
           </tbody>
         </table>
       </div>
