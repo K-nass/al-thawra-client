@@ -10,10 +10,10 @@ export default function PublishSection({ mutation }) {
         <span className="ml-2 text-sm">Scheduled Post</span>
       </label>
       <div className="flex items-center justify-end space-x-2">
-        <button className="px-4 py-2 text-sm  bg-[#DEA530] text-white rounded hover:bg-amber-600 cursor-pointer font-bold">
+        <button className="px-4 py-2 text-sm  bg-[#DEA530] text-white rounded hover:bg-amber-600 cursor-pointer">
           Save as Draft
         </button>
-        <button className="px-4 py-2 text-sm  bg-primary rounded bg-[#0E7BB8] hover:bg-blue-800 cursor-pointer text-white font-bold" onClick={() => mutation.mutate()}>
+        <button className="px-4 py-2 text-sm  bg-primary  bg-[#605CA8]  rounded hover:bg-indigo-700 cursor-pointer text-white" onClick={() => mutation.mutate()}>
           Submit
         </button>
       </div>

@@ -31,7 +31,7 @@ export default function DashboardForm() {
     }
   }, [type, navigate]);
 
-  const [state, dispatch] = useArticleReducer(type);
+  const [state, dispatch] = useArticleReducer(type)
   console.log(state);
 
 
@@ -81,8 +81,8 @@ export default function DashboardForm() {
 
   return (
     <form className="flex-1 overflow-y-auto p-6" onSubmit={(e) => {
-      mutation.mutate()
       e.preventDefault()
+      mutation.mutate()
     }}>
       <FormHeader type={type} />
       <div className="flex flex-col lg:flex-row gap-6">
