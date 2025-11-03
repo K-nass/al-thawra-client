@@ -1,11 +1,12 @@
-import { useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import FileModal from "./FileModal";
+import type { HandleChangeType } from "./types";
 
 interface FileUploadProps {
-  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void,
+  handleChange: HandleChangeType;
 }
 export default function FileUpload({  handleChange }: FileUploadProps) {
-  const [fileName, setFileName] = useState<string | null>()
+  const [fileName] = useState<string | null>()
   const [open, setOpen] = useState<boolean>(false)
   return (
     <div className="bg-white  p-4 rounded-lg shadow-sm border border-slate-200  space-y-3">

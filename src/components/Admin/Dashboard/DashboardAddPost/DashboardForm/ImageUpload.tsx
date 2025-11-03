@@ -6,7 +6,15 @@ import FileModal from "./FileModal";
 
 interface ImageUploadProps {
   state: ArticleInitialStateInterface,
-  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, newTags?: string[]) => void,
+  handleChange: (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement> | {
+      target: {
+        name: string;
+        value: string | string[];
+        type: string;
+      };
+    }
+  ) => void,
 }
 
 export default function ImageUpload({ state, handleChange }: ImageUploadProps) {
