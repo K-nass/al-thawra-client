@@ -2,7 +2,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 
-const ImageModal = ({ onClose }: { onClose: () => void }) => {
+export default function FileModal({ onClose, header }: { onClose: () => void,header:string }) {
     const [selected, setSelected] = useState<number | null>(null);
     const [fileName, setFileName] = useState<string>("");
 
@@ -14,7 +14,6 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
         "https://picsum.photos/id/1021/400/300",
     ];
 
-    // To trigger the slide-down animation only once when mounted
     const [showModal, setShowModal] = useState(false);
     useEffect(() => {
         setTimeout(() => setShowModal(true), 10);
@@ -28,12 +27,12 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
             >
                 {/* Header */}
                 <div className="flex justify-between items-center p-4">
-                    <h2 className="text-lg font-semibold">Images</h2>
+                    <h2 className="text-lg font-semibold">{header}</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-700 text-xl"
                     >
-                        <FontAwesomeIcon icon={faXmark} className="cursor-pointer"/>
+                        <FontAwesomeIcon icon={faXmark} className="cursor-pointer" />
                     </button>
                 </div>
 
@@ -138,4 +137,3 @@ const ImageModal = ({ onClose }: { onClose: () => void }) => {
     );
 };
 
-export default ImageModal;

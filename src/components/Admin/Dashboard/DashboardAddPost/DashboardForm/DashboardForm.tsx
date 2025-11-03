@@ -54,11 +54,19 @@ export default function DashboardForm() {
     return await axios.get(`${apiUrl}/tags`);
   }
 
-  const { data, isLoading } = useQuery<TagResponse>({
+  const { data: tags, isLoading: isLoadingTags } = useQuery<TagResponse>({
     queryKey: ["tags"],
     queryFn: fetchTags,
   })
 
+  async function fetchCategories() {
+    return await axios.get(`${apiUrl}/categories`)
+  }
+
+  const { data: categories, isLoading: isLoadingCategories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: fetchCategories
+  })
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -78,25 +86,24 @@ export default function DashboardForm() {
     },
   });
 
-
+  // #505458 new color i will use for form
   return (
     <form className="flex-1 overflow-y-auto p-6" onSubmit={(e) => {
       e.preventDefault()
-      mutation.mutate()
     }}>
       <FormHeader type={type} />
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="grow space-y-6">
           {/* left column */}
-          <PostDetailsForm state={state} handleChange={handleChange} tags={data?.data.items ?? []} isLoading={isLoading} />
-          <ContentEditor state={state} handleChange = {handleChange}/>
+          <PostDetailsForm state={state} handleChange={handleChange} tags={tags?.data.items ?? []} isLoading={isLoadingTags} />
+          <ContentEditor state={state} handleChange={handleChange} />
         </div>
         <div className="w-full lg:w-80 shrink space-y-6">
           {/* right column */}
           <ImageUpload state={state} handleChange={handleChange} />
-          <AdditionalImages />
-          <FileUpload />
-          <CategorySelect />
+          <AdditionalImages state={state} handleChange={handleChange} />
+          <FileUpload state={state} handleChange={handleChange} />
+          <CategorySelect handleChange={handleChange} categories={categories?.data ??[]} isLoading={isLoadingCategories} />
           <PublishSection mutation={mutation} />
         </div>
       </div>

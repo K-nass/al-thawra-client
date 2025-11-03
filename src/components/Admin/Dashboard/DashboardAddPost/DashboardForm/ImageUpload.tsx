@@ -2,7 +2,7 @@ import { faImage } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ArticleInitialStateInterface } from "./usePostReducer/postData";
 import { useState, type ChangeEvent } from "react";
-import ImageModal from "./ImageModal";
+import FileModal from "./FileModal";
 
 interface ImageUploadProps {
   state: ArticleInitialStateInterface,
@@ -26,8 +26,8 @@ export default function ImageUpload({ state, handleChange }: ImageUploadProps) {
           Select Image
         </button>
       </div>
-      {open && <ImageModal onClose={() => setOpen(false)} />}
-      <div className="text-center text-sm text-slate-500">or Add Image Url</div>
+      {open && <FileModal onClose={() => setOpen(false)} header="images"/>}
+      <p className="text-center text-sm text-slate-500">or Add Image Url</p>
       <input
         className="w-full text-sm bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary p-2"
         placeholder="Add Image Url"
