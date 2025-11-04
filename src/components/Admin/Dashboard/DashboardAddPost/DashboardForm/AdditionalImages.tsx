@@ -29,6 +29,7 @@ export default function AdditionalImages({ handleChange }: AdditionalImagesProps
         More main images (slider will be active)
       </p>
       <button
+        type="button"
         onClick={() => setOpen(true)}
         className="w-full text-sm px-3 py-2 bg-[#605CA8] text-white rounded hover:bg-indigo-700 cursor-pointer"
       >

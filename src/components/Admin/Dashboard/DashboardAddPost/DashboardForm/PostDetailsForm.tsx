@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { HandleChangeType } from "./types";
-import type { ArticleInitialStateInterface } from "./usePostReducer/postData";
+import type { ArticleInitialStateInterface, GalleryInitialStateInterface, SortedListInitialStateInterface } from "./usePostReducer/postData";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -16,11 +16,13 @@ export interface TagInterface {
   postsCount: number;
 }
 interface PostDetailsForm {
-  state: ArticleInitialStateInterface;
+  state: ArticleInitialStateInterface | GalleryInitialStateInterface | SortedListInitialStateInterface;
   handleChange: HandleChangeType;
   isLoading: boolean;
   tags: TagInterface[];
   errors?: ApiValidationError['errors'];
+  fieldErrors?: Record<string, string>;
+  type: string | null;
 }
 
 
@@ -28,7 +30,9 @@ export default function PostDetailsForm({
   state, 
   handleChange, 
   tags,
-  errors 
+  errors,
+  fieldErrors = {},
+  type
 }: PostDetailsForm) {
   // store selected tags as objects so we preserve id + name
   const [selectedTags, setSelectedTags] = useState<{ id: string; name: string }[]>([]);
@@ -78,7 +82,7 @@ export default function PostDetailsForm({
       const created = await createTagMutation.mutateAsync(tagName);
       // created is expected to be an array; pick first created item's id
       const createdItem = Array.isArray(created) ? created[0] : created;
-      const createdId: string | undefined = createdItem?.id ?? createdItem?.data?.id;
+      const createdId: string | undefined = createdItem?.id;
       if (!createdId) throw new Error("Tag creation returned no id");
 
       const newSelected = [...selectedTags, { id: createdId, name: tagName }];
@@ -108,25 +112,22 @@ export default function PostDetailsForm({
     handleChange(syntheticEvent, ids);
   };
 
-
-
-
-
-
   return (
-    <div className="bg-white  p-6 rounded-lg shadow-sm border border-slate-200 ">
-      <h3 className="text-lg font-semibold border-b border-slate-200  pb-4 mb-6">
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-slate-200">
+      <h3 className="text-base sm:text-lg font-semibold border-b border-slate-200 pb-3 sm:pb-4 mb-4 sm:mb-6">
         Post Details
       </h3>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* title */}
-        <div>
+        <div data-error-field={fieldErrors.title ? true : undefined}>
           <label className="block text-sm font-medium mb-1" htmlFor="title">
             Title
           </label>
           <input
-            className="w-full bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary p-2"
+            className={`w-full bg-slate-50 border rounded focus:ring-primary focus:border-primary p-2 ${
+              fieldErrors.title ? 'border-red-500' : 'border-slate-300'
+            }`}
             type="text"
             id="title"
             name="title"
@@ -134,6 +135,9 @@ export default function PostDetailsForm({
             value={state.title}
             onChange={handleChange}
           />
+          {fieldErrors.title && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.title}</p>
+          )}
         </div>
 
         {/* slug */}
@@ -189,7 +193,7 @@ export default function PostDetailsForm({
         {/* {Visibility} */}
         <div>
           <label className="block text-sm font-medium mb-2">Visibility</label>
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4 sm:space-x-6">
             <label className="flex items-center" htmlFor="visibility-true">
               <input
                 className="text-primary focus:ring-primary"
@@ -217,40 +221,46 @@ export default function PostDetailsForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {/* Add to Slider */}
-          <label className="flex items-center">
-            <input
-              className="rounded text-primary focus:ring-primary"
-              name="addToSlider"
-              type="checkbox"
-              checked={state.addToSlider === true}
-              onChange={handleChange}
-            />
-            <span className="ml-2">Add to Slider</span>
-          </label>
+          {'addToSlider' in state && (
+            <label className="flex items-center">
+              <input
+                className="rounded text-primary focus:ring-primary"
+                name="addToSlider"
+                type="checkbox"
+                checked={(state as ArticleInitialStateInterface).addToSlider === true}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Add to Slider</span>
+            </label>
+          )}
           {/* Add to Featured */}
-          <label className="flex items-center">
-            <input
-              className="rounded text-primary focus:ring-primary"
-              name="addToFeatured"
-              type="checkbox"
-              checked={state.addToFeatured === true}
-              onChange={handleChange}
-            />
-            <span className="ml-2">Add to Featured</span>
-          </label>
+          {'addToFeatured' in state && (
+            <label className="flex items-center">
+              <input
+                className="rounded text-primary focus:ring-primary"
+                name="addToFeatured"
+                type="checkbox"
+                checked={(state as ArticleInitialStateInterface).addToFeatured === true}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Add to Featured</span>
+            </label>
+          )}
           {/* Add to Breaking */}
-          <label className="flex items-center">
-            <input
-              className="rounded text-primary focus:ring-primary"
-              name="addToBreaking"
-              type="checkbox"
-              checked={state.addToBreaking === true}
-              onChange={handleChange}
-            />
-            <span className="ml-2">Add to Breaking</span>
-          </label>
+          {'addToBreaking' in state && (
+            <label className="flex items-center">
+              <input
+                className="rounded text-primary focus:ring-primary"
+                name="addToBreaking"
+                type="checkbox"
+                checked={(state as ArticleInitialStateInterface).addToBreaking === true}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Add to Breaking</span>
+            </label>
+          )}
           {/* Add to Recommended */}
           <label className="flex items-center">
             <input
@@ -273,14 +283,43 @@ export default function PostDetailsForm({
             />
             <span className="ml-2">Show Only to Registered Users</span>
           </label>
+
+          {/* Show Item Numbers in Post Details Page */}
+          {type === "gallery" && (
+            <label className="flex items-center">
+              <input
+                className="rounded text-primary focus:ring-primary"
+                type="checkbox"
+                name="showItemNumbersInPostDetailsPage"
+                checked={(state as GalleryInitialStateInterface).showItemNumbersInPostDetailsPage === true}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Show Item Numbers in Post Details Page</span>
+            </label>
+          )}
+          {/* Show Numbers (for sorted-list) */}
+          {type === "sorted-list" && (
+            <label className="flex items-center">
+              <input
+                className="rounded text-primary focus:ring-primary"
+                type="checkbox"
+                name="showNumbers"
+                checked={(state as SortedListInitialStateInterface).showNumbers === true}
+                onChange={handleChange}
+              />
+              <span className="ml-2">Show Numbers</span>
+            </label>
+          )}
         </div>
         
-        <div>
+        <div data-error-field={fieldErrors.tagIds ? true : undefined}>
           <label className="block text-sm font-medium mb-1" htmlFor="tags">
             Tags
           </label>
 
-          <div className="flex flex-wrap items-center gap-2 border p-2 rounded bg-slate-50">
+          <div className={`flex flex-wrap items-center gap-2 border p-2 sm:p-3 rounded bg-slate-50 ${
+            fieldErrors.tagIds ? 'border-red-500' : ''
+          }`}>
             {selectedTags.map((tag) => (
               <span
                 key={tag.id}
@@ -304,11 +343,12 @@ export default function PostDetailsForm({
             />
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2 sm:mt-3 flex flex-wrap gap-2">
             {tags.map((tag) => (
               <button
+                type="button"
                 key={tag.id}
-                className={`px-3 p-2 rounded font-semibold cursor-pointer ${selectedTags.find((t) => t.id === tag.id)
+                className={`px-2 sm:px-3 py-1.5 sm:p-2 text-sm sm:text-base rounded font-semibold cursor-pointer ${selectedTags.find((t) => t.id === tag.id)
                   ? "bg-green-500 text-white"
                   : "bg-gray-300 text-black hover:bg-gray-400"
                   }`}
@@ -321,16 +361,19 @@ export default function PostDetailsForm({
               </button>
             ))}
           </div>
+          {fieldErrors.tagIds && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.tagIds}</p>
+          )}
         </div>
 
         {/* Optional URL */}
-        <div>
+        <div data-error-field={fieldErrors.optionalURL ? true : undefined}>
           <label className="block text-sm font-medium mb-1" htmlFor="optional-url">
             Optional URL
           </label>
           <input
             className={`w-full bg-slate-50 border ${
-              errors?.OptionalURL ? 'border-red-500' : 'border-slate-300'
+              fieldErrors.optionalURL || errors?.OptionalURL ? 'border-red-500' : 'border-slate-300'
             } rounded focus:ring-primary focus:border-primary p-2`}
             id="optional-url"
             name="optionalURL"
@@ -339,6 +382,9 @@ export default function PostDetailsForm({
             value={state.optionalURL ?? ''}
             onChange={handleChange}
           />
+          {(fieldErrors.optionalURL || errors?.OptionalURL) && (
+            <p className="text-red-500 text-xs mt-1">{fieldErrors.optionalURL || errors?.OptionalURL}</p>
+          )}
         </div>
 
         {/* URL Validation Errors Section */}

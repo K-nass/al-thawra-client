@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import type { HandleChangeType } from "./types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -34,7 +34,6 @@ interface FileModalProps {
 
 export default function FileModal({ onClose, header, handleChange }: FileModalProps) {
     const [showModal, setShowModal] = useState(false);
-    const [mediaList, setMediaList] = useState<MediaItem[]>([]);
 
     // --- Upload Mutation ---
     const uploadMutation = useMutation({
@@ -52,25 +51,25 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
         },
     });
 
-    // --- Get Media Mutation ---
-    const getMediaMutation = useMutation({
-        mutationFn: async () => {
+    // --- Get Media Query (useQuery is better for GET requests) ---
+    // Using useQuery with enabled: true so it fetches once when component mounts
+    // and uses React Query's built-in caching to prevent duplicate requests
+    const { data: mediaData, isLoading: isLoadingMedia, refetch: refetchMedia } = useQuery<MediaResponse>({
+        queryKey: ["media"],
+        queryFn: async () => {
             const response = await axios.get<MediaResponse>(`${apiUrl}/media`);
             return response.data;
         },
-        onSuccess: (data) => {
-            setMediaList(data.items);
-        },
-        onError: (error) => {
-            console.error("Failed to fetch media:", error);
-        },
+        staleTime: 30000, // Cache for 30 seconds - prevents refetching if data is fresh
+        gcTime: 5 * 60 * 1000, // Keep cache for 5 minutes
     });
 
-    // --- Show Modal Animation & Fetch Media ---
+    const mediaList = mediaData?.items ?? [];
+
+    // --- Show Modal Animation ---
     useEffect(() => {
         setTimeout(() => setShowModal(true), 10);
-        getMediaMutation.mutate(); // fetch media on modal open
-    }, []);
+    }, []); // Only run once on mount
 
     // --- Upload Handler ---
     async function handleFiles(filesList: FileList | null) {
@@ -99,6 +98,8 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
             };
 
             handleChange(payload);
+            // Refetch media after successful upload
+            void refetchMedia();
             setShowModal(false);
             setTimeout(onClose, 180);
         } catch (err) {
@@ -108,15 +109,16 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4">
             <div
-                className={`bg-white w-full max-w-5xl rounded-lg shadow-lg transform transition-all duration-500 ease-out ${showModal ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
+                className={`bg-white w-full max-w-5xl max-h-[90vh] rounded-lg shadow-lg transform transition-all duration-500 ease-out flex flex-col ${showModal ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"
                     }`}
             >
                 {/* Header */}
-                <div className="flex justify-between items-center p-4">
-                    <h2 className="text-lg font-semibold capitalize">{header}</h2>
+                <div className="flex justify-between items-center p-3 sm:p-4 border-b">
+                    <h2 className="text-base sm:text-lg font-semibold capitalize">{header}</h2>
                     <button
+                        type="button"
                         onClick={() => {
                             setShowModal(false);
                             setTimeout(onClose, 180);
@@ -128,16 +130,16 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 </div>
 
                 {/* Search Bar */}
-                <div className="p-4">
+                <div className="p-3 sm:p-4">
                     <input
                         type="text"
                         placeholder="Search images..."
-                        className="w-full rounded-md p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full rounded-md p-2 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                 </div>
 
                 {/* Upload Area */}
-                <div className="p-6 rounded-md text-center mx-4 my-4 bg-gray-50">
+                <div className="p-4 sm:p-6 rounded-md text-center mx-2 sm:mx-4 my-2 sm:my-4 bg-gray-50">
                     <p className="text-sm text-gray-500 mb-2">JPG, JPEG, WEBP, PNG, GIF</p>
                     <div className="flex flex-col items-center justify-center gap-2">
                         <div className="bg-gray-100 p-4 rounded-full">
@@ -156,14 +158,14 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                             </svg>
                         </div>
                         <p className="text-gray-600 text-sm">
-                            {uploadMutation.isLoading ? "Uploading..." : "Drag and drop files here or"}
+                            {uploadMutation.isPending ? "Uploading..." : "Drag and drop files here or"}
                         </p>
                         <input
                             type="file"
                             multiple={header !== "images"}
                             className="text-center text-sm px-3 py-2 bg-[#605CA8] text-white rounded hover:bg-indigo-700 cursor-pointer"
                             onChange={(e) => void handleFiles(e.target.files)}
-                            disabled={uploadMutation.isLoading}
+                            disabled={uploadMutation.isPending}
                         />
 
                         {uploadMutation.isError && (
@@ -175,11 +177,11 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 </div>
 
                 {/* Image Grid */}
-                <div className="grid grid-cols-4 gap-4 px-6 pb-6 overflow-y-auto max-h-96">
-                    {getMediaMutation.isLoading ? (
-                        <p className="col-span-4 text-center text-gray-500">Loading images...</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-4 px-3 sm:px-6 pb-4 sm:pb-6 overflow-y-auto flex-1 max-h-96">
+                    {isLoadingMedia ? (
+                        <p className="col-span-2 sm:col-span-3 md:col-span-4 text-center text-gray-500 text-sm sm:text-base">Loading images...</p>
                     ) : mediaList.length === 0 ? (
-                        <p className="col-span-4 text-center text-gray-500">No media found.</p>
+                        <p className="col-span-2 sm:col-span-3 md:col-span-4 text-center text-gray-500 text-sm sm:text-base">No media found.</p>
                     ) : (
                         mediaList.map((item) => (
                             <div key={item.id} className="relative cursor-pointer rounded overflow-hidden">
@@ -194,13 +196,14 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 </div>
 
                 {/* Footer */}
-                <div className="flex justify-end p-4 cursor-pointer">
+                <div className="flex justify-end p-3 sm:p-4 border-t">
                     <button
+                        type="button"
                         onClick={() => {
                             setShowModal(false);
                             setTimeout(onClose, 180);
                         }}
-                        className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                        className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base bg-gray-200 rounded hover:bg-gray-300"
                     >
                         Close
                     </button>

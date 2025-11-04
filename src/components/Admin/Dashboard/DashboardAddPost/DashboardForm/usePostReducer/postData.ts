@@ -26,11 +26,12 @@ export const shardedInitialState: ShardedInitialStateInterface = {
   status: "Draft",
   visibility: true,
   showOnlyToRegisteredUsers: true,
-  tagIds: [""],
+  tagIds: [],
   addToRecommended: true,
 };
 
-export interface ArticleInitialStateInterface extends ShardedInitialStateInterface {
+export interface ArticleInitialStateInterface
+  extends ShardedInitialStateInterface {
   addToBreaking: boolean;
   addToFeatured: boolean;
   addToSlider: boolean;
@@ -74,12 +75,14 @@ interface Item {
   imageDescription: string;
   content: string;
 }
-interface GalleryInitialStateInterface {
+export interface GalleryInitialStateInterface
+  extends ShardedInitialStateInterface {
   imageUrl: string;
   imageDescription: string | null;
   items: Item[];
-  showItemNumbersInPostDetailsPage: true;
+  showItemNumbersInPostDetailsPage: boolean;
 }
+
 export const galleryInitialState: GalleryInitialStateInterface = {
   ...shardedInitialState,
   imageUrl: "",
@@ -95,13 +98,15 @@ export const galleryInitialState: GalleryInitialStateInterface = {
   showItemNumbersInPostDetailsPage: true,
 };
 
-interface SortedListInitialStateInterface {
+export interface SortedListInitialStateInterface
+  extends ShardedInitialStateInterface {
   imageUrl: string;
   imageDescription: string | null;
   items: Item[];
   showNumbers: boolean;
 }
 export const sortedListInitialState: SortedListInitialStateInterface = {
+  ...shardedInitialState,
   imageUrl: "",
   imageDescription: "",
   items: [

@@ -16,7 +16,10 @@ export default function FileUpload({  handleChange }: FileUploadProps) {
       </p>
       <label className="block text-center w-full text-sm px-3 py-2 bg-[#605CA8] text-white rounded hover:bg-indigo-700 cursor-pointer">
 
-        <button onClick={() => setOpen(true)}>
+        <button 
+          type="button"
+          onClick={() => setOpen(true)}
+        >
           Select File
         </button>
       </label>

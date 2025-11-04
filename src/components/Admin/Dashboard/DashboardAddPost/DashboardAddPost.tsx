@@ -15,7 +15,7 @@ import ContentTypeSelector from "./ContentTypeSelector/ContentTypeSelector";
 type NameType =
   | "Article"
   | "Gallery"
-  | "Sorted List"
+  | "sorted-list"
   | "Table of Contents"
   | "Video"
   | "Audio"
@@ -39,7 +39,7 @@ const contentTypes: ContentType[] = [
   },
   {
     id: 3,
-    name: "Sorted List",
+    name: "sorted-list",
     icon: faListCheck,
     description: "A list based article",
   },

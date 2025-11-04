@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 export default function ContentTypeSelector({ type }: { type: ContentType }) {
   return (
     <Link
-      to={`/admin/add-post?type=${type.name.toLowerCase()}`}
+      to={`/admin/add-post?type=${type.name.toLowerCase().replace(/\s+/g, "-") }`}
       className="bg-white  p-6 rounded-lg border border-slate-200  flex flex-col items-center text-center hover:shadow-lg hover:border-primary transition-all duration-300 cursor-pointer"
     >
       <div className="text-primary text-5xl mb-4">

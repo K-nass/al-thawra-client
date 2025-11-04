@@ -17,6 +17,7 @@ import {
   faTag,
   faChevronDown,
   faChevronUp,
+  faXmark,
   type IconDefinition,
   faFileAlt,
 } from "@fortawesome/free-solid-svg-icons";
@@ -121,44 +122,110 @@ const sidebarItems: SidebarItemInterface[] = [
 ];
 
 export default function DashboardSidebar() {
-  const [isVisible, setIsVisible] = useState(false);
+  const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const toggleItem = (itemId: number) => {
+    setExpandedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+  };
+  
   return (
-    <div className="w-1/6 p-5 bg-[#222E33] text-slate-300 flex flex-col">
-      <h1 className="text-xl text-white"><span className="font-bold">Admin</span> Panel</h1>
-      <DashboardProfileCard />
-      <ul className="flex flex-col gap-2 mt-3">
-        {sidebarItems.map((item) => (
-          <div key={item.id} className="p-2 rounded-xl">
-            <div className="flex items-center justify-between ">
-              <DashboardSidebarItem
-                item={item}
-                handleToggle={
-                  item.children ? () => setIsVisible(!isVisible) : undefined
-                }
-              />
-              {item.children && (
-                <FontAwesomeIcon
-                  icon={isVisible ? faChevronUp : faChevronDown}
-                  className="text-gray-400 font-bold cursor-pointer"
-                  onClick={() => setIsVisible(!isVisible)}
-                />
-              )}
-            </div>
-            {item.children && (
-              <ul className="flex flex-col gap-2.5 mt-2 ms-5">
-                {item.children.map(
-                  (child) =>
-                    isVisible && (
-                      <div className="rounded-lg transition p-1.5">
-                        <DashboardSidebarItem key={child.id} item={child} />
-                      </div>
-                    )
-                )}
-              </ul>
-            )}
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        type="button"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 bg-[#222E33] text-white rounded-lg shadow-lg"
+        aria-label="Toggle menu"
+      >
+        <FontAwesomeIcon icon={isMobileMenuOpen ? faXmark : faBars} className="text-xl" />
+      </button>
+
+      {/* Sidebar */}
+      <div
+        className={`
+          fixed md:static
+          inset-y-0 left-0
+          w-20 md:w-64
+          p-3 md:p-5 bg-[#222E33] text-slate-300
+          flex flex-col
+          transform transition-transform duration-300 ease-in-out
+          z-40
+          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}
+      >
+        <div className="flex items-center justify-center md:justify-between mb-4 md:mb-6">
+          <div className="md:flex md:items-center">
+            <span className="text-white text-lg md:text-xl font-bold">A</span>
+            <h1 className="hidden md:block text-xl text-white ml-2"><span className="font-bold">Admin</span> Panel</h1>
           </div>
-        ))}
-      </ul>
-    </div>
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden text-white hover:text-gray-300"
+            aria-label="Close menu"
+          >
+            <FontAwesomeIcon icon={faXmark} />
+          </button>
+        </div>
+        <div className="md:block hidden">
+          <DashboardProfileCard />
+        </div>
+        <ul className="flex flex-col gap-1 md:gap-2 mt-3 overflow-y-auto flex-1">
+          {sidebarItems.map((item) => {
+            const isExpanded = expandedItems.has(item.id);
+            return (
+              <div key={item.id} className="p-1.5 md:p-2 rounded-xl">
+                <div className="flex items-center justify-center md:justify-between relative">
+                  <DashboardSidebarItem
+                    item={item}
+                    handleToggle={
+                      item.children ? () => toggleItem(item.id) : undefined
+                    }
+                  />
+                  {item.children && (
+                    <button
+                      type="button"
+                      onClick={() => toggleItem(item.id)}
+                      className="hidden md:block text-gray-400 hover:text-gray-100 cursor-pointer ml-auto"
+                    >
+                      <FontAwesomeIcon
+                        icon={isExpanded ? faChevronUp : faChevronDown}
+                        className="text-sm"
+                      />
+                    </button>
+                  )}
+                </div>
+                {item.children && isExpanded && (
+                  <ul className="flex flex-col gap-1.5 md:gap-2.5 mt-1 md:mt-2 md:ms-5">
+                    {item.children.map((child) => (
+                      <div key={child.id} className="rounded-lg transition p-1 md:p-1.5">
+                        <DashboardSidebarItem item={child} />
+                      </div>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </ul>
+      </div>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-30"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+    </>
   );
 }

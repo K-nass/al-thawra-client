@@ -12,14 +12,22 @@ export default function DashboardSidebarItem({
   return (
     <li key={item.id} onClick={handleToggle}>
       <Link
-        className="text-gray-400 font-bold hover:text-gray-100"
+        className="flex items-center text-gray-400 font-bold hover:text-gray-100 transition-colors relative group"
         to={item.path ?? "#"}
+        title={item.label}
       >
         <FontAwesomeIcon
           icon={item.icon}
-          className="me-2 text-[14px] text-gray-400 font-bold hover:text-gray-100"
+          className="text-lg sm:text-xl text-gray-400 font-bold hover:text-gray-100 flex-shrink-0"
         />
-        {item.label}
+        {/* Label - hidden on small screens, shown on large screens */}
+        <span className="ml-2 md:block hidden whitespace-nowrap">
+          {item.label}
+        </span>
+        {/* Tooltip on small screens when hovering over icon */}
+        <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 md:hidden">
+          {item.label}
+        </span>
       </Link>
     </li>
   );
