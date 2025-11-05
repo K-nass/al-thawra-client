@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 
-export default function Layout() {
+export default function WebsiteLayout() {
   return (
     <div>
       <Outlet />
