@@ -13,22 +13,40 @@ export const routes = createBrowserRouter([
     element: <WebsiteLayout />,
     children: [{ index: true, element: <Home /> }],
   },
+  // {
+  //   path: "admin",
+  //   element: <DashboardLayout />,
+  //   children: [
+  //     {
+  //       index: true,
+  //       element: <DashboardHome />,
+  //     },
+  //     { path: "post-format", element: <DashboardAddPost /> },
+  //     { path: "add-post", element: <DashboardForm /> },
+  //     {
+  //       path: "posts", element: <DashboardPosts />, children: [
+  //         {
+  //           path: "all", element: <DashboardPosts label="posts" />,
+  //         }, {
+  //           path: "slider-posts", element: <DashboardPosts label=" Slider Posts" />
+  //         }
+  //       ]
+  //     }
+  //   ],
+  // },
   {
     path: "admin",
     element: <DashboardLayout />,
     children: [
-      {
-        index: true,
-        element: <DashboardHome />,
-      },
+      { index: true, element: <DashboardHome /> },
       { path: "post-format", element: <DashboardAddPost /> },
       { path: "add-post", element: <DashboardForm /> },
-      {
-        path: "posts", element: <DashboardPosts />, children: [{
-          path: "all", element: <DashboardPosts />
-        }
-        ]
-      }
-    ],
-  },
+      { path: "posts/all", element: <DashboardPosts label="Posts" /> },
+      { path: "posts/slider-posts", element: <DashboardPosts label="Slider Posts" /> },
+      { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },
+      { path: "posts/breaking-news", element: <DashboardPosts label="Breaking News" /> },
+
+    ]
+  }
+
 ]);
