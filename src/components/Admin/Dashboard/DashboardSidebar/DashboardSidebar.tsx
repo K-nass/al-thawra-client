@@ -28,63 +28,66 @@ import DashboardSidebarItem from "./DashboardSidebarItem/DashboardSidebarItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useLogout } from "@/hooks/useLogout";
+import { useLanguage } from "@/contexts/LanguageContext";
+import LanguageToggle from "@/components/LanguageToggle/LanguageToggle";
+import { useTranslation } from "react-i18next";
 
 export interface SidebarItemInterface {
   id: number;
-  label: string;
+  labelKey: string;
   icon: IconDefinition;
   path?: string;
   children?: SidebarItemInterface[];
 }
 
-const sidebarItems: SidebarItemInterface[] = [
-  { id: 0, label: "Home", icon: faHouse, path: "" },
+const getSidebarItems = (t: (key: string) => string): SidebarItemInterface[] => [
+  { id: 0, labelKey: "dashboard.home", icon: faHouse, path: "" },
   {
     id: 1,
-    label: "Navigation",
+    labelKey: "dashboard.navigation",
     icon: faTh,
     path: "/admin/navigation",
   },
-  { id: 2, label: "Themes", icon: faLeaf, path: "/admin/themes" },
-  { id: 3, label: "Pages", icon: faFileText, path: "/admin/pages" },
+  { id: 2, labelKey: "dashboard.themes", icon: faLeaf, path: "/admin/themes" },
+  { id: 3, labelKey: "dashboard.pages", icon: faFileText, path: "/admin/pages" },
   {
     id: 4,
-    label: "Add Post",
+    labelKey: "dashboard.addPost",
     icon: faFile,
     path: "/admin/post-format",
   },
   {
     id: 5,
-    label: "Bulk Post Upload",
+    labelKey: "dashboard.bulkPostUpload",
     icon: faCloudUpload,
     path: "/admin/bulk-upload",
   },
   {
     id: 6,
-    label: "Posts",
+    labelKey: "dashboard.posts",
     icon: faBars,
     children: [
       {
         id: 7,
-        label: "All Posts",
+        labelKey: "dashboard.allPosts",
         icon: faFileAlt,
         path: "/admin/posts/all",
       },
       {
         id: 8,
-        label: "Slider Posts",
+        labelKey: "dashboard.sliderPosts",
         icon: faRss,
         path: "/admin/posts/slider-posts",
       },
       {
         id: 9,
-        label: "Featured Posts",
+        labelKey: "dashboard.featuredPosts",
         icon: faStar,
         path: "/admin/posts/featured-posts",
       },
       {
         id: 10,
-        label: "Breaking News",
+        labelKey: "dashboard.breakingNews",
         icon: faBolt,
         path: "/admin/posts/breaking-news",
       },
@@ -92,17 +95,20 @@ const sidebarItems: SidebarItemInterface[] = [
   },
   {
     id: 15,
-    label: "Categories",
+    labelKey: "dashboard.categories",
     icon: faLayerGroup,
     path: "/admin/categories",
   },
-  { id: 16, label: "Tags", icon: faTag, path: "/admin/tags" },
+  { id: 16, labelKey: "dashboard.tags", icon: faTag, path: "/admin/tags" },
 ];
 
 export default function DashboardSidebar() {
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, isLoading } = useLogout();
+  const { t } = useLanguage();
+  const { t: i18nT } = useTranslation();
+  const sidebarItems = getSidebarItems(i18nT);
   
   const toggleItem = (itemId: number) => {
     setExpandedItems(prev => {
@@ -143,7 +149,7 @@ export default function DashboardSidebar() {
       >
         <div className="flex items-center justify-center md:justify-between mb-4 md:mb-6">
           <div className="md:flex md:items-center">
-            <h1 className="hidden md:block text-xl text-white ml-2"><span className="font-bold">Admin</span> Panel</h1>
+            <h1 className="hidden md:block text-xl text-white ml-2"><span className="font-bold">Admin</span> {t('dashboard.adminPanel')}</h1>
           </div>
           <button
             type="button"
@@ -196,8 +202,15 @@ export default function DashboardSidebar() {
           })}
         </ul>
         
-        {/* Logout Button */}
+        {/* Language Toggle */}
         <div className="mt-4 border-t border-gray-600 pt-4">
+          <div className="flex justify-center md:justify-start mb-3">
+            <LanguageToggle variant="dark" />
+          </div>
+        </div>
+        
+        {/* Logout Button */}
+        <div className="border-t border-gray-600 pt-4">
           <button
             type="button"
             onClick={() => logout()}
@@ -206,7 +219,7 @@ export default function DashboardSidebar() {
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="text-lg" />
             <span className="hidden md:inline font-medium">
-              {isLoading ? 'Logging out...' : 'Logout'}
+              {isLoading ? t('common.loading') : t('dashboard.logout')}
             </span>
           </button>
         </div>

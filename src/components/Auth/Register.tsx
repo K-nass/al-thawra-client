@@ -4,9 +4,12 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { setAuthToken, setRefreshToken } from '@/api/client';
 import { authApi, type RegisterRequest } from '@/api/auth.api';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageToggle from '@/components/LanguageToggle/LanguageToggle';
 
 export default function Register() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [formData, setFormData] = useState<RegisterRequest>({
     userName: '',
     email: '',
@@ -115,10 +118,15 @@ export default function Register() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Language Toggle */}
+        <div className="flex justify-end mb-4">
+          <LanguageToggle />
+        </div>
+        
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">Al-Qabas</h1>
-          <p className="text-indigo-100">Create Account</p>
+          <h1 className="text-4xl font-bold text-white mb-2">{t('app.name')}</h1>
+          <p className="text-indigo-100">{t('auth.register')}</p>
         </div>
 
         {/* Card */}
@@ -141,7 +149,7 @@ export default function Register() {
             {/* Username Field */}
             <div>
               <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
+                {t('auth.name')}
               </label>
               <input
                 id="userName"
@@ -149,7 +157,7 @@ export default function Register() {
                 name="userName"
                 value={formData.userName}
                 onChange={handleChange}
-                placeholder="Choose a username"
+                placeholder={t('auth.name')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   fieldErrors.userName ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -167,7 +175,7 @@ export default function Register() {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -175,7 +183,7 @@ export default function Register() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Enter your email"
+                placeholder={t('auth.email')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   fieldErrors.email ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -193,7 +201,7 @@ export default function Register() {
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
+                {t('auth.password')}
               </label>
               <input
                 id="password"
@@ -201,7 +209,7 @@ export default function Register() {
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="Enter your password"
+                placeholder={t('auth.password')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   fieldErrors.password ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -219,7 +227,7 @@ export default function Register() {
             {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
+                {t('auth.confirmPassword')}
               </label>
               <input
                 id="confirmPassword"
@@ -227,7 +235,7 @@ export default function Register() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm your password"
+                placeholder={t('auth.confirmPassword')}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   fieldErrors.confirmPassword ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -248,16 +256,16 @@ export default function Register() {
               disabled={mutation.isPending}
               className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 mt-6"
             >
-              {mutation.isPending ? 'Creating account...' : 'Register'}
+              {mutation.isPending ? t('auth.registering') : t('auth.register')}
             </button>
           </form>
 
           {/* Login Link */}
           <div className="mt-6 text-center">
             <p className="text-gray-600 text-sm">
-              Already have an account?{' '}
+              {t('auth.hasAccount')}{' '}
               <Link to="/login" className="text-indigo-600 hover:text-indigo-700 font-semibold">
-                Login here
+                {t('auth.loginHere')}
               </Link>
             </p>
           </div>

@@ -2,6 +2,7 @@ import { RouterProvider } from "react-router-dom";
 import { routes } from "./routes";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthRefresh } from "./hooks/useAuthRefresh";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 const query = new QueryClient();
 
@@ -18,8 +19,10 @@ export default function App() {
   }
 
   return (
-    <QueryClientProvider client={query}>
-      <RouterProvider router={routes}></RouterProvider>
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={query}>
+        <RouterProvider router={routes}></RouterProvider>
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 }

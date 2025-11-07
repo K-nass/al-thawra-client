@@ -4,9 +4,11 @@ import { useFetchPosts } from "@/hooks/useFetchPosts";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPosts({ label }: { label?: string }) {
     const navigate = useNavigate();
+    const { t } = useTranslation();
     const { data: categories } = useCategories();
     const [category, setCategory] = useState<string | null>(null);
     const [language, setLanguage] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                         className="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#13967B] hover:bg-[#0e7a64] text-white rounded-lg shadow-md transition-all"
                         onClick={()=>navigate("/admin/add-post")}
                     >
-                        <span>Add Post</span>
+                        <span>{t('post.addPost')}</span>
                     </button>
                 </div>
 
@@ -57,7 +59,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                     <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4">
                         {/* Page size */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">Show</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.show')}</label>
                             <select
                                 value={pageSize}
                                 onChange={(e) => setPageSize(Number(e.target.value))}
@@ -73,36 +75,36 @@ export default function DashboardPosts({ label }: { label?: string }) {
 
                         {/* Language */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">Language</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.language')}</label>
                             <select
                                 onChange={(e) => setLanguage(e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900"
                             >
-                                <option value="all">All</option>
-                                <option value="English">English</option>
-                                <option value="Arabic">Arabic</option>
+                                <option value="all">{t('common.all')}</option>
+                                <option value="English">{t('post.english')}</option>
+                                <option value="Arabic">{t('post.arabic')}</option>
                             </select>
                         </div>
 
                         {/* Post Type */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">Post Type</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.postType')}</label>
                             <select className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900">
-                                <option>All</option>
-                                <option>Article</option>
-                                <option>Video</option>
+                                <option>{t('common.all')}</option>
+                                <option>{t('post.article')}</option>
+                                <option>{t('post.video')}</option>
                             </select>
                         </div>
 
                         {/* Category */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">Category</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.category')}</label>
                             <select
                                 value={category ?? ""}
                                 onChange={(e) => setCategory(e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900"
                             >
-                                <option value="all">All</option>
+                                <option value="all">{t('common.all')}</option>
                                 {categories?.data.map((option) => (
                                     <option key={option.id} value={option.slug}>
                                         {option.name}
@@ -113,17 +115,17 @@ export default function DashboardPosts({ label }: { label?: string }) {
 
                         {/* Subcategory */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">Subcategory</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.subcategory')}</label>
                             <select className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900">
-                                <option>All</option>
+                                <option>{t('common.all')}</option>
                             </select>
                         </div>
 
                         {/* User */}
                         <div>
-                            <label className="text-sm font-medium text-gray-700">User</label>
+                            <label className="text-sm font-medium text-gray-700">{t('filter.user')}</label>
                             <select className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900">
-                                <option>Select</option>
+                                <option>{t('common.select')}</option>
                             </select>
                         </div>
 
@@ -131,7 +133,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                         <div className="col-span-2 flex items-end space-x-2">
                             <input
                                 id="search"
-                                placeholder="Search"
+                                placeholder={t('filter.search')}
                                 value={searchPhrase ?? ""}
                                 onChange={(e) => setSearchPhrase(e.target.value)}
                                 className="grow mt-1 block p-2 border-gray-300 rounded-md focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm"
@@ -148,15 +150,15 @@ export default function DashboardPosts({ label }: { label?: string }) {
                             <thead className="text-xs uppercase text-gray-700 bg-gray-100 sticky top-0 z-10">
                                 <tr>
                                     <th className="p-4"><input type="checkbox" className="rounded border-gray-300 text-[#13967B]" /></th>
-                                    <th className="px-6 py-3">Id</th>
-                                    <th className="px-6 py-3 min-w-[300px]">Post</th>
-                                    <th className="px-6 py-3">Language</th>
-                                    <th className="px-6 py-3">Type</th>
-                                    <th className="px-6 py-3">Category</th>
-                                    <th className="px-6 py-3">Author</th>
-                                    <th className="px-6 py-3">Views</th>
-                                    <th className="px-6 py-3">Date</th>
-                                    <th className="px-6 py-3 text-right">Options</th>
+                                    <th className="px-6 py-3">{t('post.id')}</th>
+                                    <th className="px-6 py-3 min-w-[300px]">{t('post.posts')}</th>
+                                    <th className="px-6 py-3">{t('post.language')}</th>
+                                    <th className="px-6 py-3">{t('post.type')}</th>
+                                    <th className="px-6 py-3">{t('post.category')}</th>
+                                    <th className="px-6 py-3">{t('post.author')}</th>
+                                    <th className="px-6 py-3">{t('post.views')}</th>
+                                    <th className="px-6 py-3">{t('post.date')}</th>
+                                    <th className="px-6 py-3 text-right">{t('post.options')}</th>
                                 </tr>
                             </thead>
 
@@ -219,7 +221,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
                                                     <button className="px-3 py-2 text-xs bg-[#13967B] text-white rounded-md hover:bg-[#0e7a64] transition-all">
-                                                        Manage
+                                                        {t('common.manage')}
                                                     </button>
                                                 </td>
                                             </tr>

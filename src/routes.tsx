@@ -1,6 +1,4 @@
 import { createBrowserRouter, Navigate } from "react-router-dom";
-import WebsiteLayout from "./layouts/WebsiteLayout";
-import Home from "./components/Home/Home";
 import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./components/Admin/Dashboard/DashboardHome/DashboardHome";
 import DashboardAddPost from "./components/Admin/Dashboard/DashboardAddPost/DashboardAddPost";
@@ -31,8 +29,7 @@ export const routes = createBrowserRouter([
   },
   {
     path: "",
-    element: <WebsiteLayout />,
-    children: [{ index: true, element: <Home /> }],
+    element: <AuthPageWrapper><Login /></AuthPageWrapper>,
   },
   {
     path: "admin",
@@ -45,7 +42,6 @@ export const routes = createBrowserRouter([
       { path: "posts/slider-posts", element: <DashboardPosts label="Slider Posts" /> },
       { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },
       { path: "posts/breaking-news", element: <DashboardPosts label="Breaking News" /> },
-
     ]
   }
 ]);

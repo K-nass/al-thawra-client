@@ -6,6 +6,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { apiClient } from "@/api/client";
 import { useMutation } from "@tanstack/react-query";
 import type { ApiValidationError } from './types';
+import { useTranslation } from "react-i18next";
 
 export interface TagInterface {
   id: string; 
@@ -32,6 +33,7 @@ export default function PostDetailsForm({
   fieldErrors = {},
   type
 }: PostDetailsForm) {
+  const { t } = useTranslation();
   // store selected tags as objects so we preserve id + name
   const [selectedTags, setSelectedTags] = useState<{ id: string; name: string }[]>([]);
   const [inputValue, setInputValue] = useState("");
@@ -111,14 +113,14 @@ export default function PostDetailsForm({
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-slate-200">
       <h3 className="text-base sm:text-lg font-semibold border-b border-slate-200 pb-3 sm:pb-4 mb-4 sm:mb-6">
-        Post Details
+        {t('post.postDetails')}
       </h3>
 
       <div className="space-y-4 sm:space-y-6">
         {/* title */}
         <div data-error-field={fieldErrors.title ? true : undefined}>
           <label className="block text-sm font-medium mb-1" htmlFor="title">
-            Title
+            {t('post.title')}
           </label>
           <input
             className={`w-full bg-slate-50 border rounded focus:ring-primary focus:border-primary p-2 ${
@@ -127,7 +129,7 @@ export default function PostDetailsForm({
             type="text"
             id="title"
             name="title"
-            placeholder="Title"
+            placeholder={t('post.title')}
             value={state.title}
             onChange={handleChange}
           />
@@ -139,17 +141,17 @@ export default function PostDetailsForm({
         {/* slug */}
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor="slug">
-            Slug
+            {t('post.slug')}
           </label>
           <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-            If you leave it blank, it will be generated automatically.
+            {t('post.slugHint')}
           </p>
           <input
             className="w-full bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary p-2"
             type="text"
             id="slug"
             name="slug"
-            placeholder="Slug"
+            placeholder={t('post.slug')}
             value={state.slug ?? ""}
             onChange={handleChange}
           />
@@ -158,13 +160,13 @@ export default function PostDetailsForm({
         {/* Meta Tag */}
         <div>
           <label className="block text-sm font-medium mb-1" htmlFor="summary">
-            Summary &amp; Description (Meta Tag)
+            {t('post.description')} &amp; Meta Tag
           </label>
           <textarea
             className="w-full bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary"
             id="summary"
             name="metaDescription"
-            placeholder="Summary &amp; Description (Meta Tag)"
+            placeholder={t('post.description')}
             value={state.metaDescription ?? ""}
             onChange={handleChange}
           ></textarea>

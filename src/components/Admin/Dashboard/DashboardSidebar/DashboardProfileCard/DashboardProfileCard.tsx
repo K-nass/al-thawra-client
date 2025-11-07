@@ -1,7 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { authApi } from "@/api/auth.api";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardProfileCard() {
+  const { t } = useTranslation();
   const { data: userProfile, isLoading } = useQuery({
     queryKey: ["userProfile"],
     queryFn: authApi.getUserProfile,
@@ -38,7 +40,7 @@ export default function DashboardProfileCard() {
         <p className="font-semibold text-white">{userProfile?.userName || "Admin"}</p>
         <div className="flex items-center text-xs text-green-400">
           <span className="w-2 h-2 bg-green-400 rounded-full mr-1.5"></span>
-          online
+          {t('common.online')}
         </div>
       </div>
     </div>
