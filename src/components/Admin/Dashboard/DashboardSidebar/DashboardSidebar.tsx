@@ -9,10 +9,6 @@ import {
   faRss,
   faStar,
   faBolt,
-  faThumbsUp,
-  faClock,
-  faCalendar,
-  faListCheck,
   faLayerGroup,
   faTag,
   faChevronDown,
@@ -30,7 +26,6 @@ import { useState } from "react";
 import { useLogout } from "@/hooks/useLogout";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageToggle from "@/components/LanguageToggle/LanguageToggle";
-import { useTranslation } from "react-i18next";
 
 export interface SidebarItemInterface {
   id: number;
@@ -40,7 +35,7 @@ export interface SidebarItemInterface {
   children?: SidebarItemInterface[];
 }
 
-const getSidebarItems = (t: (key: string) => string): SidebarItemInterface[] => [
+const getSidebarItems = (): SidebarItemInterface[] => [
   { id: 0, labelKey: "dashboard.home", icon: faHouse, path: "" },
   {
     id: 1,
@@ -107,8 +102,7 @@ export default function DashboardSidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { logout, isLoading } = useLogout();
   const { t } = useLanguage();
-  const { t: i18nT } = useTranslation();
-  const sidebarItems = getSidebarItems(i18nT);
+  const sidebarItems = getSidebarItems();
   
   const toggleItem = (itemId: number) => {
     setExpandedItems(prev => {

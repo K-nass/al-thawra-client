@@ -17,7 +17,7 @@ interface SortedListItemsProps {
       };
     }
   ) => void;
-  errors?: Record<string, string>;
+  errors?: Record<string, string[]>;
 }
 
 export default function SortedListItems({ state, handleChange, errors = {} }: SortedListItemsProps) {
@@ -92,7 +92,11 @@ export default function SortedListItems({ state, handleChange, errors = {} }: So
         </button>
       </div>
       {errors.items && (
-        <p className="text-red-500 text-xs mb-2">{errors.items}</p>
+        <ul className="mb-2 space-y-1">
+          {errors.items.map((error, idx) => (
+            <li key={idx} className="text-red-600 text-xs">• {error}</li>
+          ))}
+        </ul>
       )}
       <div className="space-y-4 sm:space-y-6">
         {state.items.map((item, index) => (

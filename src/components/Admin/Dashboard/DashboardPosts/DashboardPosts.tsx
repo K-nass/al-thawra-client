@@ -105,7 +105,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                 className="mt-1 block w-full rounded-md border-gray-300 focus:ring-[#13967B] focus:border-[#13967B] sm:text-sm text-gray-900"
                             >
                                 <option value="all">{t('common.all')}</option>
-                                {categories?.data.map((option) => (
+                                {categories?.data.map((option: { id: string; slug: string; name: string }) => (
                                     <option key={option.id} value={option.slug}>
                                         {option.name}
                                     </option>
@@ -184,7 +184,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                         exit={{ opacity: 0, y: -20 }}
                                         transition={{ duration: 0.4, ease: "easeOut" }}
                                     >
-                                        {posts?.data.items.map((item) => (
+                                        {posts?.data.items.map((item: any) => (
                                             <tr
                                                 key={item.id}
                                                 className="hover:bg-gray-50 transition-colors"

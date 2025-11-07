@@ -23,7 +23,7 @@ interface Props {
   isLoading?: boolean;
   handleChange: HandleChangeType;
   value?: string | null;
-  errors?: Record<string, string>;
+  errors?: Record<string, string[]>;
 }
 
 export default memo(function CategorySelect({ categories = [], isLoading, handleChange, value, errors = {} }: Props) {
@@ -50,7 +50,11 @@ export default memo(function CategorySelect({ categories = [], isLoading, handle
         ))}
       </select>
       {errors.categoryId && (
-        <p className="text-red-500 text-xs mt-1">{errors.categoryId}</p>
+        <ul className="mt-1 space-y-1">
+          {errors.categoryId.map((error, idx) => (
+            <li key={idx} className="text-red-600 text-xs">• {error}</li>
+          ))}
+        </ul>
       )}
     </div>
   );

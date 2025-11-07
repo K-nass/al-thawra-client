@@ -5,7 +5,7 @@ interface PublishSectionProps {
   mutation: UseMutationResult<unknown, unknown, void, unknown>;
 }
 
-export default function PublishSection({ mutation }: PublishSectionProps) {
+export default function PublishSection({ mutation: _mutation }: PublishSectionProps) {
   const { t } = useTranslation();
   
   return (

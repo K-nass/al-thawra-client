@@ -26,7 +26,7 @@ type NameType =
   | "Poll"
   | "Recipe";
 
-const getContentTypes = (t: (key: string) => string): ContentType[] => [
+const getContentTypes = (): ContentType[] => [
   {
     id: 1,
     name: "Article",
@@ -98,7 +98,7 @@ export interface ContentType {
 
 export default function DashboardAddPost() {
   const { t } = useTranslation();
-  const contentTypes = getContentTypes(t);
+  const contentTypes = getContentTypes();
 
   return (
     <div className="flex-1 overflow-y-auto p-8">

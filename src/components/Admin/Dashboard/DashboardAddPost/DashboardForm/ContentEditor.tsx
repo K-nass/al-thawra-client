@@ -41,7 +41,7 @@ const icons = [
 interface ContentEditorProps {
   state: ArticleInitialStateInterface,
   handleChange: (e: ChangeEvent<HTMLTextAreaElement>) => void,
-  errors?: Record<string, string>,
+  errors?: Record<string, string[]>,
 }
 
 export default function ContentEditor({ state, handleChange, errors = {} }: ContentEditorProps) {
@@ -67,7 +67,11 @@ export default function ContentEditor({ state, handleChange, errors = {} }: Cont
         />
       </div>
       {errors.content && (
-        <p className="text-red-500 text-xs mt-1 px-4 pb-2">{errors.content}</p>
+        <ul className="mt-1 px-4 pb-2 space-y-1">
+          {errors.content.map((error, idx) => (
+            <li key={idx} className="text-red-600 text-xs">• {error}</li>
+          ))}
+        </ul>
       )}
     </div>
   );

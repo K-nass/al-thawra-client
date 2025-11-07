@@ -21,8 +21,6 @@ import type {
   ArticleInitialStateInterface,
   GalleryInitialStateInterface,
   SortedListInitialStateInterface,
-  VideoInitialStateInterface,
-  AudioInitialStateInterface,
 } from "./usePostReducer/postData";
 import { postConfig } from "./usePostReducer/postConfig";
 import { useCategories } from "@/hooks/useCategories";
