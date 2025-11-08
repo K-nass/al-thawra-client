@@ -24,6 +24,7 @@ import type {
 } from "./usePostReducer/postData";
 import { postConfig } from "./usePostReducer/postConfig";
 import { useCategories } from "@/hooks/useCategories";
+import { useTranslation } from "react-i18next";
 
 interface TagResponse {
   data: {
@@ -32,6 +33,7 @@ interface TagResponse {
 }
 
 export default function DashboardForm() {
+  const { t } = useTranslation();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const type = query.get("type");
@@ -115,7 +117,7 @@ export default function DashboardForm() {
       if (type === "video" && "imageUrl" in payload) {
         payload = {
           ...payload,
-          videoThumbnailUrl: payload.imageUrl || "",
+          videoThumbnailUrl: payload.imageUrl || null,
         };
       }
       
@@ -127,6 +129,57 @@ export default function DashboardForm() {
         };
       }
       
+      // Clean up empty strings from array fields to prevent API validation errors
+      if (payload.additionalImageUrls) {
+        payload.additionalImageUrls = payload.additionalImageUrls.filter((url: string) => url && url.trim() !== '');
+        if (payload.additionalImageUrls.length === 0) {
+          payload.additionalImageUrls = null;
+        }
+      }
+      
+      if (payload.fileUrls) {
+        payload.fileUrls = payload.fileUrls.filter((url: string) => url && url.trim() !== '');
+        if (payload.fileUrls.length === 0) {
+          payload.fileUrls = null;
+        }
+      }
+      
+      if (payload.videoFileUrls) {
+        payload.videoFileUrls = payload.videoFileUrls.filter((url: string) => url && url.trim() !== '');
+        if (payload.videoFileUrls.length === 0) {
+          payload.videoFileUrls = null;
+        }
+      }
+      
+      if (payload.audioFileUrls) {
+        payload.audioFileUrls = payload.audioFileUrls.filter((url: string) => url && url.trim() !== '');
+        if (payload.audioFileUrls.length === 0) {
+          payload.audioFileUrls = null;
+        }
+      }
+      
+      // Clean up empty strings in tagIds array
+      if (payload.tagIds) {
+        payload.tagIds = payload.tagIds.filter((id: string) => id && id.trim() !== '');
+        if (payload.tagIds.length === 0) {
+          payload.tagIds = null;
+        }
+      }
+      
+      // Clean up empty string values for single URL fields
+      if (payload.videoThumbnailUrl === '') {
+        payload.videoThumbnailUrl = null;
+      }
+      if (payload.thumbnailUrl === '') {
+        payload.thumbnailUrl = null;
+      }
+      if (payload.imageUrl === '') {
+        payload.imageUrl = null;
+      }
+      if (payload.videoUrl === '') {
+        payload.videoUrl = null;
+      }
+
       const response = await apiClient.post(
         `/posts/categories/${categoryId}/${endpoint}`,
         payload
@@ -147,9 +200,15 @@ export default function DashboardForm() {
         const d = error.response?.data;
         const status = error.response?.status;
         
-        // Handle 401 Unauthorized - redirect to login
+        // Handle 401 Unauthorized - only redirect if token refresh failed
+        // The axios interceptor will automatically try to refresh the token
+        // If we get here with 401, it means refresh failed
         if (status === 401) {
-          navigate('/login');
+          message = t('common.sessionExpired');
+          setNotification({ type: "error", message });
+          setTimeout(() => {
+            navigate('/login');
+          }, 2000);
           return;
         }
         

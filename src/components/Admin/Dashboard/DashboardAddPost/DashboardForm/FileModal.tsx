@@ -10,6 +10,10 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 interface UploadResponse {
     url: string;
+    fileName?: string;
+    sizeInBytes?: number;
+    mimeType?: string;
+    duration?: string;
 }
 
 interface MediaItem {
@@ -20,7 +24,7 @@ interface MediaItem {
     sizeInBytes: number;
     mimeType: string;
     uploadedAt: string;
-    duration?: number;
+    duration?: string | number;
 }
 
 interface MediaResponse {
@@ -39,6 +43,46 @@ interface FileModalProps {
 export default function FileModal({ onClose, header, handleChange }: FileModalProps) {
     const { t } = useTranslation();
     const [showModal, setShowModal] = useState(false);
+
+    // Helper function to format duration
+    const formatDuration = (duration: string | number | null | undefined): string => {
+        if (!duration) return "";
+        
+        // If it's a number (seconds), convert to readable format
+        if (typeof duration === "number") {
+            const hours = Math.floor(duration / 3600);
+            const minutes = Math.floor((duration % 3600) / 60);
+            const seconds = Math.floor(duration % 60);
+            
+            if (hours > 0) {
+                return `${hours}h ${minutes}m ${seconds}s`;
+            } else if (minutes > 0) {
+                return `${minutes}m ${seconds}s`;
+            } else {
+                return `${seconds} seconds`;
+            }
+        }
+        
+        // If it's a string like "00:00:42.0571428", parse it
+        if (typeof duration === "string") {
+            const parts = duration.split(":");
+            if (parts.length === 3) {
+                const hours = parseInt(parts[0]);
+                const minutes = parseInt(parts[1]);
+                const seconds = Math.floor(parseFloat(parts[2]));
+                
+                if (hours > 0) {
+                    return `${hours}h ${minutes}m ${seconds}s`;
+                } else if (minutes > 0) {
+                    return `${minutes}m ${seconds}s`;
+                } else {
+                    return `${seconds} seconds`;
+                }
+            }
+        }
+        
+        return String(duration);
+    };
 
     // Determine upload endpoint and media type based on header
     const getUploadEndpoint = () => {
@@ -120,11 +164,19 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
 
             const value = (header === "images" || header === "video" || header === "audio") ? uploadedUrls[0] : uploadedUrls;
             
+            // For audio/video, include all upload details in the payload
             const payload = {
                 target: {
                     name: fieldName,
                     value,
                     type: "text",
+                    // Include upload response details for audio/video
+                    ...(header === "audio" || header === "video" ? {
+                        fileName: results[0]?.fileName || "",
+                        sizeInBytes: results[0]?.sizeInBytes || 0,
+                        mimeType: results[0]?.mimeType || "",
+                        duration: results[0]?.duration || null,
+                    } : {}),
                 },
             };
 
@@ -269,25 +321,39 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                                 );
                             }
 
-                            // For video, audio, and files - show file info
+                            // For video, audio, and files - show file info with all details
                             return (
                                 <button
                                     key={item.id}
                                     type="button"
                                     onClick={handleSelectMedia}
-                                    className="relative cursor-pointer rounded overflow-hidden group bg-gray-100 p-3 flex flex-col items-center justify-center h-32 hover:bg-gray-200 transition"
+                                    className="relative cursor-pointer rounded overflow-hidden group bg-gray-100 p-3 flex flex-col items-start justify-start hover:bg-gray-200 transition h-auto"
                                 >
-                                    <div className="text-2xl mb-2">
-                                        {header === "video" ? "🎬" : header === "audio" ? "🎵" : "📄"}
-                                    </div>
-                                    <p className="text-xs font-semibold text-gray-700 text-center truncate w-full px-1">
-                                        {item.fileName}
-                                    </p>
-                                    {item.duration && (
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            {Math.round(item.duration)}s
+                                    <div className="flex items-center gap-2 mb-2 w-full">
+                                        <div className="text-2xl">
+                                            {header === "video" ? "🎬" : header === "audio" ? "🎵" : "📄"}
+                                        </div>
+                                        <p className="text-xs font-semibold text-gray-700 truncate flex-1">
+                                            {item.fileName}
                                         </p>
-                                    )}
+                                    </div>
+                                    <div className="w-full space-y-1 text-xs text-gray-600">
+                                        {item.sizeInBytes && (
+                                            <p className="truncate">
+                                                <span className="font-medium">Size:</span> {(item.sizeInBytes / 1024).toFixed(2)} KB
+                                            </p>
+                                        )}
+                                        {item.mimeType && (
+                                            <p className="truncate">
+                                                <span className="font-medium">Type:</span> {item.mimeType}
+                                            </p>
+                                        )}
+                                        {item.duration && (
+                                            <p className="truncate">
+                                                <span className="font-medium">Duration:</span> {formatDuration(item.duration)}
+                                            </p>
+                                        )}
+                                    </div>
                                 </button>
                             );
                         })

@@ -7,6 +7,7 @@ import DashboardPosts from "./components/Admin/Dashboard/DashboardPosts/Dashboar
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary/ErrorBoundary";
 import { getAuthToken } from "./api/client";
 import { useDocumentTitle } from "./hooks/useDocumentTitle";
 
@@ -43,7 +44,7 @@ export const routes = createBrowserRouter([
       },
       {
         path: "admin",
-        element: <ProtectedRoute><DashboardLayout /></ProtectedRoute>,
+        element: <ProtectedRoute><ErrorBoundary><DashboardLayout /></ErrorBoundary></ProtectedRoute>,
         children: [
           { index: true, element: <DashboardHome /> },
           { path: "post-format", element: <DashboardAddPost /> },
@@ -52,6 +53,7 @@ export const routes = createBrowserRouter([
           { path: "posts/slider-posts", element: <DashboardPosts label="Slider Posts" /> },
           { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },
           { path: "posts/breaking-news", element: <DashboardPosts label="Breaking News" /> },
+          { path: "pages", element: <DashboardPosts label="pages"/> },
         ]
       }
     ]

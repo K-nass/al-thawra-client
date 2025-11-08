@@ -67,11 +67,17 @@
     "search": "Search",
     "filter": "Filter",
     "submit": "Submit",
-    "online": "Online",
+    "online": "online",
     "manage": "Manage",
     "show": "Show",
     "all": "All",
-    "select": "Select"
+    "select": "Select",
+    "refreshingSession": "Refreshing session...",
+    "sessionExpired": "Your session has expired. Please login again.",
+    "notFound": "Page Not Found",
+    "notFoundMessage": "The page you are looking for doesn't exist or has been moved.",
+    "goHome": "Go to Home",
+    "goBack": "Go Back"
   },
   "app": {
     "name": "Al-Thawra",

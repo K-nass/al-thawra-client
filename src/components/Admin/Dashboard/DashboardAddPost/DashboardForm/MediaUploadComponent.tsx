@@ -31,6 +31,47 @@ export default function MediaUploadComponent({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"url" | "upload">("url");
   const [showFileModal, setShowFileModal] = useState(false);
+  const [uploadedMedia, setUploadedMedia] = useState<MediaItem | null>(null);
+
+  // Helper function to format duration
+  const formatDuration = (duration: string | number | null): string => {
+    if (!duration) return "";
+    
+    // If it's a number (seconds), convert to readable format
+    if (typeof duration === "number") {
+      const hours = Math.floor(duration / 3600);
+      const minutes = Math.floor((duration % 3600) / 60);
+      const seconds = Math.floor(duration % 60);
+      
+      if (hours > 0) {
+        return `${hours}h ${minutes}m ${seconds}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${seconds}s`;
+      } else {
+        return `${seconds} seconds`;
+      }
+    }
+    
+    // If it's a string like "00:00:42.0571428", parse it
+    if (typeof duration === "string") {
+      const parts = duration.split(":");
+      if (parts.length === 3) {
+        const hours = parseInt(parts[0]);
+        const minutes = parseInt(parts[1]);
+        const seconds = Math.floor(parseFloat(parts[2]));
+        
+        if (hours > 0) {
+          return `${hours}h ${minutes}m ${seconds}s`;
+        } else if (minutes > 0) {
+          return `${minutes}m ${seconds}s`;
+        } else {
+          return `${seconds} seconds`;
+        }
+      }
+    }
+    
+    return String(duration);
+  };
 
   const mediaLabel =
     mediaType === "video"
@@ -171,6 +212,47 @@ export default function MediaUploadComponent({
               </div>
             </div>
 
+            {/* Uploaded Media Details */}
+            {uploadedMedia && uploadedMedia.url && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 className="text-sm font-semibold text-green-800 mb-3">Uploaded {mediaType === "video" ? "Video" : "Audio"} Details</h4>
+                <div className="space-y-2 text-sm text-green-700">
+                  {uploadedMedia.fileName && (
+                    <div className="flex">
+                      <span className="font-medium w-24">File Name:</span>
+                      <span className="flex-1 truncate">{uploadedMedia.fileName}</span>
+                    </div>
+                  )}
+                  {uploadedMedia.sizeInBytes > 0 && (
+                    <div className="flex">
+                      <span className="font-medium w-24">Size:</span>
+                      <span>{(uploadedMedia.sizeInBytes / 1024).toFixed(2)} KB ({uploadedMedia.sizeInBytes.toLocaleString()} bytes)</span>
+                    </div>
+                  )}
+                  {uploadedMedia.mimeType && (
+                    <div className="flex">
+                      <span className="font-medium w-24">Type:</span>
+                      <span>{uploadedMedia.mimeType}</span>
+                    </div>
+                  )}
+                  {uploadedMedia.duration && (
+                    <div className="flex">
+                      <span className="font-medium w-24">Duration:</span>
+                      <span>{formatDuration(uploadedMedia.duration)}</span>
+                    </div>
+                  )}
+                  {uploadedMedia.url && (
+                    <div className="flex">
+                      <span className="font-medium w-24">URL:</span>
+                      <a href={uploadedMedia.url} target="_blank" rel="noopener noreferrer" className="flex-1 truncate text-blue-600 hover:underline">
+                        {uploadedMedia.url}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Media Embed Field for Upload */}
             <div className="space-y-2">
               <label
@@ -200,18 +282,20 @@ export default function MediaUploadComponent({
           handleChange={(e: any) => {
             // Handle the uploaded media URL
             if (e.target.name === "videoUrl" || e.target.name === "audioUrl") {
-              onMediaSelect({
+              const mediaItem = {
                 id: "",
                 url: e.target.value,
-                fileName: "",
+                fileName: e.target.fileName || "",
                 type: mediaType,
-                sizeInBytes: 0,
-                mimeType: "",
+                sizeInBytes: e.target.sizeInBytes || 0,
+                mimeType: e.target.mimeType || "",
                 uploadedAt: null,
                 altText: null,
                 description: null,
-                duration: null,
-              });
+                duration: e.target.duration || null,
+              };
+              setUploadedMedia(mediaItem);
+              onMediaSelect(mediaItem);
             }
             setShowFileModal(false);
           }}

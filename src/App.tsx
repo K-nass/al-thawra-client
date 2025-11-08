@@ -5,12 +5,13 @@ import { useAuthRefresh } from "./hooks/useAuthRefresh";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import Loader from "./components/Loader/Loader";
 
 const query = new QueryClient();
 
 function AppContent() {
   const { isLoading } = useAuthRefresh();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   // Set document direction based on language
   useEffect(() => {
@@ -20,11 +21,7 @@ function AppContent() {
   }, [i18n.language]);
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading...</div>
-      </div>
-    );
+    return <Loader text={t('common.loading')} fullScreen />;
   }
 
   return (
