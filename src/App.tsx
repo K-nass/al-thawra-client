@@ -6,7 +6,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { ToastProvider } from "./components/Toast/ToastContainer";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import Loader from "./components/Loader/Loader";
+import Loader from "./components/Common/Loader";
 
 const query = new QueryClient();
 

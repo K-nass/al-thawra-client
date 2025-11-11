@@ -1,7 +1,7 @@
 import { apiClient } from "@/api/client";
 import DataTableHeader from "../DataTableSection/DataTableHeader";
 import { useQuery } from "@tanstack/react-query";
-import Loader from "../../../../Loader/Loader";
+import Loader from "@/components/Common/Loader";
 import UserCard from "./UserCard/UserCard";
 import { useTranslation } from "react-i18next";
 

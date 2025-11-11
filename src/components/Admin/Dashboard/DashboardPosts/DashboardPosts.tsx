@@ -1,4 +1,4 @@
-import Loader from "@/components/Loader/Loader";
+import Loader from "@/components/Common/Loader";
 import PostActionsDropdown from "@/components/Common/PostActionsDropdown";
 import { useCategories } from "@/hooks/useCategories";
 import { useFetchPosts } from "@/hooks/useFetchPosts";
@@ -7,16 +7,24 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { postsApi } from "@/api";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import ApiNotification from "@/components/Common/ApiNotification";
 
 export default function DashboardPosts({ label }: { label?: string }) {
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const queryClient = useQueryClient();
     const { data: categories } = useCategories();
     const [category, setCategory] = useState<string | null>(null);
     const [language, setLanguage] = useState<string | null>(null);
     const [searchPhrase, setSearchPhrase] = useState<string | null>(null);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(15);
+    const [notification, setNotification] = useState<{
+        type: "success" | "error";
+        message: string;
+    } | null>(null);
     let isSlider = false;
     let isFeatured = false;
     let isBreaking = false;
@@ -51,12 +59,59 @@ export default function DashboardPosts({ label }: { label?: string }) {
     const isLoading = isPages ? isLoadingPages : isLoadingPosts;
     const hasError = isPages && pagesError;
 
+    // Delete mutation
+    const deleteMutation = useMutation({
+        mutationFn: async ({ postId, categoryId, postType }: { postId: string; categoryId: string; postType: string }) => {
+            return await postsApi.deletePost(categoryId, postId, postType);
+        },
+        onSuccess: () => {
+            setNotification({ type: "success", message: "Post deleted successfully" });
+            // Refetch posts after deletion
+            queryClient.invalidateQueries({ queryKey: ["posts"] });
+        },
+        onError: (error: any) => {
+            const message = error?.response?.data?.title || error?.response?.data?.message || "Failed to delete post";
+            setNotification({ type: "error", message });
+        },
+    });
+
+    const handleDelete = (postId: string) => {
+        const post = (data as any)?.data?.items?.find((p: any) => p.id === postId);
+        if (!post) return;
+
+        console.log('Post data for deletion:', post);
+
+        const postType = post?.postType?.toLowerCase() || 'article';
+        // Try both categoryId and category_id field names
+        const categoryId = post?.categoryId || post?.category_id;
+
+        if (!categoryId) {
+            console.error('Category ID not found in post:', post);
+            setNotification({ type: "error", message: "Category ID not found. Please refresh the page and try again." });
+            return;
+        }
+
+        console.log('Deleting post:', { postId, categoryId, postType });
+
+        // Show confirmation dialog
+        if (window.confirm(`Are you sure you want to delete "${post.title}"? This action cannot be undone.`)) {
+            deleteMutation.mutate({ postId, categoryId, postType });
+        }
+    };
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
     }, [pageNumber]);
 
     return (
         <div className="flex-1 flex flex-col overflow-hidden">
+            {notification && (
+                <ApiNotification
+                    type={notification.type}
+                    message={notification.message}
+                    onClose={() => setNotification(null)}
+                />
+            )}
             <div className="flex-1 overflow-y-auto p-6">
                 {/* Header */}
                 <div className="flex justify-between items-center mb-6">
@@ -324,12 +379,23 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                     <td className="px-6 py-4 text-right">
                                                         <PostActionsDropdown
                                                             postId={item.id}
-                                                            onEdit={(id) => navigate(`/admin/edit-post/${id}`)}
+                                                            onEdit={(id) => {
+                                                                const post = (data as any)?.data?.items?.find((p: any) => p.id === id);
+                                                                // Convert postType to lowercase (API returns "Article", "Gallery", etc.)
+                                                                const postType = post?.postType?.toLowerCase() || 'article';
+                                                                navigate(`/admin/edit-post/${id}?type=${postType}`, {
+                                                                    state: { 
+                                                                        post,
+                                                                        categorySlug: post?.categorySlug,
+                                                                        slug: post?.slug
+                                                                    }
+                                                                });
+                                                            }}
                                                             onAddToSlider={(id) => console.log('Add to slider:', id)}
                                                             onAddToFeatured={(id) => console.log('Add to featured:', id)}
                                                             onAddToBreaking={(id) => console.log('Add to breaking:', id)}
                                                             onAddToRecommended={(id) => console.log('Add to recommended:', id)}
-                                                            onDelete={(id) => console.log('Delete:', id)}
+                                                            onDelete={handleDelete}
                                                         />
                                                     </td>
                                                 </tr>

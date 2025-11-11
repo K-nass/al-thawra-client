@@ -163,13 +163,22 @@ export default function PostDetailsForm({
             {t('formLabels.metaDescription')}
           </label>
           <textarea
-            className="w-full bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary"
+            className={`w-full bg-slate-50 border-slate-300 rounded focus:ring-primary focus:border-primary ${
+              fieldErrors?.metadescription ? 'border-red-500' : ''
+            }`}
             id="summary"
             name="metaDescription"
             placeholder={t('post.description')}
             value={state.metaDescription ?? ""}
             onChange={handleChange}
           ></textarea>
+          {fieldErrors?.metadescription && (
+            <div className="mt-1 text-sm text-red-600">
+              {fieldErrors.metadescription.map((error, idx) => (
+                <div key={idx}>• {error}</div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* metaKeywords */}
@@ -178,7 +187,9 @@ export default function PostDetailsForm({
             {t('formLabels.metaKeywords')}
           </label>
           <input
-            className="w-full bg-slate-50  border-slate-300  rounded focus:ring-primary focus:border-primary p-2"
+            className={`w-full bg-slate-50 border-slate-300 rounded focus:ring-primary focus:border-primary p-2 ${
+              fieldErrors?.metakeywords ? 'border-red-500' : ''
+            }`}
             type="text"
             id="keywords"
             name="metaKeywords"
@@ -186,6 +197,13 @@ export default function PostDetailsForm({
             value={state.metaKeywords ?? ""}
             onChange={handleChange}
           />
+          {fieldErrors?.metakeywords && (
+            <div className="mt-1 text-sm text-red-600">
+              {fieldErrors.metakeywords.map((error, idx) => (
+                <div key={idx}>• {error}</div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* {Visibility} */}

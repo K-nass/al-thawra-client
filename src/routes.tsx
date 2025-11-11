@@ -3,6 +3,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import DashboardHome from "./components/Admin/Dashboard/DashboardHome/DashboardHome";
 import DashboardAddPost from "./components/Admin/Dashboard/DashboardAddPost/DashboardAddPost";
 import DashboardForm from "./components/Admin/Dashboard/DashboardAddPost/DashboardForm/DashboardForm";
+import DashboardEditPost from "./components/Admin/Dashboard/DashboardEditPost/DashboardEditPost";
 import DashboardPosts from "./components/Admin/Dashboard/DashboardPosts/DashboardPosts";
 import DashboardCategories from "./components/Admin/Dashboard/DashboardCategories/DashboardCategories";
 import DashboardAddCategory from "./components/Admin/Dashboard/DashboardAddCategory/DashboardAddCategory";
@@ -61,6 +62,7 @@ export const routes = createBrowserRouter([
           { index: true, element: <DashboardHome /> },
           { path: "post-format", element: <DashboardAddPost /> },
           { path: "add-post", element: <DashboardForm /> },
+          { path: "edit-post/:postId", element: <DashboardEditPost /> },
           { path: "posts/all", element: <DashboardPosts label="Posts" /> },
           { path: "posts/slider-posts", element: <DashboardPosts label="Slider Posts" /> },
           { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },

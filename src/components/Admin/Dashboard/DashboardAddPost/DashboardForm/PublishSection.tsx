@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 
 interface PublishSectionProps {
   mutation: UseMutationResult<unknown, unknown, void, unknown>;
+  isEditMode?: boolean;
 }
 
-export default function PublishSection({ mutation: _mutation }: PublishSectionProps) {
+export default function PublishSection({ mutation: _mutation, isEditMode = false }: PublishSectionProps) {
   const { t } = useTranslation();
   
   return (
@@ -29,7 +30,7 @@ export default function PublishSection({ mutation: _mutation }: PublishSectionPr
           type="submit"
           className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-primary bg-[#605CA8] rounded hover:bg-indigo-700 cursor-pointer text-white"
         >
-          {t('post.publishPost')}
+          {isEditMode ? t('post.updatePost', 'Update Post') : t('post.publishPost')}
         </button>
       </div>
     </div>

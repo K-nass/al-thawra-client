@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { categoriesApi, type GetCategoriesParams } from "@/api";
-import Loader from "@/components/Common/Loader";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,7 +20,7 @@ export default function Categories() {
     if (searchPhrase) params.SearchPhrase = searchPhrase;
 
     // Fetch categories
-    const { data: categories, isLoading, isError, error } = useQuery({
+    const { data: categories, isError, error } = useQuery({
         queryKey: ["categories", params],
         queryFn: () => categoriesApi.getAll(params),
     });
@@ -116,20 +115,7 @@ export default function Categories() {
                             </thead>
 
                             <AnimatePresence mode="wait">
-                                {isLoading ? (
-                                    <motion.tbody
-                                        key="loader"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                    >
-                                        <tr>
-                                            <td colSpan={7} className="text-center py-10">
-                                                <Loader />
-                                            </td>
-                                        </tr>
-                                    </motion.tbody>
-                                ) : isError ? (
+                                {isError ? (
                                     <motion.tbody
                                         key="error"
                                         initial={{ opacity: 0 }}

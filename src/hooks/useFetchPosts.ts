@@ -41,30 +41,10 @@ export function useFetchPosts(params: FetchPostsParams = {}) {
       searchPhrase,
     } = params;
 
-    const hasFilters =
-      category ||
-      authorName ||
-      hasAuthor ||
-      status ||
-      isFeatured ||
-      isBreaking ||
-      isSlider ||
-      isRecommended ||
-      language ||
-      type ||
-      from ||
-      to ||
-      pageNumber ||
-      pageSize ||
-      searchPhrase;
-
-    if (!hasFilters || category === "all") {
-      return await axios.get(`${apiUrl}/posts`);
-    }
-
     const queryParams = new URLSearchParams();
 
-    if (category) queryParams.append("CategorySlug", category);
+    // Only add parameters that have values (don't send empty strings)
+    if (category && category !== "all") queryParams.append("CategorySlug", category);
     if (authorName) queryParams.append("AuthorName", authorName);
     if (hasAuthor !== undefined) queryParams.append("HasAuthor", String(hasAuthor));
     if (status) queryParams.append("Status", status);
@@ -76,10 +56,14 @@ export function useFetchPosts(params: FetchPostsParams = {}) {
     if (type) queryParams.append("Type", type);
     if (from) queryParams.append("From", from);
     if (to) queryParams.append("To", to);
+    
+    // Always include these required parameters
     queryParams.append("IncludeLikedByUsers", "false");
-    if (pageNumber) queryParams.append("PageNumber", String(pageNumber));
-    if (pageSize) queryParams.append("PageSize", String(pageSize));
-    if (searchPhrase) queryParams.append("SearchPhrase", searchPhrase);
+    queryParams.append("PageNumber", String(pageNumber || 1));
+    queryParams.append("PageSize", String(pageSize || 15));
+    if (searchPhrase !== null && searchPhrase !== undefined) {
+      queryParams.append("SearchPhrase", searchPhrase);
+    }
 
     return await axios.get(
       `${apiUrl}/posts?${queryParams.toString()}`

@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import DataTableSection from "./DataTableSection/DataTableSection";
 import StatsCard from "./StatsCard/StatsCard";
 import { apiClient } from "@/api/client";
+import { postsApi } from "@/api";
 import LatestUsersSection from "./LatestUsersSection/LatestUsersSection";
 import { useTranslation } from "react-i18next";
 
@@ -27,8 +28,7 @@ export default function DashboardHome() {
     return apiClient.get("/contact-messages", {
       params: {
         PageNumber: 1,
-        PageSize: 15,
-        SearchPhrase: ""
+        PageSize: 15
       }
     });
   }
@@ -37,19 +37,13 @@ export default function DashboardHome() {
     return apiClient.get("/contact-messages", {
       params: {
         PageNumber: 1,
-        PageSize: 15,
-        SearchPhrase: ""
+        PageSize: 15
       }
     });
   }
 
   function fetchPostsCount() {
-    return apiClient.get("/posts", {
-      params: {
-        PageNumber: 1,
-        PageSize: 15
-      }
-    });
+    return postsApi.getAll();
   }
   
   const { data: latestContactMessages, isLoading: loadingMessages, isError: isErrorLatestContactMessages, error: latestContactMessagesError } = useQuery({

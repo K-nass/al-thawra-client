@@ -1,4 +1,4 @@
-import Loader from "../../../../Loader/Loader";
+import Loader from "@/components/Common/Loader";
 import type { CommentInterface, MessageInterface } from "../DashboardHome";
 import DataTableHeader from "./DataTableHeader";
 import TableRow from "./TableRow";
