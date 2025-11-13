@@ -208,7 +208,7 @@ export default function Register() {
               </label>
               <input
                 id="password"
-                type="text"
+                type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -234,7 +234,7 @@ export default function Register() {
               </label>
               <input
                 id="confirmPassword"
-                type="text"
+                type="password"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
