@@ -11,10 +11,13 @@
   "dependencies": {
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
+    "framer-motion": "^11.11.17",
     "isbot": "^5.1.31",
+    "lucide-react": "^0.454.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router": "^7.9.2"
+    "react-router": "^7.9.2",
+    "swiper": "^11.1.14"
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.2",
