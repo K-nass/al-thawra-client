@@ -9,6 +9,8 @@ export interface Post {
   categorySlug: string | null;
   publishedAt: string | null;
   createdAt: string;
+  authorName?: string;
+  authorSlug?: string;
 }
 
 interface PostCardProps {
