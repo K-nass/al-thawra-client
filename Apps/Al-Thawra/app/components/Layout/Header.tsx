@@ -47,25 +47,25 @@ export function Header() {
           <div className="flex justify-between items-center py-3">
             {/* Right Side - Logo */}
             <Link to="/" className="text-white text-3xl font-black italic hover:opacity-90 transition-opacity">
-              الثورة
+              <img src="/logo.png" alt="الثورة لوجو" style={{width:"100px"}}/>
             </Link>
              <nav className="hidden lg:flex items-center gap-1 text-white font-bold">
               <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/">
                 الصحيفة
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/local">
+              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/local">
                 محليات
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/opinion">
+              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/opinion">
                 كتاب وآراء
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/economy">
+              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/economy">
                 اقتصاد
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/international">
+              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/international">
                 الثورة الدولي
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/lite">
+              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/lite">
                 لايت
               </Link>
               <Link className="flex items-center gap-1 px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/more">
@@ -80,7 +80,7 @@ export function Header() {
               <Link to="/login" className="hidden md:block px-4 py-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors font-medium">
                 تسجيل الدخول
               </Link>
-              <Link to="/subscriptions" className="hidden md:flex items-center gap-2 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-[var(--color-primary)] transition-colors">
+              <Link to="/cart" className="hidden md:flex items-center gap-2 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-[var(--color-primary)] transition-colors">
                 <ShoppingCart className="w-4 h-4" />
                 <span>الاشتراكات</span>
               </Link>

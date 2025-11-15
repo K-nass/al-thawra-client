@@ -28,7 +28,7 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <article className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
-      <Link to={`/posts/${post.slug}`} className="block relative aspect-[16/10] overflow-hidden">
+      <Link to={`/article/${post.id}`} className="block relative aspect-[16/10] overflow-hidden">
         {post.image ? (
           <img
             src={post.image}
@@ -50,7 +50,7 @@ export function PostCard({ post }: PostCardProps) {
             if (navigator.share) {
               navigator.share({
                 title: post.title,
-                url: window.location.origin + `/posts/${post.slug}`,
+                url: window.location.origin + `/article/${post.id}`,
               });
             }
           }}

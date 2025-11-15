@@ -5,4 +5,6 @@ export default [
   route("article/:id", "routes/article.tsx"),
   route("author/:slug", "routes/author.$slug.tsx"),
   route("category/:slug", "routes/category.$slug.tsx"),
+  route("cart", "routes/cart.tsx"),
+  route("profile", "routes/profile.tsx"),
 ] satisfies RouteConfig;
