@@ -7,4 +7,5 @@ export default [
   route("category/:slug", "routes/category.$slug.tsx"),
   route("cart", "routes/cart.tsx"),
   route("profile", "routes/profile.tsx"),
+  route("*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;
