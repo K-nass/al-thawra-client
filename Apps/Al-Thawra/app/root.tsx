@@ -6,12 +6,14 @@ import {
   Scripts,
   ScrollRestoration,
   useLocation,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
+import { categoriesService } from "./services/categoriesService";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +27,17 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+// Loader function for root layout
+export async function loader() {
+  try {
+    const categories = await categoriesService.getMenuCategories('Arabic');
+    return { categories };
+  } catch (error) {
+    console.error('Error loading categories in root:', error);
+    return { categories: [] };
+  }
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -46,13 +59,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
+  const { categories } = useLoaderData<typeof loader>();
   
   // Pages that should not show sidebar
   const noSidebarPages = ['/login', '/register', '/forgot-password', '/reset-password'];
   const showSidebar = !noSidebarPages.includes(location.pathname);
 
   return (
-    <PageLayout>
+    <PageLayout categories={categories}>
       {showSidebar ? (
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="flex flex-col lg:flex-row gap-6">

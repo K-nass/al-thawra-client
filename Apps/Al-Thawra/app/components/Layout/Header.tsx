@@ -19,11 +19,22 @@ import {
   User,
   Podcast,
 } from "lucide-react";
+import type { Category } from "../../services/categoriesService";
 
-export function Header() {
+interface HeaderProps {
+  categories?: Category[];
+}
+
+export function Header({ categories = [] }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const location = useLocation();
+  
+  // Filter and sort menu categories
+  const menuCategories = categories
+    .filter(cat => cat.showOnMenu && cat.isActive)
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 8); // Limit to 8 categories for the menu
 
   return (
     <header
@@ -230,45 +241,18 @@ export function Header() {
             >
               عدد اليوم
             </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/local"
-            >
-              محليات
-            </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/opinion"
-            >
-              كتاب وآراء
-            </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/economy"
-            >
-              اقتصاد
-            </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/security"
-            >
-              أمن ومحاكم
-            </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/international"
-            >
-              الثورة الدولي
-            </Link>
-            <Link
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/category/lite"
-            >
-              لايت
-            </Link>
+            {menuCategories.map((category) => (
+              <Link
+                key={category.id}
+                className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+                to={`/category/${category.slug}`}
+              >
+                {category.name}
+              </Link>
+            ))}
             <Link
               className="flex items-center gap-1 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
-              to="/more"
+              to="/categories"
             >
               المزيد
               <ChevronDown className="w-4 h-4" />
