@@ -1,119 +1,96 @@
-import { useParams } from "react-router";
 import type { Route } from "./+types/article";
 import {
   PostDetails,
-  PostHeader,
-  PostImage,
-  PostContent,
-  CommentsSection,
-  RelatedPosts,
 } from "../components/Post";
 import { PostCard, type Post } from "../components/PostCard";
+import axiosInstance from "../lib/axios";
 
-// Mock data - replace with actual API calls
-const mockArticles: Record<
-  string,
-  {
-    category: string;
-    categoryHref: string;
-    title: string;
-    date: string;
-    commentsCount: number;
-    imageSrc: string;
-    imageAlt: string;
-    content: string;
-    relatedPosts?: Post[];
+interface ArticleResponse {
+  id: string;
+  title: string;
+  slug: string;
+  summary: string;
+  content: string;
+  image: string;
+  imageDescription: string;
+  additionalImages: string[];
+  status: string;
+  language: string;
+  isFeatured: boolean;
+  isBreaking: boolean;
+  isSlider: boolean;
+  isRecommended: boolean;
+  viewsCount: number;
+  likesCount: number;
+  createdAt: string;
+  createdBy: string;
+  publishedAt: string;
+  authorId: string;
+  authorName: string;
+  authorImage: string;
+  ownerIsAuthor: boolean;
+  categoryId: string;
+  categoryName: string;
+  categorySlug: string;
+  tags: string[];
+  likedByUsers: string[];
+}
+
+// Loader function for SSR
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const { slug } = params;
+
+  try {
+    const response = await axiosInstance.get<ArticleResponse>(
+      `/posts/${slug}`
+    );
+
+    return {
+      article: response.data,
+    };
+  } catch (error) {
+    throw new Response("Article not found", { status: 404 });
   }
-> = {
-  "1": {
-    category: "محليات",
-    categoryHref: "/category/local",
-    title: "مساعد وزير الخارجية لشؤون أوروبا: تطوير علاقاتنا مع السويد",
-    date: "13 نوفمبر 2025",
-    commentsCount: 0,
-    imageSrc:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDiLt-4_ERB89RMxttTNfhimylfqIc2GzNQlJHIGpe3O3zYfXT7wU8at0z7zIN3jK3eJ3a9AYf0S9vuPpfaH6HVeGoFNdFXKL5PW9EUWpzyzGh_wkuq0eY0-1H1h6hC5jcNNLyuAAK5jQuq1Asn0i4nuD_YpxZpjEu9fT3n-TE1OQ0yT1dQ-oYIxPvSdln9gUfbBpXtZeSBOtTQe2-w0q4yHlcWI-fsuED8I9nKzlmSZbZSmPJWUoUkwuxJcoHyG637uZ63PDiHtXBF",
-    imageAlt: "Two diplomats shaking hands in a formal setting",
-    content: `مساعد وزير الخارجية لشؤون أوروبا يؤكد على أهمية تطوير العلاقات الثنائية مع السويد في مختلف المجالات.
-
-وأشار المسؤول إلى أن العلاقات بين البلدين تشهد تطورا ملحوظا على الصعيد الاقتصادي والثقافي والسياسي.
-
-وأضاف أن هناك فرصا كبيرة للتعاون المشترك في مجالات التكنولوجيا والطاقة والتعليم.`,
-    relatedPosts: [
-      {
-        id: "2",
-        title: "اتفاقية تعاون اقتصادي جديدة بين دول الخليج",
-        slug: "economic-cooperation-agreement",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDiLt-4_ERB89RMxttTNfhimylfqIc2GzNQlJHIGpe3O3zYfXT7wU8at0z7zIN3jK3eJ3a9AYf0S9vuPpfaH6HVeGoFNdFXKL5PW9EUWpzyzGh_wkuq0eY0-1H1h6hC5jcNNLyuAAK5jQuq1Asn0i4nuD_YpxZpjEu9fT3n-TE1OQ0yT1dQ-oYIxPvSdln9gUfbBpXtZeSBOtTQe2-w0q4yHlcWI-fsuED8I9nKzlmSZbZSmPJWUoUkwuxJcoHyG637uZ63PDiHtXBF",
-        categoryName: "اقتصاد",
-        categorySlug: "economy",
-        publishedAt: "2025-11-14T10:00:00Z",
-        createdAt: "2025-11-14T10:00:00Z",
-      },
-      {
-        id: "3",
-        title: "مبادرات حكومية لدعم الشركات الناشئة",
-        slug: "government-startup-initiatives",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDiLt-4_ERB89RMxttTNfhimylfqIc2GzNQlJHIGpe3O3zYfXT7wU8at0z7zIN3jK3eJ3a9AYf0S9vuPpfaH6HVeGoFNdFXKL5PW9EUWpzyzGh_wkuq0eY0-1H1h6hC5jcNNLyuAAK5jQuq1Asn0i4nuD_YpxZpjEu9fT3n-TE1OQ0yT1dQ-oYIxPvSdln9gUfbBpXtZeSBOtTQe2-w0q4yHlcWI-fsuED8I9nKzlmSZbZSmPJWUoUkwuxJcoHyG637uZ63PDiHtXBF",
-        categoryName: "محليات",
-        categorySlug: "local",
-        publishedAt: "2025-11-13T15:30:00Z",
-        createdAt: "2025-11-13T15:30:00Z",
-      },
-      {
-        id: "4",
-        title: "العلاقات الدبلوماسية تشهد تطورات إيجابية",
-        slug: "diplomatic-relations-developments",
-        image:
-          "https://lh3.googleusercontent.com/aida-public/AB6AXuDiLt-4_ERB89RMxttTNfhimylfqIc2GzNQlJHIGpe3O3zYfXT7wU8at0z7zIN3jK3eJ3a9AYf0S9vuPpfaH6HVeGoFNdFXKL5PW9EUWpzyzGh_wkuq0eY0-1H1h6hC5jcNNLyuAAK5jQuq1Asn0i4nuD_YpxZpjEu9fT3n-TE1OQ0yT1dQ-oYIxPvSdln9gUfbBpXtZeSBOtTQe2-w0q4yHlcWI-fsuED8I9nKzlmSZbZSmPJWUoUkwuxJcoHyG637uZ63PDiHtXBF",
-        categoryName: "سياسة",
-        categorySlug: "politics",
-        publishedAt: "2025-11-12T09:15:00Z",
-        createdAt: "2025-11-12T09:15:00Z",
-      },
-    ],
-  },
 };
 
-export function meta({ params }: Route.MetaArgs) {
-  const article = mockArticles[params.id];
+export function meta({ loaderData }: Route.MetaArgs) {
+  const article = loaderData?.article;
 
   return [
-    { title: article?.title || "مقالة - القبس" },
+    { title: article?.title || "مقالة - الثورة" },
     {
       name: "description",
-      content: article?.content.substring(0, 160) || "اقرأ المزيد على القبس",
+      content: article?.summary || article?.content.substring(0, 160) || "اقرأ المزيد على الثورة",
     },
   ];
 }
 
-export default function ArticlePage({ params }: Route.ComponentProps) {
-  const article = mockArticles[params.id];
-  
+export default function ArticlePage({
+  loaderData,
+}: Route.ComponentProps) {
+  const { article } = loaderData;
+
+  // Format date
+  const formattedDate = new Date(article.publishedAt).toLocaleDateString("ar-EG", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
     <PostDetails
-      category={article.category}
-      categoryHref={article.categoryHref}
+      category={article.categoryName}
+      categoryHref={`/category/${article.categorySlug}`}
       title={article.title}
-      date={article.date}
-      commentsCount={article.commentsCount}
-      imageSrc={article.imageSrc}
-      imageAlt={article.imageAlt}
+      date={formattedDate}
+      commentsCount={0}
+      imageSrc={article.image}
+      imageAlt={article.imageDescription}
       content={article.content}
       registerHref="/register"
       loginHref="/login"
       relatedPostsTitle="مقالات ذات صلة"
-      relatedPosts={
-        article.relatedPosts && article.relatedPosts.length > 0 && (
-          <>
-            {article.relatedPosts.slice(0, 3).map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </>
-        )
-      }
+      relatedPosts={null}
     />
   );
 }
