@@ -23,7 +23,7 @@ export function NewsletterSubscription() {
               {/* Logo/Brand */}
               <div className="flex-shrink-0 order-1 md:order-3">
                 <div className="text-4xl md:text-5xl font-bold text-[var(--color-primary)]">
-                  القبس
+                  الثورة
                 </div>
               </div>
 

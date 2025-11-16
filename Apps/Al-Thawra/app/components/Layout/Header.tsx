@@ -1,36 +1,91 @@
 import { useState } from "react";
-import { Link } from "react-router";
-import { Search, Menu, X, ChevronDown, Send, Youtube, Twitter, Facebook, Instagram, TrendingUp, ShoppingCart, Mail } from "lucide-react";
+import { Link, useLocation } from "react-router";
+import {
+  Search,
+  Menu,
+  X,
+  ChevronDown,
+  Send,
+  Youtube,
+  Twitter,
+  Facebook,
+  Instagram,
+  TrendingUp,
+  ShoppingCart,
+  Mail,
+  Newspaper,
+  Tv,
+  Bot,
+  User,
+  Podcast,
+} from "lucide-react";
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-md" dir="rtl" lang="ar">
+    <header
+      className="sticky top-0 z-50 bg-white shadow-md"
+      dir="rtl"
+      lang="ar"
+    >
       {/* Top Bar - Social & Info */}
       <div className="bg-gray-100 border-b border-gray-300">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Right Side - Editor Info */}
             <div className="flex items-center gap-6 text-gray-700">
-              <span className="font-medium">رئيس مجلس الادارة: سام الغبارى </span>
+              <span className="font-medium">
+                رئيس مجلس الادارة: سام الغبارى{" "}
+              </span>
             </div>
             {/* Left Side - Social Icons */}
             <div className="flex items-center gap-3">
-              <a href="https://t.me/althawra" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[var(--color-primary)] transition-colors" aria-label="Telegram">
+              <a
+                href="https://t.me/althawra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                aria-label="Telegram"
+              >
                 <Send className="w-4 h-4" />
               </a>
-              <a href="https://youtube.com/@althawra" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[var(--color-primary)] transition-colors" aria-label="YouTube">
+              <a
+                href="https://youtube.com/@althawra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                aria-label="YouTube"
+              >
                 <Youtube className="w-4 h-4" />
               </a>
-              <a href="https://twitter.com/althawra" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[var(--color-primary)] transition-colors" aria-label="Twitter">
+              <a
+                href="https://twitter.com/althawra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                aria-label="Twitter"
+              >
                 <Twitter className="w-4 h-4" />
               </a>
-              <a href="https://facebook.com/althawra" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[var(--color-primary)] transition-colors" aria-label="Facebook">
+              <a
+                href="https://facebook.com/althawra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                aria-label="Facebook"
+              >
                 <Facebook className="w-4 h-4" />
               </a>
-              <a href="https://instagram.com/althawra" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[var(--color-primary)] transition-colors" aria-label="Instagram">
+              <a
+                href="https://instagram.com/althawra"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                aria-label="Instagram"
+              >
                 <Instagram className="w-4 h-4" />
               </a>
             </div>
@@ -43,50 +98,108 @@ export function Header() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-3">
             {/* Right Side - Logo */}
-            <Link to="/" className="text-white text-3xl font-black italic hover:opacity-90 transition-opacity">
-              <img src="/logo.png" alt="الثورة لوجو" style={{width:"100px"}}/>
+            <Link
+              to="/"
+              className="text-white text-3xl font-black italic hover:opacity-90 transition-opacity"
+            >
+              <img
+                src="/logo.png"
+                alt="الثورة لوجو"
+                style={{ width: "100px" }}
+              />
             </Link>
-             <nav className="hidden lg:flex items-center gap-1 text-white font-bold">
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/">
-                الصحيفة
+            <nav className="hidden lg:flex items-center gap-1 text-white">
+              <Link
+                className={`flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 group ${
+                  location.pathname === "/" ? "font-bold bg-white rounded-full bg-opacity-10 text-[var(--color-primary)]" : "font-semibold"
+                }`}
+                to="/"
+              >
+                <Newspaper className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>الصحيفة</span>
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/local">
-                محليات
+
+              <Link
+                className={`flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 group ${
+                  location.pathname === "/tv" ? "font-bold bg-white bg-opacity-10 text-[var(--color-primary)]" : "font-semibold"
+                }`}
+                to="/tv"
+              >
+                <Tv className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>التلفزيون</span>
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/opinion">
-                كتاب وآراء
+
+              <Link
+                className={`flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 group ${
+                  location.pathname === "/ai" ? "font-bold bg-white bg-opacity-10 text-[var(--color-primary)]" : "font-semibold"
+                }`}
+                to="/ai"
+              >
+                <Bot className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>AI</span>
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/economy">
-                اقتصاد
+
+              <Link
+                className={`flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 group ${
+                  location.pathname === "/profile" ? "font-bold bg-white bg-opacity-10 text-[var(--color-primary)]" : "font-semibold"
+                }`}
+                to="/profile"
+              >
+                <User className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>صفحتي</span>
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/international">
-                الثورة الدولي
+
+              {/* Separator */}
+              <div className="h-6 w-px bg-white bg-opacity-30 mx-2"></div>
+
+              <Link
+                className={`flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 group ${
+                  location.pathname === "/podcast" ? "font-bold bg-white bg-opacity-10 text-[var(--color-primary)]" : "font-semibold"
+                }`}
+                to="/podcast"
+              >
+                <Podcast className="w-4 h-4 transition-transform group-hover:scale-110" />
+                <span>بودكاست</span>
               </Link>
-              <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/lite">
-                لايت
-              </Link>
-              <Link className="flex items-center gap-1 px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/more">
-                المزيد
-                <ChevronDown className="w-4 h-4" />
-              </Link>
+
+              {/* Optional More dropdown with enhanced styling */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-3 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded-xl transition-all duration-300 hover:scale-105 font-semibold">
+                  <span>المزيد</span>
+                  <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                </button>
+
+                {/* Dropdown menu - you can add this later */}
+                <div className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="py-2">{/* Add dropdown items here */}</div>
+                </div>
+              </div>
             </nav>
-            {/* </div> */}
 
             {/* Left Side - Actions */}
             <div className="flex items-center gap-3">
-              <Link to="/login" className="hidden md:block px-4 py-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors font-medium">
+              <Link
+                to="/login"
+                className="hidden md:block px-4 py-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors font-medium"
+              >
                 تسجيل الدخول
               </Link>
-              <Link to="/cart" className="hidden md:flex items-center gap-2 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-[var(--color-primary)] transition-colors">
+              <Link
+                to="/cart"
+                className="hidden md:flex items-center gap-2 px-4 py-2 border border-white text-white rounded hover:bg-white hover:text-[var(--color-primary)] transition-colors"
+              >
                 <ShoppingCart className="w-4 h-4" />
                 <span>الاشتراكات</span>
               </Link>
-              <Link to="/contact" className="hidden md:flex items-center gap-2 px-4 py-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors">
+              <Link
+                to="/contact"
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              >
                 <Mail className="w-4 h-4" />
               </Link>
-              <button 
+              <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" 
+                className="p-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 aria-label="بحث"
               >
                 <Search className="w-5 h-5" />
@@ -96,7 +209,11 @@ export function Header() {
                 className="lg:hidden p-2 text-white hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 aria-label="القائمة"
               >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5" />
+                ) : (
+                  <Menu className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -107,28 +224,52 @@ export function Header() {
       <div className="bg-gray-100 border-b border-gray-300">
         <div className="container mx-auto px-4">
           <nav className="hidden lg:flex items-center justify-start gap-1 py-2">
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/"
+            >
               عدد اليوم
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/local">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/local"
+            >
               محليات
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/opinion">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/opinion"
+            >
               كتاب وآراء
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/economy">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/economy"
+            >
               اقتصاد
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/security">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/security"
+            >
               أمن ومحاكم
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/international">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/international"
+            >
               الثورة الدولي
             </Link>
-            <Link className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/category/lite">
+            <Link
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/category/lite"
+            >
               لايت
             </Link>
-            <Link className="flex items-center gap-1 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium" to="/more">
+            <Link
+              className="flex items-center gap-1 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-white rounded transition-colors font-medium"
+              to="/more"
+            >
               المزيد
               <ChevronDown className="w-4 h-4" />
             </Link>
@@ -148,9 +289,7 @@ export function Header() {
                 autoFocus
                 dir="rtl"
               />
-              <button
-                className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium"
-              >
+              <button className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium">
                 بحث
               </button>
               <button
@@ -169,22 +308,46 @@ export function Header() {
       {isMobileMenuOpen && (
         <div className="lg:hidden bg-[var(--color-primary-dark)]">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-white">
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               الصحيفة
             </Link>
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/local" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/category/local"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               محليات
             </Link>
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/opinion" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/category/opinion"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               كتاب وآراء
             </Link>
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/economy" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/category/economy"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               اقتصاد
             </Link>
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/international" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/category/international"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               الثورة الدولي
             </Link>
-            <Link className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors" to="/category/lite" onClick={() => setIsMobileMenuOpen(false)}>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/category/lite"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               لايت
             </Link>
           </nav>
