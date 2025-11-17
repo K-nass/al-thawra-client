@@ -5,6 +5,7 @@ import {
 } from "../components/Post";
 import { PostCard, type Post } from "../components/PostCard";
 import { ArticlePageSkeleton } from "../components/skeletons";
+import axiosInstance from "~/lib/axios";
 
 interface ArticleResponse {
   id: string;
@@ -39,17 +40,18 @@ interface ArticleResponse {
 
 // Loader function for SSR
 export const loader = async ({ params }: Route.LoaderArgs) => {
-  const { slug } = params;
+  const { slug,categorySlug } = params;
 
   try {
     const response = await axiosInstance.get<ArticleResponse>(
-      `/posts/${slug}`
+      `/posts/categories/${categorySlug}/articles/${slug}`
     );
-
+    
     return {
       article: response.data,
     };
   } catch (error) {
+    console.log(slug);
     throw new Response("Article not found", { status: 404 });
   }
 };
