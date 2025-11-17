@@ -1,5 +1,6 @@
-import { useParams } from "react-router";
+import { useParams, useNavigation } from "react-router";
 import { PostsGrid } from "../components/PostsGrid";
+import { AuthorPageSkeleton } from "../components/skeletons";
 import type { Post } from "../components/PostCard";
 
 // Dummy author data
@@ -14,84 +15,17 @@ const dummyAuthor = {
 };
 
 // Dummy posts data
-const dummyPosts: Post[] = [
-  {
-    id: "1",
-    title: "العربية لولادة القضايا لعضوات مجالس المحافظات: إنجازات المرأة الكويتية مصدر فخر وإلهام",
-    slug: "post-1",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-12T10:00:00Z",
-    createdAt: "2025-11-12T10:00:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-  {
-    id: "2",
-    title: "جهاز الاعتماد الأكاديمي: إلغاء 155 برنامجاً دراسياً من قوائم اعتماد الجامعات الأميركية",
-    slug: "post-2",
-    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-13T10:00:00Z",
-    createdAt: "2025-11-13T10:00:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-  {
-    id: "3",
-    title: "وزارة التربية تستطلع آراء الميدان وأولياء الأمور حول المناهج الجديدة",
-    slug: "post-3",
-    image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-13T13:34:00Z",
-    createdAt: "2025-11-13T13:34:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-  {
-    id: "4",
-    title: "التعليم العالي يناقش خطط التطوير الأكاديمي للجامعات الحكومية",
-    slug: "post-4",
-    image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-10T10:00:00Z",
-    createdAt: "2025-11-10T10:00:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-  {
-    id: "5",
-    title: "مبادرات تعليمية جديدة لدعم الطلاب المتفوقين",
-    slug: "post-5",
-    image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-09T10:00:00Z",
-    createdAt: "2025-11-09T10:00:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-  {
-    id: "6",
-    title: "ورش عمل تدريبية للمعلمين حول التقنيات الحديثة",
-    slug: "post-6",
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&h=600&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-08T10:00:00Z",
-    createdAt: "2025-11-08T10:00:00Z",
-    authorName: "أميرة بن طرف",
-    authorSlug: "amira-ben-taraf",
-  },
-];
+
 
 export default function AuthorPage() {
   const params = useParams();
+  const navigation = useNavigation();
   const authorSlug = params.slug;
+
+  // Show loading skeleton during navigation
+  if (navigation.state === "loading") {
+    return <AuthorPageSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
@@ -156,7 +90,7 @@ export default function AuthorPage() {
         <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">
           مقالات {dummyAuthor.name}
         </h2>
-        <PostsGrid posts={dummyPosts} />
+        <PostsGrid posts={[]} />
       </div>
     </div>
   );

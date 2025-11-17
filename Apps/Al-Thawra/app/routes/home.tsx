@@ -1,8 +1,12 @@
 import type { Route } from "./+types/home";
+import { useLoaderData, useNavigation } from "react-router";
 import { PostsGrid } from "../components/PostsGrid";
 import { Slider } from "../components/Slider";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
-import type { Post } from "../components/PostCard";
+import { HomePageSkeleton } from "../components/skeletons";
+import { EmptyState } from "../components/EmptyState";
+import { postsService, type Post } from "../services/postsService";
+import { categoriesService, type Category } from "../services/categoriesService";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,118 +15,105 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-// Mock data for testing
-const mockPosts: Post[] = [
-  {
-    id: "1",
-    title: "مساعد وزير الخارجية لشؤون أوروبا: تطوير علاقاتنا مع السويد",
-    slug: "post-1",
-    image: "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=500&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-13T00:00:00Z",
-    createdAt: "2025-11-13T00:00:00Z",
-  },
-  {
-    id: "2",
-    title: "وزير الأشغال: أعمال صيانة جذرية للطرق وشبكات الصرف والأمطار في منطقة اليرموك",
-    slug: "post-2",
-    image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=800&h=500&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-14T00:00:00Z",
-    createdAt: "2025-11-14T00:00:00Z",
-  },
-  {
-    id: "3",
-    title: "الأرصاد: زيادة الرطوبة خلال الليل وحتى صباح الغد",
-    slug: "post-3",
-    image: "https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=800&h=500&fit=crop",
-    categoryName: "محليات",
-    categorySlug: "local",
-    publishedAt: "2025-11-14T00:00:00Z",
-    createdAt: "2025-11-14T00:00:00Z",
-  },
-];
+// Loading fallback for hydration
+export function HydrateFallback() {
+  return <HomePageSkeleton />;
+}
 
-const mockOpinionPosts: Post[] = [
-  {
-    id: "4",
-    title: "المستشار عادل بطرس",
-    slug: "post-4",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=500&fit=crop",
-    categoryName: "كتاب وآراء",
-    categorySlug: "opinion",
-    publishedAt: "2025-11-14T00:00:00Z",
-    createdAt: "2025-11-14T00:00:00Z",
-  },
-  {
-    id: "5",
-    title: "طالب الرفاعي",
-    slug: "post-5",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&h=500&fit=crop",
-    categoryName: "كتاب وآراء",
-    categorySlug: "opinion",
-    publishedAt: "2025-11-14T00:00:00Z",
-    createdAt: "2025-11-14T00:00:00Z",
-  },
-  {
-    id: "6",
-    title: "أحمد العرافي",
-    slug: "post-6",
-    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=800&h=500&fit=crop",
-    categoryName: "كتاب وآراء",
-    categorySlug: "opinion",
-    publishedAt: "2025-11-14T00:00:00Z",
-    createdAt: "2025-11-14T00:00:00Z",
-  },
-];
+// Loader function for server-side data fetching
+export async function loader() {
+  try {
+    // Get homepage categories (fast metadata)
+    const homepageCategories = await categoriesService.getHomepageCategories('Arabic').catch(() => []);
+    
+    // Sort and limit categories
+    const limitedCategories = homepageCategories
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 6);
+    
+    // Make only ONE request for ALL posts (90 items)
+    // We'll filter locally for slider and categories
+    const allPostsResponse = await postsService.getPosts({ 
+      pageSize: 90, // Get enough posts for slider + all categories
+      language: 'Arabic' 
+    }).catch(() => ({ items: [], totalCount: 0, pageNumber: 1, pageSize: 90, totalPages: 0 }));
+    
+    // Filter slider posts locally (posts marked as isSlider)
+    const sliderPosts = allPostsResponse.items
+      .filter(post => post.isSlider)
+      .slice(0, 15);
+    
+    // Filter posts by category locally (fast!)
+    const categoryPosts = limitedCategories
+      .map(category => {
+        const posts = allPostsResponse.items
+          .filter(post => post.categorySlug === category.slug)
+          .slice(0, 15); // Limit to 15 posts per category
+        
+        return {
+          category,
+          posts,
+        };
+      })
+      .filter(cp => cp.posts.length > 0); // Only include categories with posts
 
-// Slider posts
-const sliderPosts: Post[] = [
-  {
-    id: "s1",
-    title: "عاجل: قرارات حكومية جديدة لدعم الاقتصاد الوطني",
-    slug: "slider-1",
-    image: "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1200&h=600&fit=crop",
-    categoryName: "عاجل",
-    categorySlug: "breaking",
-    publishedAt: "2025-11-15T00:00:00Z",
-    createdAt: "2025-11-15T00:00:00Z",
-  },
-  {
-    id: "s2",
-    title: "مؤتمر دولي في الكويت لمناقشة قضايا المنطقة",
-    slug: "slider-2",
-    image: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=600&fit=crop",
-    categoryName: "سياسة",
-    categorySlug: "politics",
-    publishedAt: "2025-11-15T00:00:00Z",
-    createdAt: "2025-11-15T00:00:00Z",
-  },
-  {
-    id: "s3",
-    title: "إنجازات رياضية تاريخية للمنتخب الوطني",
-    slug: "slider-3",
-    image: "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&h=600&fit=crop",
-    categoryName: "رياضة",
-    categorySlug: "sports",
-    publishedAt: "2025-11-15T00:00:00Z",
-    createdAt: "2025-11-15T00:00:00Z",
-  },
-];
+    return {
+      sliderPosts,
+      categoryPosts,
+    };
+  } catch (error: any) {
+    console.error('Error loading home page:', error.response?.data || error.message);
+    return {
+      sliderPosts: [],
+      categoryPosts: [],
+    };
+  }
+}
 
 export default function Home() {
+  // Get data from loader
+  const { sliderPosts, categoryPosts } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+
+  // Show loading skeleton during navigation
+  if (navigation.state === "loading") {
+    return <HomePageSkeleton />;
+  }
+
+  // Show empty state if no data at all
+  if (sliderPosts.length === 0 && categoryPosts.length === 0) {
+    return (
+      <EmptyState 
+        title="لا توجد مقالات متاحة"
+        description="نعمل على إضافة محتوى جديد. يرجى المحاولة مرة أخرى لاحقاً"
+        showRefresh={true}
+        onRefresh={() => window.location.reload()}
+      />
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Slider */}
-      <Slider posts={sliderPosts} />
+      {sliderPosts.length > 0 && <Slider posts={sliderPosts} />}
 
-      {/* Local News Section */}
-      <PostsGrid posts={mockPosts} categoryName="محليات" />
-
-      {/* Opinion Section */}
-      <PostsGrid posts={mockOpinionPosts} categoryName="كتاب وآراء" />
+      {/* Dynamic Category Sections */}
+      {categoryPosts.length > 0 ? (
+        categoryPosts.map(({ category, posts }) => (
+          <PostsGrid 
+            key={category.id}
+            posts={posts} 
+            categoryName={category.name} 
+            categorySlug={category.slug}
+            showCategoryHeader={true}
+          />
+        ))
+      ) : (
+        <EmptyState 
+          title="لا توجد أقسام متاحة"
+          description="لم نتمكن من تحميل الأقسام في الوقت الحالي"
+        />
+      )}
 
       {/* Newsletter Subscription */}
       <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-8 mt-8">

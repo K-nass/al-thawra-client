@@ -1,9 +1,10 @@
+import { useParams, useNavigation } from "react-router";
 import type { Route } from "./+types/article";
 import {
   PostDetails,
 } from "../components/Post";
 import { PostCard, type Post } from "../components/PostCard";
-import axiosInstance from "../lib/axios";
+import { ArticlePageSkeleton } from "../components/skeletons";
 
 interface ArticleResponse {
   id: string;

@@ -1,17 +1,7 @@
 import { Link } from "react-router";
+import type { Post } from "../services/postsService";
 
-export interface Post {
-  id: string;
-  title: string;
-  slug: string;
-  image: string | null;
-  categoryName: string | null;
-  categorySlug: string | null;
-  publishedAt: string | null;
-  createdAt: string;
-  authorName?: string;
-  authorSlug?: string;
-}
+export type { Post };
 
 interface PostCardProps {
   post: Post;
