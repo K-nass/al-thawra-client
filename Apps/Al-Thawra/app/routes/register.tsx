@@ -54,10 +54,21 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex items-center justify-center p-4 bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="h-screen flex items-start justify-center pt-8 p-4 bg-[var(--color-background-light)] overflow-hidden">
+      <div className="max-w-md w-full bg-[var(--color-white)] rounded-2xl shadow-xl p-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
+        {/* Logo */}
+        <div className="flex justify-center mb-4">
+          <Link to="/">
+            <img
+              src="/logo.png"
+              alt="الثورة"
+              className="h-16 w-auto"
+            />
+          </Link>
+        </div>
+
         {/* Title */}
-        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-8 text-center">
+        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6 text-center">
           إنشاء حساب جديد
         </h2>
 

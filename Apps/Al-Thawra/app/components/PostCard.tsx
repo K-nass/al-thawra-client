@@ -16,7 +16,7 @@ export function PostCard({ post }: PostCardProps) {
   });
 
   return (
-    <article className="group relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <article className="group relative bg-[var(--color-white)] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
       {/* Image */}
       <Link to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`} className="block relative aspect-16/10 overflow-hidden">
         {post.image ? (
@@ -26,14 +26,14 @@ export function PostCard({ post }: PostCardProps) {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-            <span className="text-gray-400 text-sm">لا توجد صورة</span>
+          <div className="w-full h-full bg-[var(--color-divider)] flex items-center justify-center">
+            <span className="text-[var(--color-text-secondary)] text-sm">لا توجد صورة</span>
           </div>
         )}
         
         {/* Share Icon */}
         <button
-          className="absolute top-3 left-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors"
+          className="absolute top-3 left-3 w-8 h-8 bg-[var(--color-white)]/90 hover:bg-[var(--color-white)] rounded-full flex items-center justify-center shadow-sm transition-colors"
           onClick={(e) => {
             e.preventDefault();
             // Share functionality
@@ -46,7 +46,7 @@ export function PostCard({ post }: PostCardProps) {
           }}
         >
           <svg
-            className="w-4 h-4 text-gray-700"
+            className="w-4 h-4 text-[var(--color-text-primary)]"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -75,13 +75,13 @@ export function PostCard({ post }: PostCardProps) {
 
         {/* Title */}
         <Link to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}>
-          <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors leading-tight">
+          <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2 line-clamp-2 group-hover:text-[var(--color-primary)] transition-colors leading-tight">
             {post.title}
           </h3>
         </Link>
 
         {/* Date */}
-        <time className="text-sm text-gray-500" dateTime={displayDate}>
+        <time className="text-sm text-[var(--color-text-secondary)]" dateTime={displayDate}>
           {formattedDate}
         </time>
 

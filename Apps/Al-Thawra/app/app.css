@@ -6,16 +6,39 @@
 }
 
 :root {
-  /* Color Palette */
-  --color-primary: #005C9C;
-  --color-primary-dark: #004577;
-  --color-primary-light: #0077C2;
-  --color-secondary: #00A3E0;
-  --color-accent: #FF6B35;
-  --color-background-light: #F8F9FA;
-  --color-background-dark: #1A1A1A;
-  --color-text-primary: #2C3E50;
-  --color-text-secondary: #6C757D;
+  /* Primary Colors (Dark Navy) */
+  --color-primary-dark: #021024;      /* Darkest Blue */
+  --color-primary: #052659;           /* Deep Blue */
+  --color-primary-light: #345B83;     /* Medium Blue */
+
+  /* Secondary Colors (Lighter Shades) */
+  --color-secondary: #7DA0CA;         /* Light Blue */
+  --color-secondary-light: #C1E8FF;   /* Very Light Blue */
+
+  /* Accent Color */
+  --color-accent: #C1E8FF;            /* Accent Highlight */
+
+  /* Background Colors */
+  --color-background-light: #FFFFFF;  /* White background for light mode */
+  --color-background-dark: #021024;   /* Dark background (same as primary-dark) */
+  --color-card: #052659;              /* Card background darker tone */
+  
+  /* Text Colors */
+  --color-text-primary: #021024;      /* Dark text for light mode */
+  --color-text-secondary: #7DA0CA;    /* Soft blue for secondary text */
+  --color-text-light: #FFFFFF;        /* White text for dark backgrounds */
+  
+  /* Neutral Colors */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-gray: #B2B2B2;              /* Light gray */
+  --color-soft-blue: #7DA0CA;         /* Soft grayish blue */
+  --color-divider: #E0E0E0;           /* Light gray for dividers */
+
+  /* Status Colors */
+  --color-error: #D32F2F;             /* Red for errors */
+  --color-success: #388E3C;           /* Green for success */
+  --color-error-icon: #D32F2F;        /* Dark Red for error icons */
 }
 
 html,

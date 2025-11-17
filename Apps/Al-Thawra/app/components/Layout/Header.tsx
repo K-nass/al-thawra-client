@@ -181,7 +181,7 @@ export function Header({ categories = [] }: HeaderProps) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-white hover:bg-white hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
+                className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
                 aria-label="بحث"
               >
                 <Search className="w-5 h-5" />
@@ -202,7 +202,7 @@ export function Header({ categories = [] }: HeaderProps) {
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
                     onMouseEnter={() => setIsProfileMenuOpen(true)}
                     onMouseLeave={() => setIsProfileMenuOpen(false)}
-                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 rounded-lg transition-colors duration-300 font-medium"
+                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-[var(--color-white)] hover:bg-[var(--color-secondary-light)] rounded-lg transition-colors duration-300 font-medium"
                   >
                     <User className="w-4 h-4" />
                     <span>{currentUser.userName || currentUser.username}</span>
@@ -212,13 +212,13 @@ export function Header({ categories = [] }: HeaderProps) {
                   {/* Dropdown Menu */}
                   {isProfileMenuOpen && (
                     <div
-                      className="absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                      className="absolute top-full right-0 mt-1 w-48 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
                       onMouseEnter={() => setIsProfileMenuOpen(true)}
                       onMouseLeave={() => setIsProfileMenuOpen(false)}
                     >
                       <Link
                         to="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-gray-50 transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
                         onClick={() => setIsProfileMenuOpen(false)}
                       >
                         <User className="w-4 h-4" />

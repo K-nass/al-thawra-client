@@ -74,17 +74,28 @@ export default function LoginPage() {
   const previousValues = actionData?.values || { email: "" };
 
   return (
-    <div className="flex items-center justify-center p-4 bg-gray-50">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="h-screen flex items-start justify-center pt-8 p-4 bg-[var(--color-background-light)] overflow-hidden">
+      <div className="max-w-md w-full bg-[var(--color-white)] rounded-2xl shadow-xl p-6">
+            {/* Logo */}
+            <div className="flex justify-center mb-4">
+              <Link to="/">
+                <img
+                  src="/logo.png"
+                  alt="الثورة"
+                  className="h-16 w-auto"
+                />
+              </Link>
+            </div>
+
             {/* Title */}
-            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-8 text-center">
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6 text-center">
               تسجيل الدخول
             </h2>
 
             {/* General Error Message */}
             {generalError && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-700">{generalError}</p>
+              <div className="mb-4 p-3 bg-[var(--color-error)]/10 border border-[var(--color-error)] rounded-lg">
+                <p className="text-sm text-[var(--color-error)]">{generalError}</p>
               </div>
             )}
 
@@ -105,7 +116,7 @@ export default function LoginPage() {
                     name="email"
                     defaultValue={previousValues.email}
                     className={`w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                      errors.email ? "border-red-500" : "border-gray-300"
+                      errors.email ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
                     }`}
                     placeholder="example@email.com"
                     dir="ltr"
@@ -113,7 +124,7 @@ export default function LoginPage() {
                   />
                 </div>
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                  <p className="mt-1 text-sm text-[var(--color-error)]">{errors.email}</p>
                 )}
               </div>
 
@@ -131,7 +142,7 @@ export default function LoginPage() {
                     id="password"
                     name="password"
                     className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                      errors.password ? "border-red-500" : "border-gray-300"
+                      errors.password ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
                     }`}
                     placeholder="••••••••"
                     dir="ltr"
@@ -140,14 +151,14 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
                     disabled={isSubmitting}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                  <p className="mt-1 text-sm text-[var(--color-error)]">{errors.password}</p>
                 )}
               </div>
 

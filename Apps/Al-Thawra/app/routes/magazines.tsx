@@ -135,10 +135,10 @@ export default function MagazinesPage() {
           {magazines.map((magazine) => (
             <div
               key={magazine.issueNumber}
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
+              className="bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
             >
               {/* Thumbnail */}
-              <div className="relative aspect-[3/4] bg-gray-100 overflow-hidden">
+              <div className="relative aspect-[3/4] bg-[var(--color-divider)] overflow-hidden">
                 {magazine.thumbnailUrl ? (
                   <img
                     src={magazine.thumbnailUrl}
@@ -147,7 +147,7 @@ export default function MagazinesPage() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <FileText className="w-16 h-16 text-gray-300" />
+                    <FileText className="w-16 h-16 text-[var(--color-text-secondary)]" />
                   </div>
                 )}
                 {/* Overlay on hover */}
@@ -156,7 +156,7 @@ export default function MagazinesPage() {
                     href={magazine.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-white text-[var(--color-primary)] rounded-lg hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 bg-[var(--color-white)] text-[var(--color-primary)] rounded-lg hover:bg-[var(--color-secondary-light)] transition-colors"
                   >
                     <Download className="w-4 h-4" />
                     <span className="font-medium">تحميل PDF</span>
@@ -179,7 +179,7 @@ export default function MagazinesPage() {
         </div>
       ) : (
         <div className="text-center py-12">
-          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <FileText className="w-16 h-16 text-[var(--color-text-secondary)] mx-auto mb-4" />
           <p className="text-[var(--color-text-secondary)] text-lg">
             لا توجد أعداد متاحة حالياً
           </p>
@@ -192,7 +192,7 @@ export default function MagazinesPage() {
           <button
             onClick={() => handlePageChange(pageNumber - 1)}
             disabled={pageNumber === 1}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-[var(--color-divider)] hover:bg-[var(--color-background-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="الصفحة السابقة"
           >
             <ChevronRight className="w-5 h-5" />
@@ -218,7 +218,7 @@ export default function MagazinesPage() {
                   className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                     pageNumber === pageNum
                       ? "bg-[var(--color-primary)] text-white"
-                      : "border border-gray-300 hover:bg-gray-50"
+                      : "border border-[var(--color-divider)] hover:bg-[var(--color-background-light)]"
                   }`}
                 >
                   {pageNum}
@@ -230,7 +230,7 @@ export default function MagazinesPage() {
           <button
             onClick={() => handlePageChange(pageNumber + 1)}
             disabled={pageNumber === totalPages}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-[var(--color-divider)] hover:bg-[var(--color-background-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="الصفحة التالية"
           >
             <ChevronLeft className="w-5 h-5" />
