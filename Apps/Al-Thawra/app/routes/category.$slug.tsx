@@ -12,9 +12,9 @@ export async function loader({ params }: Route.LoaderArgs) {
   const slug = params.slug;
 
   try {
-    // Fetch category details and posts in parallel
+    // Fetch category details with subcategories and posts in parallel
     const [category, postsResponse] = await Promise.all([
-      categoriesService.getCategoryBySlug(slug),
+      categoriesService.getCategoryBySlug(slug, true), // withSub = true
       postsService.getPostsByCategory(slug, { pageSize: 15 }),
     ]);
 
@@ -40,22 +40,47 @@ export default function CategoryPage() {
   const { category, posts: initialPosts, totalPosts, currentPage: initialPage } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
   
-  // State for managing loaded posts
+  // State for managing loaded posts and filters
   const [posts, setPosts] = useState(initialPosts);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [filteredTotalPosts, setFilteredTotalPosts] = useState(totalPosts);
   
   // Show loading skeleton during navigation
   if (navigation.state === "loading") {
     return <CategoryPageSkeleton />;
   }
   
+  // Handle subcategory filter change
+  const handleSubcategoryFilter = async (subcategorySlug: string | null) => {
+    setSelectedSubcategory(subcategorySlug);
+    setIsLoadingMore(true);
+    
+    try {
+      // Fetch posts for the selected subcategory or main category
+      const targetSlug = subcategorySlug || category.slug;
+      const response = await postsService.getPostsByCategory(targetSlug, { 
+        pageSize: 15 
+      });
+      
+      setPosts(response.items);
+      setCurrentPage(response.pageNumber);
+      setFilteredTotalPosts(response.totalCount);
+    } catch (error) {
+      console.error('Error filtering posts:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+  
   // Load more posts function
   const handleLoadMore = async () => {
     setIsLoadingMore(true);
     try {
       const nextPage = currentPage + 1;
-      const response = await postsService.getPostsByCategory(category.slug, { 
+      const targetSlug = selectedSubcategory || category.slug;
+      const response = await postsService.getPostsByCategory(targetSlug, { 
         pageNumber: nextPage,
         pageSize: 15 
       });
@@ -84,14 +109,28 @@ export default function CategoryPage() {
             <>
               <span className="text-gray-300">|</span>
               <nav className="flex items-center gap-2 flex-wrap">
+                <button
+                  onClick={() => handleSubcategoryFilter(null)}
+                  className={`px-3 py-1 text-sm transition-all font-medium border rounded-md ${
+                    selectedSubcategory === null
+                      ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-blue-50 border-gray-200'
+                  }`}
+                >
+                  الكل
+                </button>
                 {category.subCategories.map((subcategory) => (
-                  <Link
+                  <button
                     key={subcategory.slug}
-                    to={`/category/${subcategory.slug}`}
-                    className="px-3 py-1 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-blue-50 rounded-md transition-all font-medium border border-gray-200"
+                    onClick={() => handleSubcategoryFilter(subcategory.slug)}
+                    className={`px-3 py-1 text-sm transition-all font-medium border rounded-md ${
+                      selectedSubcategory === subcategory.slug
+                        ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
+                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-blue-50 border-gray-200'
+                    }`}
                   >
                     {subcategory.name}
-                  </Link>
+                  </button>
                 ))}
               </nav>
             </>
@@ -113,7 +152,7 @@ export default function CategoryPage() {
           />
           
           {/* Load More Button */}
-          {totalPosts > posts.length && (
+          {filteredTotalPosts > posts.length && (
             <div className="flex justify-center mt-8">
               <button 
                 onClick={handleLoadMore}
@@ -126,7 +165,7 @@ export default function CategoryPage() {
                     جاري التحميل...
                   </span>
                 ) : (
-                  `تحميل المزيد (${totalPosts - posts.length} مقالة متبقية)`
+                  `تحميل المزيد (${filteredTotalPosts - posts.length} مقالة متبقية)`
                 )}
               </button>
             </div>

@@ -20,7 +20,6 @@ export function HydrateFallback() {
   return <HomePageSkeleton />;
 }
 
-// Loader function for server-side data fetching
 export async function loader() {
   try {
     // Get homepage categories (fast metadata)

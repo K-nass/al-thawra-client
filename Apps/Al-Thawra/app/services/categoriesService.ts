@@ -110,9 +110,14 @@ class CategoriesService {
   /**
    * Get single category by slug
    */
-  async getCategoryBySlug(slug: string): Promise<Category> {
+  async getCategoryBySlug(slug: string, withSub: boolean = false): Promise<Category> {
     try {
-      const response = await axios.get<Category>(`${this.baseUrl}/${slug}`);
+      const params: any = {};
+      if (withSub) params.WithSub = true;
+      
+      const response = await axios.get<Category>(`${this.baseUrl}/${slug}`, {
+        params,
+      });
       return response.data;
     } catch (error: any) {
       console.error(`Error fetching category ${slug}:`, error.message);

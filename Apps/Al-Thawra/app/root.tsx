@@ -14,6 +14,7 @@ import "./app.css";
 import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
 import { categoriesService } from "./services/categoriesService";
+import { postsService } from "./services/postsService";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,11 +32,15 @@ export const links: Route.LinksFunction = () => [
 // Loader function for root layout
 export async function loader() {
   try {
-    const categories = await categoriesService.getMenuCategories('Arabic');
-    return { categories };
+    const [categories, trendingPosts] = await Promise.all([
+      categoriesService.getMenuCategories("Arabic"),
+      postsService.getFeaturedPosts(15), // API only accepts 15, 30, 60, or 90
+    ]);
+
+    return { categories, trendingPosts };
   } catch (error) {
-    console.error('Error loading categories in root:', error);
-    return { categories: [] };
+    console.error("Error loading data in root:", error);
+    return { categories: [], trendingPosts: [] };
   }
 }
 
@@ -59,7 +64,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { categories } = useLoaderData<typeof loader>();
+  const { categories, trendingPosts } = useLoaderData<typeof loader>();
   
   // Pages that should not show sidebar
   const noSidebarPages = ['/login', '/register', '/forgot-password', '/reset-password'];
@@ -76,7 +81,7 @@ export default function App() {
             </div>
             {/* Sidebar */}
             <div className="lg:w-72 flex-shrink-0">
-              <Sidebar />
+              <Sidebar trendingPosts={trendingPosts} />
             </div>
           </div>
         </div>
