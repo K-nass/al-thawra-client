@@ -84,6 +84,24 @@ export function PostCard({ post }: PostCardProps) {
         <time className="text-sm text-gray-500" dateTime={displayDate}>
           {formattedDate}
         </time>
+
+        {/* author name */}
+        {post.authorName && (
+          <Link
+            to={`/author/${post.authorName}`}
+            className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100 group/author hover:bg-gray-50 -mx-4 px-4 py-2 transition-colors"
+          >
+            <img 
+              src={post.authorImage} 
+              alt={post.authorName} 
+              className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-200" 
+            />
+            <span className="text-xs font-semibold text-gray-700 group-hover/author:text-[var(--color-primary)] transition-colors truncate">
+              {post.authorName}
+            </span>
+          </Link>
+        )}
+
       </div>
     </article>
   );
