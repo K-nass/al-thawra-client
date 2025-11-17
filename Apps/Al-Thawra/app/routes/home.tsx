@@ -3,7 +3,7 @@ import { useLoaderData, useNavigation } from "react-router";
 import { PostsGrid } from "../components/PostsGrid";
 import { Slider } from "../components/Slider";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
-import { HomePageSkeleton } from "../components/LoadingSkeleton";
+import { HomePageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
@@ -23,41 +23,46 @@ export function HydrateFallback() {
 // Loader function for server-side data fetching
 export async function loader() {
   try {
-    // First, get categories that should show on homepage
-    const homepageCategories = await categoriesService.getHomepageCategories('Arabic');
+    // Get homepage categories (fast metadata)
+    const homepageCategories = await categoriesService.getHomepageCategories('Arabic').catch(() => []);
     
-    // Get slider posts
-    const sliderPosts = await postsService.getSliderPosts(15);
+    // Sort and limit categories
+    const limitedCategories = homepageCategories
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 6);
     
-    // Load posts for each homepage category in parallel
-    const categoryPostsPromises = homepageCategories
-      .sort((a, b) => a.order - b.order) // Sort by order
-      .slice(0, 6) // Limit to first 6 categories
-      .map(async (category) => {
-        try {
-          const response = await postsService.getPostsByCategory(category.slug, { pageSize: 15 });
-          return {
-            category,
-            posts: response.items,
-          };
-        } catch (error) {
-          console.error(`Error loading posts for category ${category.slug}:`, error);
-          return {
-            category,
-            posts: [],
-          };
-        }
-      });
-
-    const categoryPosts = await Promise.all(categoryPostsPromises);
+    // Make only ONE request for ALL posts (90 items)
+    // We'll filter locally for slider and categories
+    const allPostsResponse = await postsService.getPosts({ 
+      pageSize: 90, // Get enough posts for slider + all categories
+      language: 'Arabic' 
+    }).catch(() => ({ items: [], totalCount: 0, pageNumber: 1, pageSize: 90, totalPages: 0 }));
+    
+    // Filter slider posts locally (posts marked as isSlider)
+    const sliderPosts = allPostsResponse.items
+      .filter(post => post.isSlider)
+      .slice(0, 15);
+    
+    // Filter posts by category locally (fast!)
+    const categoryPosts = limitedCategories
+      .map(category => {
+        const posts = allPostsResponse.items
+          .filter(post => post.categorySlug === category.slug)
+          .slice(0, 15); // Limit to 15 posts per category
+        
+        return {
+          category,
+          posts,
+        };
+      })
+      .filter(cp => cp.posts.length > 0); // Only include categories with posts
 
     return {
       sliderPosts,
-      categoryPosts: categoryPosts.filter(cp => cp.posts.length > 0), // Only return categories with posts
+      categoryPosts,
     };
   } catch (error: any) {
-    console.error('Error loading home page posts:', error.response?.data || error.message);
-    // Return empty data on error
+    console.error('Error loading home page:', error.response?.data || error.message);
     return {
       sliderPosts: [],
       categoryPosts: [],

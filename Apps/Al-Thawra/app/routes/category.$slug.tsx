@@ -1,7 +1,8 @@
 import type { Route } from "./+types/category.$slug";
-import { useLoaderData, Link } from "react-router";
+import { useLoaderData, Link, useNavigation } from "react-router";
+import { useState } from "react";
 import { PostsGrid } from "../components/PostsGrid";
-import { PostsGridSkeleton } from "../components/LoadingSkeleton";
+import { CategoryPageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
 import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
@@ -14,7 +15,7 @@ export async function loader({ params }: Route.LoaderArgs) {
     // Fetch category details and posts in parallel
     const [category, postsResponse] = await Promise.all([
       categoriesService.getCategoryBySlug(slug),
-      postsService.getPostsByCategory(slug, { pageSize: 30 }),
+      postsService.getPostsByCategory(slug, { pageSize: 15 }),
     ]);
 
     return {
@@ -32,19 +33,42 @@ export async function loader({ params }: Route.LoaderArgs) {
 
 // Loading fallback
 export function HydrateFallback() {
-  return (
-    <div className="space-y-6">
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <div className="h-8 w-32 bg-gray-200 rounded animate-pulse"></div>
-      </div>
-      <PostsGridSkeleton />
-    </div>
-  );
+  return <CategoryPageSkeleton />;
 }
 
 export default function CategoryPage() {
-  const { category, posts, totalPosts } = useLoaderData<typeof loader>();
-
+  const { category, posts: initialPosts, totalPosts, currentPage: initialPage } = useLoaderData<typeof loader>();
+  const navigation = useNavigation();
+  
+  // State for managing loaded posts
+  const [posts, setPosts] = useState(initialPosts);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  
+  // Show loading skeleton during navigation
+  if (navigation.state === "loading") {
+    return <CategoryPageSkeleton />;
+  }
+  
+  // Load more posts function
+  const handleLoadMore = async () => {
+    setIsLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const response = await postsService.getPostsByCategory(category.slug, { 
+        pageNumber: nextPage,
+        pageSize: 15 
+      });
+      
+      setPosts(prevPosts => [...prevPosts, ...response.items]);
+      setCurrentPage(nextPage);
+    } catch (error) {
+      console.error('Error loading more posts:', error);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+  
   return (
     <div className="space-y-6">
       {/* Category Header */}
@@ -88,11 +112,22 @@ export default function CategoryPage() {
             postsPerPage={posts.length}
           />
           
-          {/* Load More Button - TODO: Implement pagination */}
+          {/* Load More Button */}
           {totalPosts > posts.length && (
             <div className="flex justify-center mt-8">
-              <button className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg">
-                تحميل المزيد ({totalPosts - posts.length} مقالة متبقية)
+              <button 
+                onClick={handleLoadMore}
+                disabled={isLoadingMore}
+                className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoadingMore ? (
+                  <span className="flex items-center gap-2">
+                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    جاري التحميل...
+                  </span>
+                ) : (
+                  `تحميل المزيد (${totalPosts - posts.length} مقالة متبقية)`
+                )}
               </button>
             </div>
           )}

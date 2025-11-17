@@ -1,6 +1,6 @@
 import { useParams, useNavigation } from "react-router";
 import { PostsGrid } from "../components/PostsGrid";
-import { PostsGridSkeleton } from "../components/LoadingSkeleton";
+import { AuthorPageSkeleton } from "../components/skeletons";
 import type { Post } from "../components/PostCard";
 
 // Dummy author data
@@ -24,21 +24,7 @@ export default function AuthorPage() {
 
   // Show loading skeleton during navigation
   if (navigation.state === "loading") {
-    return (
-      <div className="space-y-6">
-        <div className="bg-white border border-gray-200 rounded-lg p-6 animate-pulse">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="w-32 h-32 rounded-full bg-gray-200"></div>
-            <div className="flex-1 space-y-3">
-              <div className="h-8 w-48 bg-gray-200 rounded"></div>
-              <div className="h-4 w-64 bg-gray-200 rounded"></div>
-              <div className="h-4 w-full bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-        <PostsGridSkeleton />
-      </div>
-    );
+    return <AuthorPageSkeleton />;
   }
 
   return (

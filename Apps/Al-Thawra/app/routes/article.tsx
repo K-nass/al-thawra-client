@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, useNavigation } from "react-router";
 import type { Route } from "./+types/article";
 import {
   PostDetails,
@@ -9,6 +9,7 @@ import {
   RelatedPosts,
 } from "../components/Post";
 import { PostCard, type Post } from "../components/PostCard";
+import { ArticlePageSkeleton } from "../components/skeletons";
 
 // Mock data - replace with actual API calls
 const mockArticles: Record<
@@ -89,8 +90,19 @@ export function meta({ params }: Route.MetaArgs) {
   ];
 }
 
+// Loading fallback
+export function HydrateFallback() {
+  return <ArticlePageSkeleton />;
+}
+
 export default function ArticlePage({ params }: Route.ComponentProps) {
+  const navigation = useNavigation();
   const article = mockArticles[params.id];
+  
+  // Show loading skeleton during navigation
+  if (navigation.state === "loading") {
+    return <ArticlePageSkeleton />;
+  }
   
   return (
     <PostDetails
