@@ -7,6 +7,7 @@ import { HomePageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
+import { cache, CacheTTL } from "../lib/cache";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,20 +23,27 @@ export function HydrateFallback() {
 
 export async function loader() {
   try {
-    // Get homepage categories (fast metadata)
-    const homepageCategories = await categoriesService.getHomepageCategories('Arabic').catch(() => []);
+    // Get homepage categories with caching
+    const homepageCategories = await cache.getOrFetch(
+      "categories:homepage:Arabic",
+      () => categoriesService.getHomepageCategories('Arabic'),
+      CacheTTL.LONG
+    ).catch(() => []);
     
     // Sort and limit categories
     const limitedCategories = homepageCategories
       .sort((a, b) => a.order - b.order)
       .slice(0, 6);
     
-    // Make only ONE request for ALL posts (90 items)
-    // We'll filter locally for slider and categories
-    const allPostsResponse = await postsService.getPosts({ 
-      pageSize: 90, // Get enough posts for slider + all categories
-      language: 'Arabic' 
-    }).catch(() => ({ items: [], totalCount: 0, pageNumber: 1, pageSize: 90, totalPages: 0 }));
+    // Make only ONE request for ALL posts with caching
+    const allPostsResponse = await cache.getOrFetch(
+      "posts:all:90:Arabic",
+      () => postsService.getPosts({ 
+        pageSize: 90,
+        language: 'Arabic' 
+      }),
+      CacheTTL.SHORT
+    ).catch(() => ({ items: [], totalCount: 0, pageNumber: 1, pageSize: 90, totalPages: 0 }));
     
     // Filter slider posts locally (posts marked as isSlider)
     const sliderPosts = allPostsResponse.items

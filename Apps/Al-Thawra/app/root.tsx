@@ -16,6 +16,7 @@ import { Sidebar } from "./components/Sidebar";
 import { NavigationLoader } from "./components/NavigationLoader";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
+import { cache, CacheTTL } from "./lib/cache";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -30,12 +31,20 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-// Loader function for root layout
+// Loader function for root layout with caching
 export async function loader() {
   try {
     const [categories, trendingPosts] = await Promise.all([
-      categoriesService.getMenuCategories("Arabic"),
-      postsService.getFeaturedPosts(15), // API only accepts 15, 30, 60, or 90
+      cache.getOrFetch(
+        "categories:menu:Arabic",
+        () => categoriesService.getMenuCategories("Arabic"),
+        CacheTTL.LONG
+      ),
+      cache.getOrFetch(
+        "posts:featured:15",
+        () => postsService.getFeaturedPosts(15),
+        CacheTTL.MEDIUM
+      ),
     ]);
 
     return { categories, trendingPosts };

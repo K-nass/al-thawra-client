@@ -7,6 +7,7 @@ import { EmptyState } from "../components/EmptyState";
 import { ButtonSpinner } from "../components/Spinner";
 import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
+import { cache, CacheTTL } from "../lib/cache";
 
 // Loader function for server-side data fetching
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -16,17 +17,26 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const page = parseInt(url.searchParams.get("page") || "1", 10);
 
   try {
-    // Fetch category details with subcategories
-    const category = await categoriesService.getCategoryBySlug(slug, true);
+    // Fetch category details with subcategories (cached)
+    const category = await cache.getOrFetch(
+      `category:${slug}:details`,
+      () => categoriesService.getCategoryBySlug(slug, true),
+      CacheTTL.LONG
+    );
     
     // Determine which slug to use for posts (subcategory or main category)
     const targetSlug = subcategorySlug || slug;
     
-    // Fetch posts for the target category/subcategory
-    const postsResponse = await postsService.getPostsByCategory(targetSlug, { 
-      pageNumber: page,
-      pageSize: 15 
-    });
+    // Fetch posts for the target category/subcategory (cached)
+    const cacheKey = cache.generateKey(`category:${targetSlug}:posts`, { page, pageSize: 15 });
+    const postsResponse = await cache.getOrFetch(
+      cacheKey,
+      () => postsService.getPostsByCategory(targetSlug, { 
+        pageNumber: page,
+        pageSize: 15 
+      }),
+      CacheTTL.SHORT
+    );
 
     return {
       category,

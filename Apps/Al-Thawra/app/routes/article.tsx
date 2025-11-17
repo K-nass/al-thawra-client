@@ -6,6 +6,7 @@ import {
 import { PostCard, type Post } from "../components/PostCard";
 import { ArticlePageSkeleton } from "../components/skeletons";
 import axiosInstance from "~/lib/axios";
+import { cache, CacheTTL } from "~/lib/cache";
 
 interface ArticleResponse {
   id: string;
@@ -38,13 +39,19 @@ interface ArticleResponse {
   likedByUsers: string[];
 }
 
-// Loader function for SSR
+// Loader function for SSR with caching
 export const loader = async ({ params }: Route.LoaderArgs) => {
-  const { slug,categorySlug } = params;
+  const { slug, categorySlug } = params;
 
   try {
-    const response = await axiosInstance.get<ArticleResponse>(
-      `/posts/categories/${categorySlug}/articles/${slug}`
+    const cacheKey = `article:${categorySlug}:${slug}`;
+    
+    const response = await cache.getOrFetch(
+      cacheKey,
+      () => axiosInstance.get<ArticleResponse>(
+        `/posts/categories/${categorySlug}/articles/${slug}`
+      ),
+      CacheTTL.MEDIUM
     );
     
     return {

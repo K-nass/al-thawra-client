@@ -6,13 +6,12 @@ export default [
   route("author/:slug", "routes/author.$slug.tsx"),
   route("category/:slug", "routes/category.$slug.tsx"),
   route("search", "routes/search.tsx"),
+  route("magazines", "routes/magazines.tsx"),
   route("login", "routes/login.tsx"),
   route("register", "routes/register.tsx"),
+  route("logout", "routes/logout.tsx"),
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
   route("profile", "routes/profile.tsx"),
-<<<<<<< Updated upstream
-=======
-  route("admin", "routes/admin.tsx")
->>>>>>> Stashed changes
+  route("admin", "routes/admin.tsx"),
 ] satisfies RouteConfig;

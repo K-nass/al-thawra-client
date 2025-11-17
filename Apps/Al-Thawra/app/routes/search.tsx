@@ -5,6 +5,7 @@ import { PostsGrid } from "../components/PostsGrid";
 import { EmptyState } from "../components/EmptyState";
 import { postsService } from "../services/postsService";
 import { Search, X } from "lucide-react";
+import { cache, CacheTTL } from "../lib/cache";
 
 // Loader function for server-side data fetching
 export async function loader({ request }: Route.LoaderArgs) {
@@ -22,11 +23,17 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 
   try {
-    const postsResponse = await postsService.getPosts({
-      searchPhrase: query,
-      pageSize: 15,
-      language: "Arabic",
-    });
+    // Cache search results
+    const cacheKey = cache.generateKey("search", { q: query, pageSize: 15 });
+    const postsResponse = await cache.getOrFetch(
+      cacheKey,
+      () => postsService.getPosts({
+        searchPhrase: query,
+        pageSize: 15,
+        language: "Arabic",
+      }),
+      CacheTTL.SHORT
+    );
 
     return {
       query,

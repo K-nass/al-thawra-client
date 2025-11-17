@@ -19,6 +19,7 @@ import {
   User,
   Podcast,
   LogOut,
+  FileText,
 } from "lucide-react";
 import type { Category } from "../../services/categoriesService";
 import authService from "../../services/authService";
@@ -148,6 +149,18 @@ export function Header({ categories = [] }: HeaderProps) {
                 >
                   <Newspaper className="w-4 h-4" />
                   <span>الصحيفة</span>
+                </Link>
+
+                <Link
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
+                    location.pathname === "/magazines" 
+                      ? "border-white text-white font-bold" 
+                      : "border-transparent hover:border-white/50"
+                  }`}
+                  to="/magazines"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>أرشيف الثورة</span>
                 </Link>
 
                 <Link
