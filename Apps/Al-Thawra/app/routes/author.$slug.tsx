@@ -3,6 +3,7 @@ import { PostsGrid } from "../components/PostsGrid";
 import { AuthorPageSkeleton } from "../components/skeletons";
 import type { Post } from "../components/PostCard";
 import axiosInstance from "../lib/axios";
+import { cache, CacheTTL } from "../lib/cache";
 
 interface AuthorProfile {
   userName: string;
@@ -32,11 +33,17 @@ export async function loader({ params }: { params: { slug: string } }) {
   try {
     const username = params.slug;
 
-    // Fetch author profile with posts
-    const profileResponse = await axiosInstance.get<AuthorProfile>(
-      `/users/profile/${username}?UserName=${username}`
+    // Fetch author profile with posts using cache
+    const author = await cache.getOrFetch<AuthorProfile>(
+      `author-profile-${username}`,
+      async () => {
+        const profileResponse = await axiosInstance.get<AuthorProfile>(
+          `/users/profile/${username}?UserName=${username}`
+        );
+        return profileResponse.data;
+      },
+      CacheTTL.MEDIUM
     );
-    const author = profileResponse.data;
 
     // Transform posts from author profile to match Post interface
     const posts: Post[] = (author.posts.items || []).map((post: any) => ({
@@ -87,11 +94,11 @@ export default function AuthorPage() {
   return (
     <div className="space-y-6">
       {/* Author Header */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <div className="bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg p-6">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
           {/* Author Avatar */}
           <div className="relative">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[var(--color-primary)] shadow-lg bg-gray-100">
+            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[var(--color-primary)] shadow-lg bg-[var(--color-divider)]">
               {author.profileImageUrl ? (
                 <img
                   src={author.profileImageUrl}
@@ -99,8 +106,8 @@ export default function AuthorPage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600">
-                  <span className="text-4xl font-bold text-white">
+                <div className="w-full h-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, var(--color-primary-light), var(--color-primary))'}}>
+                  <span className="text-4xl font-bold text-[var(--color-text-light)]">
                     {author.userName.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -133,7 +140,7 @@ export default function AuthorPage() {
                 </span>
                 <span className="text-[var(--color-text-secondary)]">مقال</span>
               </div>
-              <div className="w-px h-6 bg-gray-300"></div>
+              <div className="w-px h-6 bg-[var(--color-divider)]"></div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-[var(--color-text-secondary)]">
                   منذ {new Date(author.memberSince).toLocaleDateString("ar-EG")}
