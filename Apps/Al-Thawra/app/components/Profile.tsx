@@ -1,25 +1,23 @@
 import { Link } from "react-router";
 import { Edit, LogOut } from "lucide-react";
 
-interface ProfileData {
-  name: string;
+export interface UserProfile {
+  id: string;
+  userName: string;
   email: string;
-  avatar?: string;
-  initials?: string;
+  avatarImageUrl: string | null;
+  slug: string;
+  aboutMe: string;
+  socialAccounts: Record<string, string>;
+  permissions: string[];
+  hasAllPermissions: boolean;
 }
 
 interface ProfileProps {
-  user?: ProfileData;
+  user: UserProfile;
 }
 
 export function Profile({ user }: ProfileProps) {
-  // Mock user data if not provided
-  const userData: ProfileData = user || {
-    name: "Karim Maser",
-    email: "karimmasert@gmail.com",
-    initials: "K",
-  };
-
   const getInitials = (name: string): string => {
     return name
       .split(" ")
@@ -29,7 +27,7 @@ export function Profile({ user }: ProfileProps) {
       .slice(0, 2);
   };
 
-  const initials = userData.initials || getInitials(userData.name);
+  const initials = getInitials(user.userName);
 
   return (
     <div className="flex items-center justify-center py-12" style={{ backgroundColor: "var(--color-background-light)" }}>
@@ -43,22 +41,35 @@ export function Profile({ user }: ProfileProps) {
           <div className="relative px-6 pb-6">
             {/* Avatar */}
             <div className="flex justify-center -mt-12 mb-4">
-              <div
-                className="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
-                style={{ backgroundColor: "var(--color-secondary)" }}
-              >
-                {initials}
-              </div>
+              {user.avatarImageUrl ? (
+                <img
+                  src={user.avatarImageUrl}
+                  alt={user.userName}
+                  className="w-24 h-24 rounded-full object-cover shadow-lg border-4 border-white"
+                />
+              ) : (
+                <div
+                  className="w-24 h-24 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg"
+                  style={{ backgroundColor: "var(--color-secondary)" }}
+                >
+                  {initials}
+                </div>
+              )}
             </div>
 
             {/* User Info */}
             <div className="text-center mb-6">
               <h2 className="text-xl font-bold" style={{ color: "var(--color-text-primary)" }}>
-                {userData.name}
+                {user.userName}
               </h2>
               <p className="text-sm mt-1" style={{ color: "var(--color-text-secondary)" }}>
-                {userData.email}
+                {user.email}
               </p>
+              {user.aboutMe && (
+                <p className="text-sm mt-2 text-gray-600">
+                  {user.aboutMe}
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
@@ -84,40 +95,6 @@ export function Profile({ user }: ProfileProps) {
                 <LogOut className="w-4 h-4" />
                 <span>تسجيل خروج</span>
               </button>
-            </div>
-
-            {/* Navigation Tabs */}
-            <div className="mt-8 pt-6 border-t" style={{ borderColor: "rgba(108, 117, 125, 0.2)" }}>
-              <div className="flex justify-around text-center gap-2">
-                <Link
-                  to="/profile/courses"
-                  className="flex-1 py-2 text-sm font-medium transition-colors"
-                  style={{ color: "var(--color-primary)" }}
-                >
-                  دوراتي
-                </Link>
-                <Link
-                  to="/profile/wishlist"
-                  className="flex-1 py-2 text-sm font-medium transition-colors"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  المفضلة
-                </Link>
-                <Link
-                  to="/profile/certificates"
-                  className="flex-1 py-2 text-sm font-medium transition-colors"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  الشهادات
-                </Link>
-                <Link
-                  to="/profile/settings"
-                  className="flex-1 py-2 text-sm font-medium transition-colors"
-                  style={{ color: "var(--color-text-secondary)" }}
-                >
-                  الإعدادات
-                </Link>
-              </div>
             </div>
           </div>
         </div>

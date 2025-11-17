@@ -13,6 +13,7 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
+import { NavigationLoader } from "./components/NavigationLoader";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
 
@@ -71,7 +72,9 @@ export default function App() {
   const showSidebar = !noSidebarPages.includes(location.pathname);
 
   return (
-    <PageLayout categories={categories}>
+    <>
+      <NavigationLoader />
+      <PageLayout categories={categories}>
       {showSidebar ? (
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <div className="flex flex-col lg:flex-row gap-6">
@@ -88,7 +91,8 @@ export default function App() {
       ) : (
         <Outlet />
       )}
-    </PageLayout>
+      </PageLayout>
+    </>
   );
 }
 

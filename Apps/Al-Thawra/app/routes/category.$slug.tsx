@@ -1,22 +1,32 @@
 import type { Route } from "./+types/category.$slug";
-import { useLoaderData, Link, useNavigation } from "react-router";
+import { useLoaderData, useSearchParams, useFetcher, Link } from "react-router";
 import { useState } from "react";
 import { PostsGrid } from "../components/PostsGrid";
 import { CategoryPageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
+import { ButtonSpinner } from "../components/Spinner";
 import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
 
 // Loader function for server-side data fetching
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   const slug = params.slug;
+  const url = new URL(request.url);
+  const subcategorySlug = url.searchParams.get("sub");
+  const page = parseInt(url.searchParams.get("page") || "1", 10);
 
   try {
-    // Fetch category details with subcategories and posts in parallel
-    const [category, postsResponse] = await Promise.all([
-      categoriesService.getCategoryBySlug(slug, true), // withSub = true
-      postsService.getPostsByCategory(slug, { pageSize: 15 }),
-    ]);
+    // Fetch category details with subcategories
+    const category = await categoriesService.getCategoryBySlug(slug, true);
+    
+    // Determine which slug to use for posts (subcategory or main category)
+    const targetSlug = subcategorySlug || slug;
+    
+    // Fetch posts for the target category/subcategory
+    const postsResponse = await postsService.getPostsByCategory(targetSlug, { 
+      pageNumber: page,
+      pageSize: 15 
+    });
 
     return {
       category,
@@ -24,11 +34,41 @@ export async function loader({ params }: Route.LoaderArgs) {
       totalPosts: postsResponse.totalCount,
       currentPage: postsResponse.pageNumber,
       totalPages: postsResponse.totalPages,
+      selectedSubcategory: subcategorySlug,
     };
   } catch (error: any) {
     console.error(`Error loading category ${slug}:`, error.response?.data || error.message);
     throw new Response("Category not found", { status: 404 });
   }
+}
+
+// Meta tags for SEO
+export function meta({ data }: Route.MetaArgs) {
+  if (!data) {
+    return [
+      { title: "Category Not Found - الثورة" },
+      { name: "description", content: "The requested category could not be found." },
+    ];
+  }
+
+  const { category, selectedSubcategory } = data;
+  const subcategory = selectedSubcategory 
+    ? category.subCategories?.find((sub: any) => sub.slug === selectedSubcategory)
+    : null;
+  
+  const title = subcategory 
+    ? `${subcategory.name} - ${category.name} - الثورة`
+    : `${category.name} - الثورة`;
+  
+  const description = category.description || `تصفح أحدث الأخبار والمقالات في قسم ${category.name}`;
+
+  return [
+    { title },
+    { name: "description", content: description },
+    { property: "og:title", content: title },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+  ];
 }
 
 // Loading fallback
@@ -37,62 +77,71 @@ export function HydrateFallback() {
 }
 
 export default function CategoryPage() {
-  const { category, posts: initialPosts, totalPosts, currentPage: initialPage } = useLoaderData<typeof loader>();
-  const navigation = useNavigation();
+  const { category, posts, totalPosts, currentPage, selectedSubcategory } = useLoaderData<typeof loader>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const fetcher = useFetcher<typeof loader>();
   
-  // State for managing loaded posts and filters
-  const [posts, setPosts] = useState(initialPosts);
-  const [currentPage, setCurrentPage] = useState(initialPage);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [filteredTotalPosts, setFilteredTotalPosts] = useState(totalPosts);
+  // Client-only state: how many posts to display (progressive reveal)
+  const [displayCount, setDisplayCount] = useState(6);
   
-  // Show loading skeleton during navigation
-  if (navigation.state === "loading") {
-    return <CategoryPageSkeleton />;
+  // Accumulate posts from fetcher loads
+  const [accumulatedPosts, setAccumulatedPosts] = useState(posts);
+  
+  // When loader data changes (navigation/filter), reset accumulated posts and display count
+  const loaderKey = `${category.slug}-${selectedSubcategory || 'all'}`;
+  const [lastLoaderKey, setLastLoaderKey] = useState(loaderKey);
+  
+  if (loaderKey !== lastLoaderKey) {
+    setAccumulatedPosts(posts);
+    setDisplayCount(6);
+    setLastLoaderKey(loaderKey);
   }
   
-  // Handle subcategory filter change
-  const handleSubcategoryFilter = async (subcategorySlug: string | null) => {
-    setSelectedSubcategory(subcategorySlug);
-    setIsLoadingMore(true);
+  // When fetcher loads more data, append to accumulated posts
+  if (fetcher.data && fetcher.state === "idle") {
+    const fetcherPosts = fetcher.data.posts;
+    const lastAccumulatedId = accumulatedPosts[accumulatedPosts.length - 1]?.id;
+    const firstFetchedId = fetcherPosts[0]?.id;
     
-    try {
-      // Fetch posts for the selected subcategory or main category
-      const targetSlug = subcategorySlug || category.slug;
-      const response = await postsService.getPostsByCategory(targetSlug, { 
-        pageSize: 15 
-      });
-      
-      setPosts(response.items);
-      setCurrentPage(response.pageNumber);
-      setFilteredTotalPosts(response.totalCount);
-    } catch (error) {
-      console.error('Error filtering posts:', error);
-    } finally {
-      setIsLoadingMore(false);
+    // Only append if this is new data (avoid duplicates)
+    if (fetcherPosts.length > 0 && lastAccumulatedId !== firstFetchedId) {
+      setAccumulatedPosts(prev => [...prev, ...fetcherPosts]);
+      setDisplayCount(prev => prev + 6);
     }
+  }
+  
+  // Handle subcategory filter change via URL params
+  const handleSubcategoryFilter = (subcategorySlug: string | null) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (subcategorySlug) {
+      newParams.set("sub", subcategorySlug);
+    } else {
+      newParams.delete("sub");
+    }
+    newParams.delete("page"); // Reset to page 1
+    setSearchParams(newParams, { replace: true });
   };
   
-  // Load more posts function
-  const handleLoadMore = async () => {
-    setIsLoadingMore(true);
-    try {
-      const nextPage = currentPage + 1;
-      const targetSlug = selectedSubcategory || category.slug;
-      const response = await postsService.getPostsByCategory(targetSlug, { 
-        pageNumber: nextPage,
-        pageSize: 15 
-      });
-      
-      setPosts(prevPosts => [...prevPosts, ...response.items]);
-      setCurrentPage(nextPage);
-    } catch (error) {
-      console.error('Error loading more posts:', error);
-    } finally {
-      setIsLoadingMore(false);
+  // Handle load more
+  const handleLoadMore = () => {
+    // If we have more posts in the current batch, just reveal more
+    if (displayCount < accumulatedPosts.length) {
+      setDisplayCount(prev => Math.min(prev + 6, accumulatedPosts.length));
+      return;
     }
+    
+    // Otherwise, fetch the next page using fetcher
+    const nextPage = Math.floor(accumulatedPosts.length / 15) + 1;
+    const params = new URLSearchParams(searchParams);
+    params.set("page", String(nextPage));
+    
+    fetcher.load(`?${params.toString()}`);
   };
+  
+  // Determine loading state
+  const isLoading = fetcher.state === "loading";
+  const visiblePosts = accumulatedPosts.slice(0, displayCount);
+  const hasMorePosts = displayCount < totalPosts;
   
   return (
     <div className="space-y-6">
@@ -143,29 +192,29 @@ export default function CategoryPage() {
       </div>
 
       {/* Category Posts Grid */}
-      {posts.length > 0 ? (
+      {visiblePosts.length > 0 ? (
         <div>
           <PostsGrid 
-            posts={posts} 
+            posts={visiblePosts} 
             showCategoryHeader={false}
-            postsPerPage={posts.length}
+            postsPerPage={visiblePosts.length}
           />
           
-          {/* Load More Button */}
-          {filteredTotalPosts > posts.length && (
+          {/* Load More Button - Always show if there are more results */}
+          {hasMorePosts && (
             <div className="flex justify-center mt-8">
               <button 
                 onClick={handleLoadMore}
-                disabled={isLoadingMore}
+                disabled={isLoading}
                 className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoadingMore ? (
+                {isLoading ? (
                   <span className="flex items-center gap-2">
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <ButtonSpinner />
                     جاري التحميل...
                   </span>
                 ) : (
-                  `تحميل المزيد (${filteredTotalPosts - posts.length} مقالة متبقية)`
+                  `تحميل المزيد (${totalPosts - displayCount} مقالة متبقية)`
                 )}
               </button>
             </div>
