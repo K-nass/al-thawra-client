@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import {
   Search,
@@ -18,8 +18,10 @@ import {
   Bot,
   User,
   Podcast,
+  LogOut,
 } from "lucide-react";
 import type { Category } from "../../services/categoriesService";
+import authService from "../../services/authService";
 
 interface HeaderProps {
   categories?: Category[];
@@ -29,8 +31,16 @@ export function Header({ categories = [] }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const location = useLocation();
-  
+
+  useEffect(() => {
+    // Get current user from cookies
+    const user = authService.getCurrentUser();
+    console.log("Header - Current user:", user);
+    setCurrentUser(user);
+  }, [location.pathname]);
   // Filter and sort menu categories
   const allMenuCategories = categories
     .filter(cat => cat.showOnMenu && cat.isActive)
@@ -172,13 +182,59 @@ export function Header({ categories = [] }: HeaderProps) {
                 <span>اتصل بنا</span>
               </Link>
               
-              <Link
-                to="/login"
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300 font-medium"
-              >
-                <User className="w-4 h-4" />
-                <span>تسجيل الدخول</span>
-              </Link>
+              {/* Profile Dropdown or Login Button */}
+              {currentUser ? (
+                <div className="relative hidden md:block">
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    onMouseEnter={() => setIsProfileMenuOpen(true)}
+                    onMouseLeave={() => setIsProfileMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 rounded-lg transition-colors duration-300 font-medium"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>{currentUser.userName || currentUser.username}</span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isProfileMenuOpen && (
+                    <div
+                      className="absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+                      onMouseEnter={() => setIsProfileMenuOpen(true)}
+                      onMouseLeave={() => setIsProfileMenuOpen(false)}
+                    >
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-gray-50 transition-colors font-medium"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        <span>صفحتي</span>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          authService.logout();
+                          setCurrentUser(null);
+                          setIsProfileMenuOpen(false);
+                          window.location.href = '/';
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 transition-colors font-medium text-right"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>تسجيل الخروج</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden md:flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300 font-medium"
+                >
+                  <User className="w-4 h-4" />
+                  <span>تسجيل الدخول</span>
+                </Link>
+              )}
               
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

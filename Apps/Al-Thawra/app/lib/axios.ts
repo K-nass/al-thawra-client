@@ -1,4 +1,5 @@
 import axios from 'axios';
+import authService from '../services/authService';
 
 // Create axios instance with default config
 const baseURL = import.meta.env.VITE_API_URL || 'https://new-cms-dev.runasp.net/api/v1';
@@ -12,42 +13,145 @@ const axiosInstance = axios.create({
   },
 });
 
-// Request interceptor
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     // Get token from localStorage
-//     const token = localStorage.getItem('authToken'); //TODO: change!
-    
-//     if (token) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-    
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
+// Token refresh state
+let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: any) => void;
+}> = [];
 
-// Response interceptor
-axiosInstance.interceptors.response.use(
-  (response) => {
-    return response;
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token || '');
+    }
+  });
+  
+  isRefreshing = false;
+  failedQueue = [];
+};
+
+// Request interceptor - Add token to headers
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // Get token from memory
+    const token = authService.getToken();
+    
+    console.log('📤 Request:', config.method?.toUpperCase(), config.url, 'Token:', token ? 'Present' : 'Missing');
+    
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    
+    return config;
   },
   (error) => {
-    // Handle common errors
+    console.error('❌ Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor - Handle token refresh
+axiosInstance.interceptors.response.use(
+  (response) => {
+    console.log('✅ Response:', response.config.method?.toUpperCase(), response.config.url, 'Status:', response.status);
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    console.log('📥 Error response:', error.response?.status, originalRequest.url, 'Retry:', originalRequest._retry);
+
+    // Don't attempt refresh for login/register/refresh-token endpoints
+    const isAuthEndpoint = originalRequest.url?.includes('/auth/login') || 
+                          originalRequest.url?.includes('/auth/register') ||
+                          originalRequest.url?.includes('/auth/refresh-token');
+
+    console.log('🔍 Is auth endpoint:', isAuthEndpoint, 'Status:', error.response?.status);
+
+    // Handle 401 Unauthorized - attempt token refresh
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      console.log('🔄 Attempting token refresh...');
+      if (isRefreshing) {
+        console.log('⏳ Token refresh in progress, queuing request...');
+        // Queue the request while token is being refreshed
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            console.log('🔄 Retrying queued request with new token');
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => {
+            console.error('❌ Queued request failed:', err);
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        console.log('🔐 Getting refresh token...');
+        const refreshToken = authService.getRefreshToken();
+        
+        if (!refreshToken) {
+          console.error('❌ No refresh token available');
+          throw new Error('No refresh token available');
+        }
+
+        console.log('📡 Calling refresh token endpoint...');
+        // Call refresh token endpoint
+        const response = await axios.post(
+          `${baseURL}/auth/refresh-token`,
+          { refreshToken },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        const { accessToken, refreshToken: newRefreshToken, expiresAt } = response.data;
+        console.log('✅ Token refreshed successfully');
+
+        // Update tokens in cookies with expiry
+        authService.setTokens(accessToken, newRefreshToken, expiresAt);
+
+        // Update authorization header
+        axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+        // Process queued requests
+        console.log('📤 Processing queued requests...');
+        processQueue(null, accessToken);
+
+        // Retry original request
+        console.log('🔄 Retrying original request with new token');
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.error('❌ Token refresh failed:', refreshError);
+        // Refresh failed - clear all tokens and redirect to login
+        authService.logout();
+        
+        if (typeof window !== 'undefined') {
+          console.log('🚀 Redirecting to login...');
+          window.location.href = '/login';
+        }
+
+        processQueue(refreshError, null);
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Handle other errors
     if (error.response) {
       // Server responded with error status
       const { status, data } = error.response;
       
       switch (status) {
-        case 401:
-          // Unauthorized - clear token and redirect to login (only in browser)
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('authToken');
-            window.location.href = '/login';
-          }
-          break;
         case 403:
           // Forbidden
           console.error('Access forbidden:', data?.message || 'Forbidden');
@@ -61,7 +165,9 @@ axiosInstance.interceptors.response.use(
           console.error('Server error:', data?.message || 'Internal server error');
           break;
         default:
-          console.error('API error:', data?.message || 'Unknown error');
+          if (status !== 401) {
+            console.error('API error:', data?.message || 'Unknown error');
+          }
       }
     } else if (error.request) {
       // Request made but no response received

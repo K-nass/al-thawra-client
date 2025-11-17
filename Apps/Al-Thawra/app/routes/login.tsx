@@ -1,43 +1,77 @@
-import { useState, type FormEvent } from "react";
-import { Link } from "react-router";
+import { useState } from "react";
+import { Link, Form, useActionData, useNavigation, redirect } from "react-router";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import type { Route } from "./+types/login";
+import authService from "~/services/authService";
+
+export const action = async ({ request }: Route.ActionArgs) => {
+  if (request.method !== "POST") {
+    return { error: "Invalid request method" };
+  }
+
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
+
+  // Validation
+  const errors: Record<string, string> = {};
+
+  if (!email) {
+    errors.email = "البريد الإلكتروني مطلوب";
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    errors.email = "البريد الإلكتروني غير صالح";
+  }
+
+  if (!password) {
+    errors.password = "كلمة المرور مطلوبة";
+  } else if (password.length < 6) {
+    errors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return { errors, values: { email } };
+  }
+
+  try {
+    await authService.login({ email, password });
+    // Redirect to admin on successful login
+    return redirect("/admin");
+  } catch (error: any) {
+    const generalError =
+      error.response?.data?.title ||
+      error.response?.data?.message ||
+      "حدث خطأ أثناء تسجيل الدخول. يرجى المحاولة مرة أخرى.";
+
+    // Handle field-level validation errors
+    if (error.response?.data?.errors) {
+      const fieldErrors: Record<string, string> = {};
+      const apiErrors = error.response.data.errors;
+
+      for (const [field, messages] of Object.entries(apiErrors)) {
+        const fieldKey = field.toLowerCase();
+        if (Array.isArray(messages)) {
+          fieldErrors[fieldKey] = (messages as string[])[0];
+        } else {
+          fieldErrors[fieldKey] = messages as string;
+        }
+      }
+
+      return { errors: fieldErrors, values: { email }, generalError };
+    }
+
+    return { generalError, values: { email } };
+  }
+};
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
+  const actionData = useActionData<typeof action>();
+  const navigation = useNavigation();
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    
-    // Basic validation
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.email) {
-      newErrors.email = "البريد الإلكتروني مطلوب";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "البريد الإلكتروني غير صالح";
-    }
-    
-    if (!formData.password) {
-      newErrors.password = "كلمة المرور مطلوبة";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
-    }
-    
-    setErrors(newErrors);
-    
-    if (Object.keys(newErrors).length === 0) {
-      // Form is valid - ready for API call
-      console.log("Login form data:", formData);
-      // TODO: API call will go here
-      alert("تم جمع بيانات تسجيل الدخول بنجاح! (جاهز للربط مع API)");
-    }
-  };
+  const isSubmitting = navigation.state === "submitting";
+  const errors = actionData?.errors || {};
+  const generalError = actionData?.generalError || "";
+  const previousValues = actionData?.values || { email: "" };
 
   return (
     <div className="flex items-center justify-center p-4 bg-gray-50">
@@ -47,94 +81,95 @@ export default function LoginPage() {
               تسجيل الدخول
             </h2>
 
+            {/* General Error Message */}
+            {generalError && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-700">{generalError}</p>
+              </div>
+            )}
+
             {/* Login Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-                البريد الإلكتروني
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Mail className="w-5 h-5" />
+            <Form method="post" className="space-y-5">
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+                  البريد الإلكتروني
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    defaultValue={previousValues.email}
+                    className={`w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="example@email.com"
+                    dir="ltr"
+                    disabled={isSubmitting}
+                  />
                 </div>
-                <input
-                  type="email"
-                  id="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={`w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="example@email.com"
-                  dir="ltr"
-                />
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                )}
               </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-500">{errors.email}</p>
-              )}
-            </div>
 
-            {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-                كلمة المرور
-              </label>
-              <div className="relative">
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                  <Lock className="w-5 h-5" />
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+                  كلمة المرور
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    }`}
+                    placeholder="••••••••"
+                    dir="ltr"
+                    disabled={isSubmitting}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
+                    disabled={isSubmitting}
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                    errors.password ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="••••••••"
-                  dir="ltr"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
+                {errors.password && (
+                  <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                )}
+              </div>
+
+              {/* Forgot Password */}
+              <div className="text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
+                  نسيت كلمة المرور؟
+                </Link>
               </div>
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-500">{errors.password}</p>
-              )}
-            </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                  className="w-4 h-4 text-[var(--color-primary)] border-gray-300 rounded focus:ring-[var(--color-primary)]"
-                />
-                <span className="text-sm text-[var(--color-text-secondary)]">تذكرني</span>
-              </label>
-              <Link
-                to="/forgot-password"
-                className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors"
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                نسيت كلمة المرور؟
-              </Link>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg"
-            >
-              الدخول
-            </button>
-          </form>
+                {isSubmitting ? "جاري تسجيل الدخول..." : "الدخول"}
+              </button>
+            </Form>
 
           {/* Register Link */}
           <div className="text-center mt-6">

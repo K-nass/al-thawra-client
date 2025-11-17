@@ -50,8 +50,6 @@ export default function RegisterPage() {
     if (Object.keys(newErrors).length === 0) {
       // Form is valid - ready for API call
       console.log("Register form data:", formData);
-      // TODO: API call will go here
-      alert("تم جمع بيانات التسجيل بنجاح! (جاهز للربط مع API)");
     }
   };
 
