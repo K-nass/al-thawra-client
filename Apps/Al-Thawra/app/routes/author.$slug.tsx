@@ -1,5 +1,5 @@
 import { useLoaderData, useNavigation } from "react-router";
-import { PostsGrid } from "../components/PostsGrid";
+import { AuthorCategoryGroup } from "../components/AuthorCategoryFilter";
 import { AuthorPageSkeleton } from "../components/skeletons";
 import type { Post } from "../components/PostCard";
 import axiosInstance from "../lib/axios";
@@ -51,7 +51,7 @@ export async function loader({ params }: { params: { slug: string } }) {
       title: post.title,
       slug: post.slug,
       image: post.image,
-      categoryName: post.categoryName || "",
+      categoryName: post.categorySlug, // Use the actual categorySlug as the display name
       categorySlug: post.categorySlug,
       publishedAt: post.publishedAt,
       createdAt: post.publishedAt,
@@ -151,12 +151,15 @@ export default function AuthorPage() {
         </div>
       </div>
 
-      {/* Author Posts */}
+      {/* Author Posts Grouped by Category */}
       <div>
-        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">
-          مقالات {author.userName}
-        </h2>
-        <PostsGrid posts={posts} showCategoryHeader={false} />
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
+            مقالات {author.userName} - {posts.length} مقال
+          </h2>
+        </div>
+        
+        <AuthorCategoryGroup posts={posts} authorName={author.userName} />
       </div>
     </div>
   );
