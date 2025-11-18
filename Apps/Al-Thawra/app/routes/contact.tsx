@@ -104,7 +104,7 @@ export default function ContactPage() {
         >
           <motion.div className="flex justify-center mb-6" variants={itemVariants}>
             <img
-              src="/logo.png"
+              src="/formLogo.png"
               alt="شعار صحيفة الثورة"
               className="h-32 w-auto object-contain"
             />
@@ -221,7 +221,7 @@ export default function ContactPage() {
                 className="bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-light)] rounded-2xl shadow-lg p-8 text-white"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: false }}
                 transition={{ delay: 0.2, duration: 0.6 }}
                 whileHover={{ scale: 1.02 }}
               >

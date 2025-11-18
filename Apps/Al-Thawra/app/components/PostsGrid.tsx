@@ -54,7 +54,12 @@ export function PostsGrid({
     <section className="w-full" dir="rtl" lang="ar">
       {/* Category Header */}
       {showCategoryHeader && categoryName && (
-        <ScrollAnimation animation="slideUp" once={false} className="flex items-center justify-between mb-6">
+        <ScrollAnimation 
+          key={`header-${categorySlug}-${currentIndex}`}
+          animation="slideUp" 
+          once={false} 
+          className="flex items-center justify-between mb-6"
+        >
           <div className="flex items-center">
             {categorySlug && (
               <Link 
@@ -96,7 +101,12 @@ export function PostsGrid({
       )}
 
       {/* Posts Grid */}
-      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" staggerDelay={0.15} once={false}>
+      <StaggerContainer 
+        key={`posts-grid-${currentIndex}`}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
+        staggerDelay={0.15} 
+        once={false}
+      >
         {visiblePosts.map((post) => (
           <StaggerItem key={post.id}>
             <PostCard post={post} />
