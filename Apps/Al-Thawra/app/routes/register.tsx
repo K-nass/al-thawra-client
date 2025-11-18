@@ -89,7 +89,7 @@ export default function RegisterPage() {
         <div className="flex justify-center mb-4">
           <Link to="/">
             <img
-              src="/logo.png"
+              src="/formLogo.png"
               alt="الثورة"
               className="h-16 w-auto"
             />
