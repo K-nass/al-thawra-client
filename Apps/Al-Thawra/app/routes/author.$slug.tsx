@@ -155,15 +155,17 @@ export default function AuthorPage() {
       </ScrollAnimation>
 
       {/* Author Posts Grouped by Category */}
-      <div>
+      <ScrollAnimation animation="slideUp" delay={0.2}>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
             مقالات {author.userName} - {posts.length} مقال
           </h2>
         </div>
-        
+      </ScrollAnimation>
+      
+      <ScrollAnimation animation="slideUp" delay={0.3}>
         <AuthorCategoryGroup posts={posts} authorName={author.userName} />
-      </div>
+      </ScrollAnimation>
     </div>
   );
 }
