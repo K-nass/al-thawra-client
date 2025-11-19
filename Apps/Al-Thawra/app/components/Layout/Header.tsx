@@ -20,6 +20,7 @@ import {
   Podcast,
   LogOut,
   FileText,
+  PenTool,
 } from "lucide-react";
 import type { Category } from "../../services/categoriesService";
 import authService from "../../services/authService";
@@ -178,6 +179,18 @@ export function Header({ categories = [] }: HeaderProps) {
                 >
                   <FileText className="w-4 h-4" />
                   <span>أرشيف الثورة</span>
+                </Link>
+
+                <Link
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
+                    location.pathname === "/writers-opinions" 
+                      ? "border-white text-white font-bold" 
+                      : "border-transparent hover:border-white/50"
+                  }`}
+                  to="/writers-opinions"
+                >
+                  <PenTool className="w-4 h-4" />
+                  <span>كتاب وآراء</span>
                 </Link>
 
                 <Link

@@ -72,7 +72,7 @@ export default function RegisterPage() {
         <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
       </div>
 
-      <ScrollAnimation animation="scale" duration={0.5}>
+      <ScrollAnimation animation="scale" duration={0.5} once={true}>
         <div className="max-w-md w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 max-h-[calc(100vh-4rem)] overflow-y-auto relative z-10 border border-white/20">
         {/* Back to Home Link */}
         <Link 
@@ -235,7 +235,7 @@ export default function RegisterPage() {
         </form>
 
         {/* Login Link */}
-        <ScrollAnimation animation="fade" delay={0.5}>
+        <ScrollAnimation animation="fade" delay={0.5} once={true}>
           <div className="text-center mt-6">
           <Link
             to="/login"

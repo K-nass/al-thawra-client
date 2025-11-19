@@ -174,6 +174,23 @@ class PostsService {
   }
 
   /**
+   * Get posts with authors (Writers & Opinions)
+   */
+  async getPostsWithAuthors(pageSize: number = 15, type="Article"): Promise<Post[]> {
+    try {
+      const response = await this.getPosts({
+        hasAuthor: true,
+        pageSize,
+        type,
+      });
+      return response.items;
+    } catch (error: any) {
+      console.error("Error fetching posts with authors:", error.message);
+      throw error;
+    }
+  }
+
+  /**
    * Get posts by category
    */
   async getPostsByCategory(

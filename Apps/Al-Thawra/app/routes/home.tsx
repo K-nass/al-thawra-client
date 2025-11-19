@@ -3,6 +3,7 @@ import { useLoaderData, useNavigation } from "react-router";
 import { PostsGrid } from "../components/PostsGrid";
 import { Slider } from "../components/Slider";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
+import { WritersOpinionsGrid } from "../components/WritersOpinionsGrid";
 import { HomePageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
 import { postsService, type Post } from "../services/postsService";
@@ -42,6 +43,13 @@ export async function loader() {
       CacheTTL.SHORT
     ).catch(() => []);
     
+    // Fetch writers & opinions posts with caching
+    const writersPosts = await cache.getOrFetch(
+      "posts:writers-opinions:15:Article",
+      () => postsService.getPostsWithAuthors(15, "Article"),
+      CacheTTL.SHORT
+    ).catch(() => []);
+    
     // Fetch posts for each category separately (no Promise.all)
     const categoryPosts = [];
     for (const category of limitedCategories) {
@@ -72,12 +80,14 @@ export async function loader() {
     }
     return {  
       sliderPosts,
+      writersPosts,
       categoryPosts,
     };
   } catch (error: any) {
     console.error('Error loading home page:', error.response?.data || error.message);
     return {
       sliderPosts: [],
+      writersPosts: [],
       categoryPosts: [],
     };
   }
@@ -85,7 +95,7 @@ export async function loader() {
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, categoryPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, categoryPosts } = useLoaderData<typeof loader>();
   const navigation = useNavigation();
 
   // Show loading skeleton during navigation
@@ -94,7 +104,7 @@ export default function Home() {
   }
 
   // Show empty state if no data at all
-  if (sliderPosts.length === 0 && categoryPosts.length === 0) {
+  if (sliderPosts.length === 0 && categoryPosts.length === 0 && writersPosts.length === 0) {
     return (
       <EmptyState 
         title="لا توجد مقالات متاحة"
@@ -110,9 +120,25 @@ export default function Home() {
       {/* Slider */}
       {sliderPosts.length > 0 && <Slider posts={sliderPosts} />}
 
-      {/* Dynamic Category Sections */}
-      {categoryPosts.length > 0 ? (
-        categoryPosts.map(({ category, posts }) => (
+      {/* First Category Section */}
+      {categoryPosts.length > 0 && categoryPosts[0] && (
+        <PostsGrid 
+          key={categoryPosts[0].category.id}
+          posts={categoryPosts[0].posts} 
+          categoryName={categoryPosts[0].category.name} 
+          categorySlug={categoryPosts[0].category.slug}
+          showCategoryHeader={true}
+        />
+      )}
+
+      {/* Writers & Opinions Section - Always Second */}
+      {writersPosts.length > 0 && (
+        <WritersOpinionsGrid posts={writersPosts} showHeader={true} />
+      )}
+
+      {/* Remaining Category Sections */}
+      {categoryPosts.length > 1 && (
+        categoryPosts.slice(1).map(({ category, posts }) => (
           <PostsGrid 
             key={category.id}
             posts={posts} 
@@ -121,7 +147,10 @@ export default function Home() {
             showCategoryHeader={true}
           />
         ))
-      ) : (
+      )}
+
+      {/* Show empty state only if no categories at all */}
+      {categoryPosts.length === 0 && writersPosts.length === 0 && (
         <EmptyState 
           title="لا توجد أقسام متاحة"
           description="لم نتمكن من تحميل الأقسام في الوقت الحالي"

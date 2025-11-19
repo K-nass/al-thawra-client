@@ -3,6 +3,7 @@ import { Link, Form, useActionData, useNavigation, redirect, useNavigate } from 
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import type { Route } from "./+types/login";
 import authService from "~/services/authService";
+import { motion } from "framer-motion";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "~/components/ScrollAnimation";
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -153,7 +154,11 @@ export default function LoginPage() {
         <div className="absolute top-1/3 right-1/4 w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDuration: '5s', animationDelay: '1s' }}></div>
       </div>
 
-      <ScrollAnimation animation="scale" duration={0.5}>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <div className="max-w-md w-full bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 relative z-10 border border-white/20">
             {/* Back to Home Link */}
             <Link 
@@ -279,7 +284,7 @@ export default function LoginPage() {
             </Form>
 
           {/* Register Link */}
-          <ScrollAnimation animation="fade" delay={0.5}>
+          <ScrollAnimation animation="fade" delay={0.5} once={true}>
             <div className="text-center mt-6">
             <Link
               to="/register"
@@ -290,7 +295,7 @@ export default function LoginPage() {
             </div>
           </ScrollAnimation>
         </div>
-      </ScrollAnimation>
+      </motion.div>
     </div>
   );
 }
