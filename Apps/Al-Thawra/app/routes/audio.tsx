@@ -111,7 +111,11 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
                 style={{ backgroundImage: `url(${audio.imageUrl})` }}
               />
             )}
-            <audio src={audio.audioUrl} controls />
+            <audio
+              src={audio.audioUrl}
+              controls
+              controlsList="nodownload noplaybackrate noremoteplayback"
+            />
           </div>
         }
       />
