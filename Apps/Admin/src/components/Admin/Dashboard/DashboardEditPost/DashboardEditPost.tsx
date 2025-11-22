@@ -61,15 +61,15 @@ export default function DashboardEditPost() {
   useEffect(() => {
     const fetchPost = async () => {
       if (!postId) return;
-      
+
       try {
         setIsLoadingPost(true);
-        
+
         // Get categorySlug and slug from location state
         const { categorySlug, slug } = location.state || {};
-        
+
         let postData;
-        
+
         // If we have categorySlug and slug, use the slug-based API
         if (categorySlug && slug && type) {
           postData = await postsApi.getPostBySlug(categorySlug, slug, type);
@@ -77,16 +77,16 @@ export default function DashboardEditPost() {
           // Fallback to ID-based API (may not work for all post types)
           postData = await postsApi.getById(postId);
         }
-        
+
         // Populate form with existing data
         Object.entries(postData).forEach(([key, value]) => {
           dispatch({ type: "set-field", field: key, payload: value as string | boolean | string[] | object[] | undefined });
         });
       } catch (error) {
         console.error("Failed to fetch post:", error);
-        setNotification({ 
-          type: "error", 
-          message: "Failed to load post data" 
+        setNotification({
+          type: "error",
+          message: "Failed to load post data"
         });
       } finally {
         setIsLoadingPost(false);
@@ -105,13 +105,13 @@ export default function DashboardEditPost() {
   type CustomChangeEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     | {
-        target: {
-          name: string;
-          value: string | string[] | any;
-          type: string;
-          checked?: boolean;
-        };
+      target: {
+        name: string;
+        value: string | string[] | any;
+        type: string;
+        checked?: boolean;
       };
+    };
 
   function handleChange(e: CustomChangeEvent, newTags?: string[]) {
     const { type, value, name } = e.target;
@@ -146,7 +146,7 @@ export default function DashboardEditPost() {
   const mutation = useMutation({
     mutationFn: async () => {
       if (!postId) throw new Error("Post ID is required");
-      
+
       let payload: any = { ...state };
       const categoryId = payload.categoryId;
       if (!categoryId) throw new Error("categoryId missing");
@@ -190,13 +190,13 @@ export default function DashboardEditPost() {
         payload.description = payload.summary;
       }
       delete payload.summary;
-      
+
       // Handle optionalURL vs optionalUrl (case sensitivity)
       if (payload.optionalURL !== undefined) {
         payload.optionalUrl = payload.optionalURL;
         delete payload.optionalURL;
       }
-      
+
       // Remove fields that shouldn't be sent to the API (read-only response fields)
       delete payload.id;
       delete payload.createdAt;
@@ -222,7 +222,7 @@ export default function DashboardEditPost() {
       if (type === "article" && payload.imageUrl === null) {
         payload.imageUrl = "";
       }
-      
+
       // Handle imageDescription - API expects null or string, not array
       if (payload.imageDescription && Array.isArray(payload.imageDescription)) {
         payload.imageDescription = payload.imageDescription.length > 0 ? payload.imageDescription[0] : null;
@@ -230,7 +230,7 @@ export default function DashboardEditPost() {
       if (payload.imageDescription === "") {
         payload.imageDescription = null;
       }
-      
+
       // Ensure required string fields are not empty strings
       // Note: metaDescription and metaKeywords are REQUIRED by the API
       if (payload.slug === "") {
@@ -249,17 +249,17 @@ export default function DashboardEditPost() {
       if (payload.content === "") {
         payload.content = "";
       }
-      
+
       // Handle authorId - set to null to use current user as author
       // This prevents 403 errors when the authorId doesn't have the Author role
       payload.authorId = null;
 
       // Client-side validation for video posts
       const hasVideoUrl = payload.videoUrl && payload.videoUrl.trim() !== '';
-      const hasVideoFiles = payload.videoFileUrls && Array.isArray(payload.videoFileUrls) && 
-                           payload.videoFileUrls.some((url: string) => url && url.trim() !== '');
+      const hasVideoFiles = payload.videoFileUrls && Array.isArray(payload.videoFileUrls) &&
+        payload.videoFileUrls.some((url: string) => url && url.trim() !== '');
       const hasEmbedCode = payload.videoEmbedCode && payload.videoEmbedCode.trim() !== '';
-      
+
       if (type === "video" && !hasVideoUrl && !hasVideoFiles && !hasEmbedCode) {
         const validationError = new Error("Please provide at least one video source: Video URL, video file, or embed code");
         (validationError as any).isAxiosError = true;
@@ -290,7 +290,7 @@ export default function DashboardEditPost() {
         };
         throw validationError;
       }
-      
+
       // For video posts, copy imageUrl to videoThumbnailUrl
       if (type === "video" && "imageUrl" in payload) {
         payload = {
@@ -298,7 +298,7 @@ export default function DashboardEditPost() {
           videoThumbnailUrl: payload.imageUrl || null,
         };
       }
-      
+
       // For audio posts, copy imageUrl to thumbnailUrl
       if (type === "audio" && "imageUrl" in payload) {
         payload = {
@@ -306,7 +306,7 @@ export default function DashboardEditPost() {
           thumbnailUrl: payload.imageUrl || null,
         };
       }
-      
+
       // Clean up empty strings from array fields
       if (payload.additionalImageUrls) {
         payload.additionalImageUrls = payload.additionalImageUrls.filter((url: string) => url && url.trim() !== '');
@@ -314,28 +314,28 @@ export default function DashboardEditPost() {
           payload.additionalImageUrls = null;
         }
       }
-      
+
       if (payload.fileUrls) {
         payload.fileUrls = payload.fileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.fileUrls.length === 0) {
           payload.fileUrls = null;
         }
       }
-      
+
       if (payload.videoFileUrls) {
         payload.videoFileUrls = payload.videoFileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.videoFileUrls.length === 0) {
           payload.videoFileUrls = null;
         }
       }
-      
+
       if (payload.audioFileUrls) {
         payload.audioFileUrls = payload.audioFileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.audioFileUrls.length === 0) {
           payload.audioFileUrls = null;
         }
       }
-      
+
       // Clean up empty strings in tagIds array
       if (payload.tagIds) {
         payload.tagIds = payload.tagIds.filter((id: string) => id && id.trim() !== '');
@@ -343,7 +343,7 @@ export default function DashboardEditPost() {
           payload.tagIds = null;
         }
       }
-      
+
       // Clean up empty string values for single URL fields
       if (type === "video") {
         if (payload.videoThumbnailUrl === '') {
@@ -353,7 +353,7 @@ export default function DashboardEditPost() {
           payload.videoUrl = null;
         }
       }
-      
+
       if (type === "audio") {
         if (payload.thumbnailUrl === '') {
           payload.thumbnailUrl = null;
@@ -362,7 +362,7 @@ export default function DashboardEditPost() {
           payload.audioUrl = null;
         }
       }
-      
+
       // For articles, keep imageUrl as empty string if not provided
       if (type !== "article" && payload.imageUrl === '') {
         payload.imageUrl = null;
@@ -370,7 +370,7 @@ export default function DashboardEditPost() {
 
       // Log the cleaned payload for debugging
       console.log('Cleaned payload being sent to API:', payload);
-      
+
       // Use the generic update method for all post types
       const response = await postsApi.updatePost(categoryId, postId, type, payload);
       return response;
@@ -380,7 +380,7 @@ export default function DashboardEditPost() {
         (data && (data.message || data.title)) ?? "Post updated successfully";
       setFieldErrors({});
       setNotification({ type: "success", message: String(msg) });
-      
+
       // Redirect to posts list after 2 seconds
       setTimeout(() => {
         navigate('/admin/posts');
@@ -390,12 +390,12 @@ export default function DashboardEditPost() {
       console.error("Post update error:", error);
       let message = "Failed to update post";
       const errors: Record<string, string[]> = {};
-      
+
       if (axios.isAxiosError(error)) {
         const d = error.response?.data;
         const status = error.response?.status;
         console.error("API Error Response:", { status, data: d });
-        
+
         // Handle 401 Unauthorized
         if (status === 401) {
           message = t('common.sessionExpired');
@@ -405,7 +405,7 @@ export default function DashboardEditPost() {
           }, 2000);
           return;
         }
-        
+
         // Handle 403 Forbidden (Author role issue)
         if (status === 403) {
           if (d?.title && d.title.includes('Author role')) {
@@ -414,7 +414,7 @@ export default function DashboardEditPost() {
             message = d?.title || "You don't have permission to perform this action";
           }
         }
-        
+
         // Handle validation errors (422)
         else if (status === 422 && d?.errors) {
           // Extract field-level errors from API response
@@ -442,7 +442,7 @@ export default function DashboardEditPost() {
       } else if (error instanceof Error) {
         message = error.message;
       }
-      
+
       setFieldErrors(errors);
       setNotification({ type: "error", message });
     },
@@ -455,7 +455,7 @@ export default function DashboardEditPost() {
       </div>
     );
   }
-  
+
   return (
     <>
       {notification && (
@@ -516,11 +516,11 @@ export default function DashboardEditPost() {
             {!["gallery", "sorted-list", "audio", "video"].includes(
               type || ""
             ) && (
-              <>
-                <AdditionalImages handleChange={handleChange} fieldErrors={fieldErrors} />
-                <FileUpload handleChange={handleChange} fieldErrors={fieldErrors} />
-              </>
-            )}
+                <>
+                  <AdditionalImages handleChange={handleChange} fieldErrors={fieldErrors} />
+                  <FileUpload handleChange={handleChange} fieldErrors={fieldErrors} />
+                </>
+              )}
             {type === "video" && (
               <MediaUploadComponent
                 mediaType="video"
@@ -556,7 +556,13 @@ export default function DashboardEditPost() {
               value={state.categoryId}
               errors={fieldErrors}
             />
-            <PublishSection mutation={mutation} isEditMode={true} />
+            <PublishSection
+              mutation={mutation}
+              isEditMode={true}
+              state={state}
+              handleChange={handleChange}
+              fieldErrors={fieldErrors}
+            />
           </div>
         </div>
       </form>

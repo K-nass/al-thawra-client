@@ -1,19 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
+import { apiClient } from "@/api/client";
 import type { HandleChangeType } from "./types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-
-const apiUrl = import.meta.env.VITE_API_URL;
+import { signalRService } from "@/services/signalr.service";
 
 interface UploadResponse {
-    url: string;
-    fileName?: string;
-    sizeInBytes?: number;
-    mimeType?: string;
-    duration?: string;
+    uploadId: string;
+    fileName: string;
+    status: string;
+    message: string;
+    uploadedAt: string;
+    signalRHubUrl: string;
+    url?: string; // Sometimes returned directly if immediate
 }
 
 interface MediaItem {
@@ -44,16 +45,22 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
     const { t } = useTranslation();
     const [showModal, setShowModal] = useState(false);
 
+    // Upload State
+    const [uploadProgress, setUploadProgress] = useState<number>(0);
+    const [uploadStatus, setUploadStatus] = useState<string>("");
+    const [isUploading, setIsUploading] = useState(false);
+    const [currentUploadId, setCurrentUploadId] = useState<string | null>(null);
+
     // Helper function to format duration
     const formatDuration = (duration: string | number | null | undefined): string => {
         if (!duration) return "";
-        
+
         // If it's a number (seconds), convert to readable format
         if (typeof duration === "number") {
             const hours = Math.floor(duration / 3600);
             const minutes = Math.floor((duration % 3600) / 60);
             const seconds = Math.floor(duration % 60);
-            
+
             if (hours > 0) {
                 return `${hours}h ${minutes}m ${seconds}s`;
             } else if (minutes > 0) {
@@ -62,7 +69,7 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 return `${seconds} seconds`;
             }
         }
-        
+
         // If it's a string like "00:00:42.0571428", parse it
         if (typeof duration === "string") {
             const parts = duration.split(":");
@@ -70,7 +77,7 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 const hours = parseInt(parts[0]);
                 const minutes = parseInt(parts[1]);
                 const seconds = Math.floor(parseFloat(parts[2]));
-                
+
                 if (hours > 0) {
                     return `${hours}h ${minutes}m ${seconds}s`;
                 } else if (minutes > 0) {
@@ -80,7 +87,7 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                 }
             }
         }
-        
+
         return String(duration);
     };
 
@@ -102,8 +109,8 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
         mutationFn: async (file: File) => {
             const formData = new FormData();
             formData.append("File", file);
-            const response = await axios.post<UploadResponse>(
-                `${apiUrl}${getUploadEndpoint()}`,
+            const response = await apiClient.post<UploadResponse>(
+                getUploadEndpoint(),
                 formData,
                 {
                     headers: { "Content-Type": "multipart/form-data" },
@@ -114,20 +121,18 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
     });
 
     // --- Get Media Query (useQuery is better for GET requests) ---
-    // Using useQuery with enabled: true so it fetches once when component mounts
-    // and uses React Query's built-in caching to prevent duplicate requests
     const { data: mediaData, isLoading: isLoadingMedia, refetch: refetchMedia } = useQuery<MediaResponse>({
         queryKey: ["media", getMediaTypeFilter()],
         queryFn: async () => {
-            const response = await axios.get<MediaResponse>(`${apiUrl}/media`, {
+            const response = await apiClient.get<MediaResponse>(`/media`, {
                 params: {
                     Type: getMediaTypeFilter(),
                 },
             });
             return response.data;
         },
-        staleTime: 30000, // Cache for 30 seconds - prevents refetching if data is fresh
-        gcTime: 5 * 60 * 1000, // Keep cache for 5 minutes
+        staleTime: 30000,
+        gcTime: 5 * 60 * 1000,
     });
 
     const mediaList = mediaData?.items ?? [];
@@ -135,21 +140,39 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
     // --- Show Modal Animation ---
     useEffect(() => {
         setTimeout(() => setShowModal(true), 10);
-    }, []); // Only run once on mount
+
+        // Cleanup SignalR on unmount
+        return () => {
+            signalRService.stopConnection();
+        };
+    }, []);
 
     // --- Upload Handler ---
     async function handleFiles(filesList: FileList | null) {
         if (!filesList || filesList.length === 0) return;
 
-        try {
-            const files = Array.from(filesList);
-            const uploadPromises = files.map((file) => uploadMutation.mutateAsync(file));
-            const results = await Promise.all(uploadPromises);
-            
-            // Use the full URL exactly as returned from upload endpoint
-            const uploadedUrls = results.map((r) => {
-                return r.url;
-            });
+        setIsUploading(true);
+        setUploadProgress(0);
+        setUploadStatus("Starting upload...");
+
+        // Ref to track if we've handled completion to avoid double-handling (SignalR vs Polling)
+        let isHandled = false;
+        const pollingIntervalRef = { current: null as NodeJS.Timeout | null };
+
+        const cleanup = () => {
+            if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+            }
+        };
+
+        const handleSuccess = (url: string, mediaId: string) => {
+            if (isHandled) return;
+            isHandled = true;
+            cleanup();
+
+            setUploadProgress(100);
+            setUploadStatus("Upload complete!");
 
             const fieldName =
                 header === "images"
@@ -162,31 +185,108 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                                 ? "audioUrl"
                                 : "fileUrls";
 
-            const value = (header === "images" || header === "video" || header === "audio") ? uploadedUrls[0] : uploadedUrls;
-            
-            // For audio/video, include all upload details in the payload
+            const value = (header === "images" || header === "video" || header === "audio") ? url : [url];
+
             const payload = {
                 target: {
                     name: fieldName,
                     value,
                     type: "text",
-                    // Include upload response details for audio/video
-                    ...(header === "audio" || header === "video" ? {
-                        fileName: results[0]?.fileName || "",
-                        sizeInBytes: results[0]?.sizeInBytes || 0,
-                        mimeType: results[0]?.mimeType || "",
-                        duration: results[0]?.duration || null,
-                    } : {}),
                 },
             };
 
             handleChange(payload);
-            // Refetch media after successful upload
+            signalRService.leaveUploadGroup(mediaId);
             void refetchMedia();
+            setIsUploading(false);
             setShowModal(false);
             setTimeout(onClose, 180);
+        };
+
+        const handleFailure = (error: string, mediaId: string) => {
+            if (isHandled) return;
+            // Don't mark as handled immediately for retryable errors, but for permanent ones yes.
+            // For simplicity, if we get a failure status, we show it.
+            setUploadStatus(`Upload failed: ${error}`);
+            // If it's a permanent failure, we might want to stop polling.
+            if (error.includes("permanently")) {
+                isHandled = true;
+                cleanup();
+                setIsUploading(false);
+                signalRService.leaveUploadGroup(mediaId);
+            }
+        };
+
+        try {
+            const file = filesList[0]; // Handle single file for now with SignalR
+
+            // 1. Start upload via API
+            const response = await uploadMutation.mutateAsync(file);
+            const { uploadId, signalRHubUrl } = response;
+            setCurrentUploadId(uploadId);
+
+            // 2. Setup Polling Fallback (Start immediately)
+            pollingIntervalRef.current = setInterval(async () => {
+                if (isHandled) return;
+                try {
+                    const statusRes = await apiClient.get(`/media/upload-status/${uploadId}`);
+                    const statusData = statusRes.data;
+
+                    if (statusData.status === "Completed" && statusData.url) {
+                        handleSuccess(statusData.url, uploadId);
+                    } else if (statusData.status === "Failed") {
+                        handleFailure("Upload failed permanently.", uploadId);
+                    } else if (statusData.progressPercentage) {
+                        setUploadProgress(statusData.progressPercentage);
+                    }
+                } catch (err) {
+                    console.error("Polling error:", err);
+                }
+            }, 2000); // Poll every 2 seconds
+
+            // 3. Try to Connect to SignalR (Optional)
+            try {
+                await signalRService.startConnection(signalRHubUrl);
+                await signalRService.joinUploadGroup(uploadId);
+
+                // Listen for events only if connected
+                signalRService.onUploadProgress((data) => {
+                    if (data.mediaId === uploadId && !isHandled) {
+                        setUploadProgress(data.percentage);
+                        setUploadStatus(data.message);
+                    }
+                });
+
+                signalRService.onUploadCompleted((data) => {
+                    if (data.mediaId === uploadId) {
+                        handleSuccess(data.url, uploadId);
+                    }
+                });
+
+                signalRService.onUploadFailed((data) => {
+                    if (data.mediaId === uploadId) {
+                        setUploadStatus(`Upload failed: ${data.error}. Retrying...`);
+                    }
+                });
+
+                signalRService.onUploadFailedPermanently((data) => {
+                    if (data.mediaId === uploadId) {
+                        handleFailure("Upload failed permanently.", uploadId);
+                    }
+                });
+            } catch (signalRError) {
+                console.warn("SignalR connection failed, relying on polling:", signalRError);
+                // We don't fail the upload, we just continue with polling
+            }
+
+            setUploadStatus("Processing...");
+
         } catch (err) {
-            alert("Failed to upload files. Please try again.");
+            console.error(err);
+            setUploadStatus("Failed to start upload.");
+            setIsUploading(false);
+            cleanup();
+            alert("Failed to upload file. Please try again.");
         }
     }
 
@@ -225,46 +325,55 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                     <p className="text-sm text-gray-500 mb-2">
                         {header === "video" ? "MP4, WebM, Ogg" : header === "audio" ? "MP3, WAV, OGG, WebM" : "JPG, JPEG, WEBP, PNG, GIF"}
                     </p>
-                    <div className="flex flex-col items-center justify-center gap-2">
-                        <div className="bg-gray-100 p-4 rounded-full">
-                            <svg
-                                className="w-8 h-8 text-gray-400"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 16v-8m0 0l-3 3m3-3l3 3m4 2v4a2 2 0 01-2 2H7a2 2 0 01-2-2v-4m14 0a2 2 0 00-2-2H7a2 2 0 00-2 2"
-                                />
-                            </svg>
-                        </div>
-                        <p className="text-gray-600 text-sm">
-                            {uploadMutation.isPending ? "Uploading..." : "Drag and drop files here or"}
-                        </p>
-                        <input
-                            type="file"
-                            multiple={header !== "images" && header !== "video" && header !== "audio"}
-                            accept={
-                                header === "video"
-                                    ? "video/mp4,video/webm,video/ogg"
-                                    : header === "audio"
-                                        ? "audio/mpeg,audio/wav,audio/ogg,audio/webm"
-                                        : "image/*"
-                            }
-                            className="text-center text-sm px-3 py-2 bg-[#605CA8] text-white rounded hover:bg-indigo-700 cursor-pointer"
-                            onChange={(e) => void handleFiles(e.target.files)}
-                            disabled={uploadMutation.isPending}
-                        />
 
-                        {uploadMutation.isError && (
-                            <p className="text-xs text-red-500 mt-2">
-                                Upload failed. Please try again.
+                    {isUploading ? (
+                        <div className="w-full max-w-md mx-auto">
+                            <div className="flex justify-between text-xs mb-1">
+                                <span>{uploadStatus}</span>
+                                <span>{Math.round(uploadProgress)}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                    className="bg-[#605CA8] h-2.5 rounded-full transition-all duration-300"
+                                    style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center gap-2">
+                            <div className="bg-gray-100 p-4 rounded-full">
+                                <svg
+                                    className="w-8 h-8 text-gray-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M12 16v-8m0 0l-3 3m3-3l3 3m4 2v4a2 2 0 01-2 2H7a2 2 0 01-2-2v-4m14 0a2 2 0 00-2-2H7a2 2 0 00-2 2"
+                                    />
+                                </svg>
+                            </div>
+                            <p className="text-gray-600 text-sm">
+                                Drag and drop files here or
                             </p>
-                        )}
-                    </div>
+                            <input
+                                type="file"
+                                multiple={false} // Restrict to single file for SignalR flow for now
+                                accept={
+                                    header === "video"
+                                        ? "video/mp4,video/webm,video/ogg"
+                                        : header === "audio"
+                                            ? "audio/mpeg,audio/wav,audio/ogg,audio/webm"
+                                            : "image/*"
+                                }
+                                className="text-center text-sm px-3 py-2 bg-[#605CA8] text-white rounded hover:bg-indigo-700 cursor-pointer"
+                                onChange={(e) => void handleFiles(e.target.files)}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Media Grid */}
@@ -293,6 +402,13 @@ export default function FileModal({ onClose, header, handleChange }: FileModalPr
                                         name: fieldName,
                                         value,
                                         type: "text",
+                                        // Include details if available
+                                        ...(header === "audio" || header === "video" ? {
+                                            fileName: item.fileName,
+                                            sizeInBytes: item.sizeInBytes,
+                                            mimeType: item.mimeType,
+                                            duration: item.duration,
+                                        } : {}),
                                     },
                                 };
                                 handleChange(payload);

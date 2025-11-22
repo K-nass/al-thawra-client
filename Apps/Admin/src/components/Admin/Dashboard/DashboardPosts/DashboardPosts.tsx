@@ -30,11 +30,11 @@ export default function DashboardPosts({ label }: { label?: string }) {
     let isBreaking = false;
     const isPages = label === "pages";
 
-    
+
     if (label == "Slider Posts") isSlider = true;
     if (label === "Featured Posts") isFeatured = true
     if (label === "Breaking News") isBreaking = true
-    
+
     // Use different API based on label
     const { data: posts, isLoading: isLoadingPosts } = useFetchPosts({
         category: category ?? undefined,
@@ -119,7 +119,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                     <button
                         type="button"
                         className="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#13967B] hover:bg-[#0e7a64] text-white rounded-lg shadow-md transition-all"
-                        onClick={()=>navigate("/admin/add-post")}
+                        onClick={() => navigate("/admin/add-post")}
                     >
                         <span>{t('post.addPost')}</span>
                     </button>
@@ -307,7 +307,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                 >
                                                     <td className="p-4"><input type="checkbox" className="rounded border-gray-300 text-[#13967B]" /></td>
                                                     <td className="px-6 py-4 text-gray-700">
-                                                        <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', maxWidth:"150px"}}>
+                                                        <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', maxWidth: "150px" }}>
                                                             {item.id}
                                                         </div>
                                                     </td>
@@ -348,9 +348,9 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                 >
                                                     <td className="p-4"><input type="checkbox" className="rounded border-gray-300 text-[#13967B]" /></td>
                                                     <td className="px-6 py-4 text-gray-700">
-                                                    <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', maxWidth:"150px"}}>
-                                                        {item.id}
-                                                    </div>
+                                                        <div style={{ overflowX: 'auto', whiteSpace: 'nowrap', maxWidth: "150px" }}>
+                                                            {item.id}
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 flex items-center space-x-3 cursor-pointer">
                                                         <img
@@ -384,7 +384,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                                 // Convert postType to lowercase (API returns "Article", "Gallery", etc.)
                                                                 const postType = post?.postType?.toLowerCase() || 'article';
                                                                 navigate(`/admin/edit-post/${id}?type=${postType}`, {
-                                                                    state: { 
+                                                                    state: {
                                                                         post,
                                                                         categorySlug: post?.categorySlug,
                                                                         slug: post?.slug
@@ -408,51 +408,50 @@ export default function DashboardPosts({ label }: { label?: string }) {
                     </div>
 
                     {/* Pagination */}
-                    {((isPages && (data as any)?.totalPages && (data as any).totalPages > 1) || 
-                      (!isPages && (data as any)?.data?.totalPages && (data as any).data.totalPages > 1)) && (
-                        <div className="flex justify-center items-center space-x-2 py-4 bg-gray-50 cursor-pointer">
-                            <button
-                                onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                                disabled={pageNumber === 1}
-                                className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === 1
-                                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                                    : "text-gray-700 hover:bg-gray-100"
-                                    }`}
-                            >
-                                ‹
-                            </button>
-                            {Array.from({ 
-                                length: isPages ? ((data as any)?.totalPages || 0) : ((data as any)?.data?.totalPages || 0) 
-                            }, (_, i) => i + 1).map((num) => (
+                    {((isPages && (data as any)?.totalPages && (data as any).totalPages > 1) ||
+                        (!isPages && (data as any)?.data?.totalPages && (data as any).data.totalPages > 1)) && (
+                            <div className="flex justify-center items-center space-x-2 py-4 bg-gray-50 cursor-pointer">
                                 <button
-                                    key={num}
-                                    onClick={() => setPageNumber(num)}
-                                    className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === num
-                                        ? "bg-[#13967B] text-white border-[#13967B]"
-                                        : "text-gray-700 hover:bg-gray-100 border-gray-200"
+                                    onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                                    disabled={pageNumber === 1}
+                                    className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === 1
+                                        ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                                        : "text-gray-700 hover:bg-gray-100"
                                         }`}
                                 >
-                                    {num}
+                                    ‹
                                 </button>
-                            ))}
-                            <button
-                                onClick={() =>
-                                    setPageNumber((prev) => {
-                                        const totalPages = isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages;
-                                        return totalPages ? Math.min(prev + 1, totalPages) : prev;
-                                    })
-                                }
-                                disabled={pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)}
-                                className={`px-3 py-1 border rounded-md cursor-pointer ${
-                                    pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)
-                                    ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                                    : "text-gray-700 hover:bg-gray-100"
-                                    }`}
-                            >
-                                ›
-                            </button>
-                        </div>
-                    )}
+                                {Array.from({
+                                    length: isPages ? ((data as any)?.totalPages || 0) : ((data as any)?.data?.totalPages || 0)
+                                }, (_, i) => i + 1).map((num) => (
+                                    <button
+                                        key={num}
+                                        onClick={() => setPageNumber(num)}
+                                        className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === num
+                                            ? "bg-[#13967B] text-white border-[#13967B]"
+                                            : "text-gray-700 hover:bg-gray-100 border-gray-200"
+                                            }`}
+                                    >
+                                        {num}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() =>
+                                        setPageNumber((prev) => {
+                                            const totalPages = isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages;
+                                            return totalPages ? Math.min(prev + 1, totalPages) : prev;
+                                        })
+                                    }
+                                    disabled={pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)}
+                                    className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)
+                                            ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                                            : "text-gray-700 hover:bg-gray-100"
+                                        }`}
+                                >
+                                    ›
+                                </button>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>
