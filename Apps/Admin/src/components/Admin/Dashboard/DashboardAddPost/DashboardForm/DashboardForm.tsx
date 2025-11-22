@@ -52,7 +52,7 @@ export default function DashboardForm() {
     if (!token) {
       navigate('/login');
     }
-  }, [token, navigate]); 
+  }, [token, navigate]);
 
   const [notification, setNotification] = useState<{
     type: "success" | "error";
@@ -63,13 +63,13 @@ export default function DashboardForm() {
   type CustomChangeEvent =
     | ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     | {
-        target: {
-          name: string;
-          value: string | string[] | any;
-          type: string;
-          checked?: boolean;
-        };
+      target: {
+        name: string;
+        value: string | string[] | any;
+        type: string;
+        checked?: boolean;
       };
+    };
 
   function handleChange(e: CustomChangeEvent, newTags?: string[]) {
     const { type, value, name } = e.target;
@@ -120,10 +120,10 @@ export default function DashboardForm() {
       // Client-side validation for video posts
       // Check if at least one video source is provided with actual content
       const hasVideoUrl = payload.videoUrl && payload.videoUrl.trim() !== '';
-      const hasVideoFiles = payload.videoFileUrls && Array.isArray(payload.videoFileUrls) && 
-                           payload.videoFileUrls.some((url: string) => url && url.trim() !== '');
+      const hasVideoFiles = payload.videoFileUrls && Array.isArray(payload.videoFileUrls) &&
+        payload.videoFileUrls.some((url: string) => url && url.trim() !== '');
       const hasEmbedCode = payload.videoEmbedCode && payload.videoEmbedCode.trim() !== '';
-      
+
       if (type === "video" && !hasVideoUrl && !hasVideoFiles && !hasEmbedCode) {
         const validationError = new Error("Please provide at least one video source: Video URL, video file, or embed code");
         (validationError as any).isAxiosError = true;
@@ -156,7 +156,7 @@ export default function DashboardForm() {
       }
 
       const endpoint = config.endpoint;
-      
+
       // For video posts, copy imageUrl to videoThumbnailUrl
       if (type === "video" && "imageUrl" in payload) {
         payload = {
@@ -164,7 +164,7 @@ export default function DashboardForm() {
           videoThumbnailUrl: payload.imageUrl || null,
         };
       }
-      
+
       // For audio posts, copy imageUrl to thumbnailUrl
       if (type === "audio" && "imageUrl" in payload) {
         payload = {
@@ -172,7 +172,7 @@ export default function DashboardForm() {
           thumbnailUrl: payload.imageUrl || null,
         };
       }
-      
+
       // Clean up empty strings from array fields to prevent API validation errors
       if (payload.additionalImageUrls) {
         payload.additionalImageUrls = payload.additionalImageUrls.filter((url: string) => url && url.trim() !== '');
@@ -180,28 +180,28 @@ export default function DashboardForm() {
           payload.additionalImageUrls = null;
         }
       }
-      
+
       if (payload.fileUrls) {
         payload.fileUrls = payload.fileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.fileUrls.length === 0) {
           payload.fileUrls = null;
         }
       }
-      
+
       if (payload.videoFileUrls) {
         payload.videoFileUrls = payload.videoFileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.videoFileUrls.length === 0) {
           payload.videoFileUrls = null;
         }
       }
-      
+
       if (payload.audioFileUrls) {
         payload.audioFileUrls = payload.audioFileUrls.filter((url: string) => url && url.trim() !== '');
         if (payload.audioFileUrls.length === 0) {
           payload.audioFileUrls = null;
         }
       }
-      
+
       // Clean up empty strings in tagIds array
       if (payload.tagIds) {
         payload.tagIds = payload.tagIds.filter((id: string) => id && id.trim() !== '');
@@ -209,7 +209,7 @@ export default function DashboardForm() {
           payload.tagIds = null;
         }
       }
-      
+
       // Clean up empty string values for single URL fields
       // Note: imageUrl is required for articles, so don't convert to null
       if (type === "video") {
@@ -220,7 +220,7 @@ export default function DashboardForm() {
           payload.videoUrl = null;
         }
       }
-      
+
       if (type === "audio") {
         if (payload.thumbnailUrl === '') {
           payload.thumbnailUrl = null;
@@ -229,7 +229,7 @@ export default function DashboardForm() {
           payload.audioUrl = null;
         }
       }
-      
+
       // For articles, keep imageUrl as empty string if not provided (required field)
       // For other types, convert empty imageUrl to null if needed
       if (type !== "article" && payload.imageUrl === '') {
@@ -252,12 +252,12 @@ export default function DashboardForm() {
       console.error("Post creation error:", error);
       let message = "Failed to create post";
       const errors: Record<string, string[]> = {};
-      
+
       if (axios.isAxiosError(error)) {
         const d = error.response?.data;
         const status = error.response?.status;
         console.error("API Error Response:", { status, data: d });
-        
+
         // Handle 401 Unauthorized - only redirect if token refresh failed
         // The axios interceptor will automatically try to refresh the token
         // If we get here with 401, it means refresh failed
@@ -269,7 +269,7 @@ export default function DashboardForm() {
           }, 2000);
           return;
         }
-        
+
         // Check for title first (general error message)
         if (d?.title) message = String(d.title);
         else if (d?.message) message = String(d.message);
@@ -292,7 +292,7 @@ export default function DashboardForm() {
       } else if (error instanceof Error) {
         message = error.message;
       }
-      
+
       setFieldErrors(errors);
       setNotification({ type: "error", message });
     },
@@ -300,7 +300,7 @@ export default function DashboardForm() {
 
   // #505458 new color i will use for form
   console.log(state);
-  
+
   return (
     <>
       {notification && (
@@ -361,11 +361,11 @@ export default function DashboardForm() {
             {!["gallery", "sorted-list", "audio", "video"].includes(
               type || ""
             ) && (
-              <>
-                <AdditionalImages handleChange={handleChange} fieldErrors={fieldErrors} />
-                <FileUpload handleChange={handleChange} fieldErrors={fieldErrors} />
-              </>
-            )}
+                <>
+                  <AdditionalImages handleChange={handleChange} fieldErrors={fieldErrors} />
+                  <FileUpload handleChange={handleChange} fieldErrors={fieldErrors} />
+                </>
+              )}
             {type === "video" && (
               <MediaUploadComponent
                 mediaType="video"
@@ -401,7 +401,12 @@ export default function DashboardForm() {
               value={state.categoryId}
               errors={fieldErrors}
             />
-            <PublishSection mutation={mutation} />
+            <PublishSection
+              mutation={mutation}
+              state={state}
+              handleChange={handleChange}
+              fieldErrors={fieldErrors}
+            />
           </div>
         </div>
       </form>

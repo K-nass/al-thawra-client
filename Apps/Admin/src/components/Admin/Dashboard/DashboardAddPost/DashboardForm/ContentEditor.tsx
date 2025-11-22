@@ -1,88 +1,56 @@
-import {
-  faB,
-  faCode,
-  faItalic,
-  faList,
-  faListOl,
-  faStrikethrough,
-  faUnderline,
-  faCheck,
-  faQuoteLeft,
-  faAlignLeft,
-  faAlignCenter,
-  faAlignRight,
-  faPalette,
-  faPaintBrush,
-  faLink,
-  type IconDefinition,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Editor } from '@tinymce/tinymce-react';
 import type { ArticleInitialStateInterface } from "./usePostReducer/postData";
 import type { ChangeEvent } from "react";
 
-const icons = [
-  faB,
-  faItalic,
-  faUnderline,
-  faCode,
-  faStrikethrough,
-  faList,
-  faListOl,
-  faCheck,
-  faQuoteLeft,
-  faAlignLeft,
-  faAlignCenter,
-  faAlignRight,
-  faPalette,
-  faPaintBrush,
-  faLink,
-];
-
 interface ContentEditorProps {
-  state: ArticleInitialStateInterface,
-  handleChange: (e: ChangeEvent<HTMLTextAreaElement>) => void,
-  errors?: Record<string, string[]>,
+  state: ArticleInitialStateInterface;
+  handleChange: (e: any) => void;
+  errors?: Record<string, string[]>;
 }
 
 export default function ContentEditor({ state, handleChange, errors = {} }: ContentEditorProps) {
   return (
     <div className="border border-gray-200 rounded-md overflow-hidden" data-error-field={errors.content ? true : undefined}>
-      <div className="p-2 border-b border-gray-200 flex flex-wrap items-center gap-1">
-        {icons.map((icon, idx) => (
-          <ToolBarItem key={idx} icon={icon} />
-        ))}
-
-        <div className="w-px h-6 bg-gray-200 mx-1" />
-      </div>
-
-      <div className="p-4">
-        <textarea
-          className={`w-full h-96 focus:ring-0 resize-none p-0 border-0 ${
-            errors.content ? 'bg-red-50' : ''
-          }`}
-          placeholder="Start writing your content here..."
-          name="content"
-          value={state.content}
-          onChange={handleChange}
-        />
-      </div>
+      <Editor
+        apiKey='dqv0ltqmlrx488fon0ljbzpen8t2qm04tl8fw3tpgf7j3aom'
+        value={state.content}
+        onEditorChange={(content) => {
+          handleChange({
+            target: {
+              name: 'content',
+              value: content,
+              type: 'textarea'
+            }
+          });
+        }}
+        init={{
+          height: 500,
+          menubar: true,
+          plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+            // Your account includes a free trial of TinyMCE premium features
+            // Try the most popular premium features until Dec 6, 2025:
+            'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'advtemplate', 'ai', 'uploadcare', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+          ],
+          toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography uploadcare | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+          tinycomments_mode: 'embedded',
+          tinycomments_author: 'Author name',
+          mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+          ],
+          ai_request: (request: any, respondWith: any) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+          uploadcare_public_key: '8abd3626f67e6204cb1c',
+        }}
+      />
       {errors.content && (
-        <ul className="mt-1 px-4 pb-2 space-y-1">
+        <ul className="mt-1 px-4 pb-2 space-y-1 bg-red-50">
           {errors.content.map((error, idx) => (
             <li key={idx} className="text-red-600 text-xs">• {error}</li>
           ))}
         </ul>
       )}
     </div>
-  );
-}
-
-function ToolBarItem({ icon }: { icon: IconDefinition }) {
-  return (
-    <button className="p-2 rounded hover:bg-gray-100  text-gray-600 ">
-      <span className="material-symbols-outlined text-xl">
-        <FontAwesomeIcon icon={icon} />
-      </span>
-    </button>
   );
 }

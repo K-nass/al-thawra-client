@@ -1,4 +1,4 @@
-interface ShardedInitialStateInterface {
+export interface ShardedInitialStateInterface {
   categoryId: string;
   language: "English" | "Arabic";
   title: string;
