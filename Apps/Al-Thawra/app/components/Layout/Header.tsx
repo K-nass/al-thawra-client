@@ -204,6 +204,18 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
+                    location.pathname === "/tv" 
+                      ? "border-white text-white font-bold" 
+                      : "border-transparent hover:border-white/50"
+                  }`}
+                  to="/tv"
+                >
+                  <Tv className="w-4 h-4" />
+                  <span>التلفزيون</span>
+                </Link>
+
+                <Link
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
                     location.pathname === "/profile" 
                       ? "border-white text-white font-bold" 
                       : "border-transparent hover:border-white/50"
@@ -435,6 +447,13 @@ export function Header({ categories = [] }: HeaderProps) {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               كتاب وآراء
+            </Link>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/tv"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              التلفزيون
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
