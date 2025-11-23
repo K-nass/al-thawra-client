@@ -103,6 +103,16 @@ const setCookie = (name: string, value: string, expiresAt?: string) => {
   }, 10);
 };
 
+// Store expiry date separately for easy access
+const setExpiryDate = (expiresAt: string) => {
+  if (typeof document === 'undefined') return;
+  setCookie('tokenExpiresAt', expiresAt, expiresAt);
+};
+
+const getExpiryDate = (): string | null => {
+  return getCookie('tokenExpiresAt');
+};
+
 const removeCookie = (name: string) => {
   if (typeof document === 'undefined') return;
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax`;
@@ -122,6 +132,9 @@ class AuthService {
         setCookie('accessToken', response.data.accessToken, response.data.expiresAt);
         setCookie('refreshToken', response.data.refreshToken, response.data.expiresAt);
         setCookie('user', JSON.stringify(response.data.user), response.data.expiresAt);
+        if (response.data.expiresAt) {
+          setExpiryDate(response.data.expiresAt);
+        }
         console.log('✅ Tokens stored in cookies with expiry:', response.data.expiresAt);
         
         // Debug: Show all cookies after setting
@@ -150,6 +163,9 @@ class AuthService {
         setCookie('accessToken', response.data.accessToken, response.data.expiresAt);
         setCookie('refreshToken', response.data.refreshToken, response.data.expiresAt);
         setCookie('user', JSON.stringify(response.data.user), response.data.expiresAt);
+        if (response.data.expiresAt) {
+          setExpiryDate(response.data.expiresAt);
+        }
         console.log('✅ Tokens stored in cookies with expiry:', response.data.expiresAt);
       } else {
         console.warn('Missing accessToken or refreshToken in response');
@@ -167,6 +183,7 @@ class AuthService {
     removeCookie('accessToken');
     removeCookie('refreshToken');
     removeCookie('user');
+    removeCookie('tokenExpiresAt');
     console.log('✅ Tokens cleared from cookies');
   }
 
@@ -217,7 +234,47 @@ class AuthService {
   setTokens(accessToken: string, refreshToken: string, expiresAt?: string): void {
     setCookie('accessToken', accessToken, expiresAt);
     setCookie('refreshToken', refreshToken, expiresAt);
+    if (expiresAt) {
+      setExpiryDate(expiresAt);
+    }
     console.log('✅ Tokens updated in cookies');
+  }
+
+  // Get token expiry date
+  getTokenExpiryDate(): Date | null {
+    const expiryStr = getExpiryDate();
+    if (!expiryStr) return null;
+    
+    try {
+      return new Date(expiryStr);
+    } catch (e) {
+      console.error('Failed to parse expiry date:', e);
+      return null;
+    }
+  }
+
+  // Check if token is expired or will expire soon (within buffer seconds)
+  isTokenExpired(bufferSeconds: number = 60): boolean {
+    const expiryDate = this.getTokenExpiryDate();
+    if (!expiryDate) {
+      // No expiry date means we should check with the server
+      return false;
+    }
+    
+    const now = new Date();
+    const bufferMs = bufferSeconds * 1000;
+    const expiryWithBuffer = new Date(expiryDate.getTime() - bufferMs);
+    
+    const isExpired = now >= expiryWithBuffer;
+    if (isExpired) {
+      console.log('🕐 Token is expired or expiring soon:', {
+        now: now.toISOString(),
+        expiry: expiryDate.toISOString(),
+        expiryWithBuffer: expiryWithBuffer.toISOString(),
+      });
+    }
+    
+    return isExpired;
   }
 
   // Forgot password - send reset link

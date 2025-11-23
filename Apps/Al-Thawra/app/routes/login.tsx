@@ -196,7 +196,7 @@ export default function LoginPage() {
 
             {/* Login Form */}
             <Form method="post">
-              <StaggerContainer className="space-y-5" staggerDelay={0.1}>
+              <StaggerContainer className="space-y-5" staggerDelay={0.1} once={true} immediate={true}>
               {/* Email Field */}
               <StaggerItem>
                 <label htmlFor="email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">

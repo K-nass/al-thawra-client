@@ -33,16 +33,84 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
-// Request interceptor - Add token to headers
+// Request interceptor - Add token to headers and check expiry
 axiosInstance.interceptors.request.use(
-  (config) => {
-    // Get token from memory
+  async (config) => {
+    // Get token from cookies
     const token = authService.getToken();
     
     console.log('📤 Request:', config.method?.toUpperCase(), config.url, 'Token:', token ? 'Present' : 'Missing');
     
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Skip token refresh for auth endpoints
+    const isAuthEndpoint = config.url?.includes('/auth/login') || 
+                          config.url?.includes('/auth/register') ||
+                          config.url?.includes('/auth/refresh-token');
+    
+    if (token && !isAuthEndpoint) {
+      // Check if token is expired or expiring soon (within 60 seconds)
+      const isExpired = authService.isTokenExpired(60);
+      
+      if (isExpired) {
+        console.log('🔄 Token expiring soon, refreshing proactively...');
+        
+        // Wait if refresh is already in progress
+        if (isRefreshing) {
+          console.log('⏳ Refresh in progress, waiting...');
+          await new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          });
+        } else {
+          // Trigger refresh
+          isRefreshing = true;
+          
+          try {
+            const refreshToken = authService.getRefreshToken();
+            
+            if (!refreshToken) {
+              console.error('❌ No refresh token available');
+              throw new Error('No refresh token available');
+            }
+            
+            console.log('📡 Refreshing token proactively...');
+            const response = await axios.post(
+              `${baseURL}/auth/refresh-token`,
+              { refreshToken },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+            
+            const { accessToken, refreshToken: newRefreshToken, expiresAt } = response.data;
+            console.log('✅ Token refreshed proactively');
+            
+            // Update tokens in cookies
+            authService.setTokens(accessToken, newRefreshToken, expiresAt);
+            
+            // Update authorization header
+            axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+            config.headers.Authorization = `Bearer ${accessToken}`;
+            
+            // Process queued requests
+            processQueue(null, accessToken);
+          } catch (error) {
+            console.error('❌ Proactive token refresh failed:', error);
+            // Clear tokens and redirect to login
+            authService.logout();
+            
+            if (typeof window !== 'undefined') {
+              window.location.href = '/login';
+            }
+            
+            processQueue(error, null);
+            throw error;
+          }
+        }
+      }
+      
+      // Add token to headers
+      config.headers.Authorization = `Bearer ${authService.getToken()}`;
     }
     
     return config;

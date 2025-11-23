@@ -103,7 +103,7 @@ export default function RegisterPage() {
 
         {/* Register Form */}
         <form onSubmit={handleSubmit}>
-          <StaggerContainer className="space-y-4" staggerDelay={0.1}>
+          <StaggerContainer className="space-y-4" staggerDelay={0.1} once={true} immediate={true}>
           {/* Username Field */}
           <StaggerItem>
             <label htmlFor="username" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">

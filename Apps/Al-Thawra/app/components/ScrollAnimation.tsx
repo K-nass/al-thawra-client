@@ -90,11 +90,13 @@ export function StaggerContainer({
   className = "",
   staggerDelay = 0.1,
   once = false,
+  immediate = false,
 }: {
   children: ReactNode;
   className?: string;
   staggerDelay?: number;
   once?: boolean;
+  immediate?: boolean;
 }) {
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
@@ -105,6 +107,20 @@ export function StaggerContainer({
       },
     },
   };
+
+  // If immediate is true, animate on mount instead of on scroll
+  if (immediate) {
+    return (
+      <motion.div
+        className={className}
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        {children}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

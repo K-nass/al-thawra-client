@@ -14,6 +14,7 @@ import "./app.css";
 import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
 import { NavigationLoader } from "./components/NavigationLoader";
+import { ToastContainer } from "./components/Toast";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
 import { cache, CacheTTL } from "./lib/cache";
@@ -64,6 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <ToastContainer />
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -104,7 +106,7 @@ export default function App() {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Main Content Area */}
             <div className="flex-1 min-w-0">
-              <Outlet />
+              <Outlet context={{ categories }} />
             </div>
             {/* Sidebar */}
             <div className="lg:w-72 flex-shrink-0">
@@ -113,7 +115,7 @@ export default function App() {
           </div>
         </div>
       ) : (
-        <Outlet />
+        <Outlet context={{ categories }} />
       )}
       </PageLayout>
     </>

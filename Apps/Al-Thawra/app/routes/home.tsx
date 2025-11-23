@@ -1,5 +1,6 @@
 import type { Route } from "./+types/home";
-import { useLoaderData, useNavigation } from "react-router";
+import { useLoaderData, useNavigation, useOutletContext } from "react-router";
+import { useState, useEffect } from "react";
 import { PostsGrid } from "../components/PostsGrid";
 import { Slider } from "../components/Slider";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
@@ -22,19 +23,10 @@ export function HydrateFallback() {
   return <HomePageSkeleton />;
 }
 
-export async function loader() {
+export async function loader({ request }: Route.LoaderArgs) {
   try {
-    // Get homepage categories with caching
-    const homepageCategories = await cache.getOrFetch(
-      "categories:homepage:Arabic",
-      () => categoriesService.getHomepageCategories('Arabic'),
-      CacheTTL.LONG
-    ).catch(() => []);
-    
-    // Sort and limit categories
-    const limitedCategories = homepageCategories
-      .sort((a, b) => a.order - b.order)
-      .slice(0, 6);
+    // Note: Categories are now fetched in root loader and accessed via useRouteLoaderData
+    // We'll get them in the component instead of here
     
     // Fetch slider posts separately with caching
     const sliderPosts = await cache.getOrFetch(
@@ -50,56 +42,80 @@ export async function loader() {
       CacheTTL.SHORT
     ).catch(() => []);
     
-    // Fetch posts for each category separately (no Promise.all)
-    const categoryPosts = [];
-    for (const category of limitedCategories) {
-      try {
-        const posts = await cache.getOrFetch(
-          `posts:category:${category.slug}:15:Article`,
-          async () => {
-            const response = await postsService.getPostsByCategory(
-              category.slug,
-              { pageSize: 15 },
-              "Article"
-            );
-            return response.items;
-          },
-          CacheTTL.SHORT
-        );
-        
-        if (posts.length > 0) {
-          categoryPosts.push({
-            category,
-            posts,
-          });
-        }
-      } catch (error) {
-        console.error(`Error fetching posts for category ${category.slug}:`, error);
-        // Continue with next category
-      }
-    }
     return {  
       sliderPosts,
       writersPosts,
-      categoryPosts,
+      // Categories will be accessed from root loader in component
     };
   } catch (error: any) {
     console.error('Error loading home page:', error.response?.data || error.message);
     return {
       sliderPosts: [],
       writersPosts: [],
-      categoryPosts: [],
     };
   }
 }
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, categoryPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts } = useLoaderData<typeof loader>();
+  // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
+  const { categories } = useOutletContext<{ categories: Category[] }>();
+  
   const navigation = useNavigation();
+  const [categoryPosts, setCategoryPosts] = useState<Array<{ category: Category; posts: Post[] }>>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
-  // Show loading skeleton during navigation
-  if (navigation.state === "loading") {
+  // Fetch posts for categories
+  useEffect(() => {
+    async function fetchCategoryPosts() {
+      setIsLoadingCategories(true);
+      
+      // Sort and limit categories
+      const limitedCategories = categories
+        .sort((a: Category, b: Category) => a.order - b.order)
+        .slice(0, 6);
+      
+      const results = [];
+      for (const category of limitedCategories) {
+        try {
+          const posts = await cache.getOrFetch(
+            `posts:category:${category.slug}:15:Article`,
+            async () => {
+              const response = await postsService.getPostsByCategory(
+                category.slug,
+                { pageSize: 15 },
+                "Article"
+              );
+              return response.items;
+            },
+            CacheTTL.SHORT
+          );
+          
+          if (posts.length > 0) {
+            results.push({
+              category,
+              posts,
+            });
+          }
+        } catch (error) {
+          console.error(`Error fetching posts for category ${category.slug}:`, error);
+        }
+      }
+      
+      setCategoryPosts(results);
+      setIsLoadingCategories(false);
+    }
+    
+    if (categories.length > 0) {
+      fetchCategoryPosts();
+    } else {
+      setIsLoadingCategories(false);
+    }
+  }, [categories]);
+
+  // Show loading skeleton during navigation or category loading
+  if (navigation.state === "loading" || isLoadingCategories) {
     return <HomePageSkeleton />;
   }
 
@@ -138,7 +154,7 @@ export default function Home() {
 
       {/* Remaining Category Sections */}
       {categoryPosts.length > 1 && (
-        categoryPosts.slice(1).map(({ category, posts }) => (
+        categoryPosts.slice(1).map(({ category, posts }: { category: Category; posts: Post[] }) => (
           <PostsGrid 
             key={category.id}
             posts={posts} 

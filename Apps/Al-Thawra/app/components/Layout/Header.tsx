@@ -37,7 +37,7 @@ export function Header({ categories = [] }: HeaderProps) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     // Get current user from cookies
     const user = authService.getCurrentUser();
@@ -81,7 +81,7 @@ export function Header({ categories = [] }: HeaderProps) {
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Right Side - Editor Info */}
             <div className="flex items-center gap-6 text-gray-700">
-              <span className="font-medium">
+              <span className="font-bold text-base">
                 رئيس مجلس الادارة: سام الغبارى{" "}
               </span>
             </div>
@@ -151,7 +151,7 @@ export function Header({ categories = [] }: HeaderProps) {
                 <img
                   src="/logo.png"
                   alt="الثورة لوجو"
-                  style={{ width: "100px" }}
+                  style={{ width: "130px" }}
                 />
               </Link>
 
@@ -201,21 +201,11 @@ export function Header({ categories = [] }: HeaderProps) {
                   <Tv className="w-4 h-4" />
                   <span>التلفزيون</span>
                 </Link>
+                
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
-                    location.pathname === "/profile" 
+                    location.pathname === "/podcast" 
                       ? "border-white text-white font-bold" 
-                      : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/profile"
-                >
-                  <User className="w-4 h-4" />
-                  <span>صفحتي</span>
-                </Link>
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${location.pathname === "/podcast"
-                      ? "border-white text-white font-bold"
                       : "border-transparent hover:border-white/50"
                     }`}
                   to="/podcast"
@@ -223,11 +213,31 @@ export function Header({ categories = [] }: HeaderProps) {
                   <Podcast className="w-4 h-4" />
                   <span>بودكاست</span>
                 </Link>
+
+                <Link
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group ${
+                    location.pathname === "/profile" 
+                      ? "border-white text-white font-bold" 
+                      : "border-transparent hover:border-white/50"
+                  }`}
+                  to="/profile"
+                >
+                  <User className="w-4 h-4" />
+                  <span>صفحتي</span>
+                </Link>
               </nav>
             </div>
 
             {/* Left Side - Actions */}
             <div className="flex items-center gap-2">
+              <Link
+                to="/cart"
+                className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
+                aria-label="السلة"
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </Link>
+              
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
@@ -249,9 +259,12 @@ export function Header({ categories = [] }: HeaderProps) {
                 <div className="relative hidden md:block" ref={profileDropdownRef}>
                   <button
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-[var(--color-white)] hover:bg-[var(--color-secondary-light)] rounded-lg transition-colors duration-300 font-medium"
+                    className="flex items-center gap-2 px-3 py-2 text-[var(--color-primary)] bg-[var(--color-white)] hover:bg-[var(--color-secondary-light)] rounded-lg transition-colors duration-300 font-medium"
                   >
-                    <User className="w-4 h-4" />
+                    {/* Profile Picture or Icon */}
+                    <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
                     <span>{currentUser.userName || currentUser.username}</span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
                   </button>
@@ -423,14 +436,14 @@ export function Header({ categories = [] }: HeaderProps) {
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/category/local"
+              to="/magazines"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              محليات
+              أرشيف الثورة
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/category/opinion"
+              to="/writers-opinions"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               كتاب وآراء
@@ -444,31 +457,17 @@ export function Header({ categories = [] }: HeaderProps) {
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/tv"
+              to="/podcast"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              التلفزيون
+              بودكاست
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/category/economy"
+              to="/profile"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              اقتصاد
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/category/international"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              الثورة الدولي
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/category/lite"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              لايت
+              صفحتي
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
