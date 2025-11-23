@@ -117,7 +117,7 @@ export function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12 px-4" dir="rtl">
+    <div className="min-h-screen bg-[var(--color-background-light)] py-12 px-4" dir="rtl">
       <div className="max-w-4xl mx-auto">
         {/* Success Message */}
         {showSuccess && (
@@ -223,7 +223,7 @@ export function Profile() {
 
                 {/* About Me */}
                 {profile.aboutMe && (
-                  <div className="mb-8 p-6 bg-gray-50 rounded-lg">
+                  <div className="mb-8 p-6 bg-[var(--color-white)] rounded-lg border border-[var(--color-divider)]">
                     <h3 className="text-lg font-semibold text-gray-800 mb-3">نبذة عني</h3>
                     <p className="text-gray-700 leading-relaxed">{profile.aboutMe}</p>
                   </div>
@@ -295,7 +295,7 @@ export function Profile() {
                 <div className="pt-6 border-t border-[var(--color-divider)]">
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white rounded-lg transition-colors font-medium"
                   >
                     <LogOut className="w-5 h-5" />
                     <span>تسجيل الخروج</span>
@@ -467,7 +467,7 @@ export function Profile() {
                     type="button"
                     onClick={() => setIsEditing(false)}
                     disabled={isSubmitting}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--color-background-light)] hover:bg-[var(--color-card)] text-[var(--color-text-primary)] rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-[var(--color-divider)]"
                   >
                     <X className="w-5 h-5" />
                     <span>إلغاء</span>

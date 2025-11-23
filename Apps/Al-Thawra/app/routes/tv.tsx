@@ -8,6 +8,7 @@ import { categoriesService, type Category } from "../services/categoriesService"
 import { cache, CacheTTL } from "../lib/cache";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "../components/ScrollAnimation";
 import { generateMetaTags } from "~/utils/seo";
+import { showToast } from "~/components/Toast";
 
 export function meta({}: Route.MetaArgs) {
   return generateMetaTags({
@@ -167,11 +168,26 @@ export default function TVPage() {
 
             {/* Action Buttons */}
             <div className="space-y-3 mb-6">
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white rounded-xl transition-all duration-300 font-bold shadow-lg">
+              <Link 
+                to={
+                  featuredVideo.categorySlug && featuredVideo.slug
+                    ? `/posts/categories/${featuredVideo.categorySlug}/videos/${featuredVideo.slug}`
+                    : "#"
+                }
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105"
+              >
                 <Play className="w-5 h-5 fill-current" />
                 <span>مشاهدة الآن</span>
-              </button>
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all duration-300 backdrop-blur-sm">
+              </Link>
+              <button 
+                onClick={() => {
+                  const url = `${window.location.origin}/posts/categories/${featuredVideo.categorySlug}/videos/${featuredVideo.slug}`;
+                  navigator.clipboard.writeText(url).then(() => {
+                    showToast('تم نسخ الرابط بنجاح ✓', 'success');
+                  });
+                }}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl transition-all duration-300 backdrop-blur-sm hover:scale-105 shadow-lg"
+              >
                 <Share2 className="w-5 h-5" />
                 <span>مشاركة</span>
               </button>

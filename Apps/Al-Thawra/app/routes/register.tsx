@@ -55,7 +55,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden relative">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--color-background-light)] overflow-hidden relative">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Geometric shapes */}
@@ -239,7 +239,7 @@ export default function RegisterPage() {
           <div className="text-center mt-6">
           <Link
             to="/login"
-            className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors text-sm"
+            className="text-[var(--color-text-primary)] hover:text-white transition-colors text-sm"
           >
             لديك حساب بالفعل؟ <span className="font-medium">تسجيل الدخول</span>
           </Link>

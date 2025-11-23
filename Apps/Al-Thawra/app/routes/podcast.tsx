@@ -3,6 +3,7 @@ import { PostsGrid } from "../components/PostsGrid";
 import { Slider } from "../components/Slider";
 import type { PaginatedPostsResponse, Post } from "../services/postsService";
 import axiosInstance from "../lib/axios";
+import { generateMetaTags } from "~/utils/seo";
 
 // Loader function for SSR
 export async function loader({ request }: { request: Request }) {
@@ -25,6 +26,15 @@ export async function loader({ request }: { request: Request }) {
     } catch (error) {
         throw new Response("Failed to load podcasts", { status: 500 });
     }
+}
+
+export function meta() {
+  return generateMetaTags({
+    title: "البودكاست - الثورة",
+    description: "استمع إلى أحدث الحوارات والنقاشات الشيقة. بودكاست الثورة يقدم محتوى صوتي متنوع يغطي مختلف القضايا",
+    url: "/podcast",
+    type: "website",
+  });
 }
 
 export default function PodcastPage() {

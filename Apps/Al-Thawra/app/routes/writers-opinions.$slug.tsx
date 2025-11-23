@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 import { PostDetails } from "../components/Post";
 import axiosInstance from "~/lib/axios";
 import { cache, CacheTTL } from "~/lib/cache";
+import { generateMetaTags, generateArticleSchema } from "~/utils/seo";
 
 interface LoaderArgs {
   params: {
@@ -119,13 +120,35 @@ export const loader = async ({ params }: LoaderArgs) => {
 };
 
 export function meta({ data }: MetaArgs) {
-  const article = data?.article;
+  if (!data?.article) {
+    return [
+      { title: "مقال غير موجود | الثورة" },
+      { name: "robots", content: "noindex" },
+    ];
+  }
 
+  const article = data.article;
+  
   return [
-    { title: article?.title ? `${article.title} - كتاب وآراء` : "كتاب وآراء - الثورة" },
+    ...generateMetaTags({
+      title: `${article.title} - كتاب وآراء`,
+      description: article.summary || article.content?.substring(0, 160) || "",
+      url: `/writers-opinions/${article.slug}`,
+      type: "article",
+      image: article.image,
+    }),
     {
-      name: "description",
-      content: article?.summary || article?.content?.substring(0, 160) || "اقرأ المزيد على الثورة",
+      "script:ld+json": generateArticleSchema({
+        title: article.title,
+        description: article.summary || article.content?.substring(0, 160) || "",
+        image: article.image,
+        publishedAt: article.publishedAt,
+        updatedAt: article.publishedAt,
+        authorName: article.authorName,
+        categoryName: "كتاب وآراء",
+        content: article.content,
+        url: `/writers-opinions/${article.slug}`,
+      }),
     },
   ];
 }

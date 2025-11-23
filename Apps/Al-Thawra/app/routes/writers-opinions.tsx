@@ -4,6 +4,7 @@ import { WritersOpinionsGrid } from "~/components/WritersOpinionsGrid";
 import { ScrollAnimation } from "~/components/ScrollAnimation";
 import { PenTool } from "lucide-react";
 import { cache, CacheTTL } from "~/lib/cache";
+import { generateMetaTags } from "~/utils/seo";
 
 interface LoaderData {
   posts: any[];
@@ -52,6 +53,15 @@ export async function loader({ request }: LoaderArgs) {
       totalPages: 1,
     };
   }
+}
+
+export function meta() {
+  return generateMetaTags({
+    title: "كتاب وآراء - الثورة",
+    description: "اقرأ آراء وتحليلات من كتابنا المميزين. مقالات متنوعة تغطي مختلف القضايا السياسية والاجتماعية والثقافية",
+    url: "/writers-opinions",
+    type: "website",
+  });
 }
 
 export default function WritersOpinionsPage() {
