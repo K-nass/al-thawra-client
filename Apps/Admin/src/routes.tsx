@@ -18,6 +18,7 @@ import Roles from "./components/Admin/Dashboard/Roles/Roles";
 import AddRole from "./components/Admin/Dashboard/AddRole/AddRole";
 import EditRole from "./components/Admin/Dashboard/EditRole/EditRole";
 import Users from "./components/Admin/Dashboard/Users/Users";
+import EditUser from "./components/Admin/Dashboard/EditUser/EditUser";
 import Home from "./components/Home/Home";
 
 // Wrapper component to redirect authenticated users away from login/register
@@ -68,15 +69,16 @@ export const routes = createBrowserRouter([
           { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },
           { path: "posts/breaking-news", element: <DashboardPosts label="Breaking News" /> },
           { path: "pages", element: <DashboardPosts label="pages" /> },
-          {path:"roles-permissions",element:<Roles />},
-          {path:"add-role",element:<AddRole />},
-          {path:"edit-role/:id",element:<EditRole />},
-          {path:"users",element:<Users />},
-          {path:"categories",element:<DashboardCategories />},
-          {path:"add-category",element:<DashboardAddCategory />},
-          {path:"edit-category/:id",element:<DashboardAddCategory />}
+          { path: "roles-permissions", element: <Roles /> },
+          { path: "add-role", element: <AddRole /> },
+          { path: "edit-role/:id", element: <EditRole /> },
+          { path: "users", element: <Users /> },
+          { path: "edit-user/:id/:username", element: <EditUser /> },
+          { path: "categories", element: <DashboardCategories /> },
+          { path: "add-category", element: <DashboardAddCategory /> },
+          { path: "edit-category/:id", element: <DashboardAddCategory /> }
         ]
       }
     ]
-  } 
+  }
 ]);

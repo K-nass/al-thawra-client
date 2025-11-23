@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { usersApi, type GetUsersParams } from "@/api";
 import Loader from "@/components/Common/Loader";
@@ -238,7 +239,7 @@ export default function Users() {
                                                                     }}
                                                                 />
                                                             ) : null}
-                                                            <div 
+                                                            <div
                                                                 className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold"
                                                                 style={{ display: user.avatarImageUrl ? 'none' : 'flex' }}
                                                             >
@@ -257,22 +258,20 @@ export default function Users() {
                                                     </td>
                                                     <td className="p-4">
                                                         <span
-                                                            className={`inline-block text-xs font-medium px-2.5 py-1 rounded ${
-                                                                user.isActive
-                                                                    ? "bg-green-100 text-green-800"
-                                                                    : "bg-red-100 text-red-800"
-                                                            }`}
+                                                            className={`inline-block text-xs font-medium px-2.5 py-1 rounded ${user.isActive
+                                                                ? "bg-green-100 text-green-800"
+                                                                : "bg-red-100 text-red-800"
+                                                                }`}
                                                         >
                                                             {user.isActive ? "Active" : "Inactive"}
                                                         </span>
                                                     </td>
                                                     <td className="p-4">
                                                         <span
-                                                            className={`inline-block text-xs font-medium px-2.5 py-1 rounded ${
-                                                                user.emailConfirmed
-                                                                    ? "bg-green-100 text-green-800"
-                                                                    : "bg-yellow-100 text-yellow-800"
-                                                            }`}
+                                                            className={`inline-block text-xs font-medium px-2.5 py-1 rounded ${user.emailConfirmed
+                                                                ? "bg-green-100 text-green-800"
+                                                                : "bg-yellow-100 text-yellow-800"
+                                                                }`}
                                                         >
                                                             {user.emailConfirmed ? "Confirmed" : "Pending"}
                                                         </span>
@@ -281,9 +280,12 @@ export default function Users() {
                                                         {formatDate(user.createdAt)}
                                                     </td>
                                                     <td className="p-4">
-                                                        <button className="text-sm text-primary hover:text-emerald-700 font-medium">
-                                                            View
-                                                        </button>
+                                                        <Link
+                                                            to={`/admin/edit-user/${user.id}/${user.userName}`}
+                                                            className="text-sm text-primary hover:text-emerald-700 font-medium"
+                                                        >
+                                                            Edit
+                                                        </Link>
                                                     </td>
                                                 </tr>
                                             ))
