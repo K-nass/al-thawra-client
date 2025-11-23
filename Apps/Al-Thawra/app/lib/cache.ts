@@ -4,7 +4,10 @@
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
+  etag?: string;  // ETag from response for cache validation
+  url?: string;   // URL for ETag validation requests
 }
+
 
 class Cache {
   private store: Map<string, CacheEntry<any>> = new Map();
@@ -33,14 +36,38 @@ class Cache {
   }
 
   /**
-   * Set data in cache
+   * Set data in cache with optional ETag and URL
    */
-  set<T>(key: string, data: T): void {
+  set<T>(key: string, data: T, etag?: string, url?: string): void {
     this.store.set(key, {
       data,
       timestamp: Date.now(),
+      etag,
+      url,
     });
-    console.log(`💾 Cache SET: ${key}`);
+    console.log(`💾 Cache SET: ${key}${etag ? ` (ETag: ${etag.substring(0, 20)}...)` : ''}`);
+  }
+
+  /**
+   * Refresh timestamp for cache entry (used after successful ETag validation)
+   */
+  refreshTimestamp(key: string): void {
+    const entry = this.store.get(key);
+    if (entry) {
+      entry.timestamp = Date.now();
+      console.log(`🔄 Cache REFRESHED: ${key}`);
+    }
+  }
+
+  /**
+   * Update ETag for existing cache entry
+   */
+  updateETag(key: string, etag: string): void {
+    const entry = this.store.get(key);
+    if (entry) {
+      entry.etag = etag;
+      console.log(`🏷️ ETag UPDATED: ${key} -> ${etag.substring(0, 20)}...`);
+    }
   }
 
   /**
@@ -60,22 +87,122 @@ class Cache {
   }
 
   /**
-   * Get or fetch data with caching
+   * Validate cache entry with backend using ETag
+   */
+  async validateWithETag(url: string, etag: string): Promise<boolean> {
+    try {
+      // Dynamic import to avoid circular dependency
+      const { default: axios } = await import('./axios');
+      
+      console.log(`🔍 Validating ETag for: ${url}`);
+      
+      const response = await axios.get(url, {
+        headers: {
+          'If-None-Match': etag,
+        },
+        validateStatus: (status) => status === 304 || status === 200,
+      });
+      
+      if (response.status === 304) {
+        console.log(`✅ ETag VALID (304): Data unchanged`);
+        return true;
+      } else {
+        console.log(`🔄 ETag INVALID (200): Data changed, new ETag: ${response.headers['etag']}`);
+        return false;
+      }
+    } catch (error) {
+      console.warn(`⚠️ ETag validation failed, using cached data:`, error);
+      return true; // Fallback to cache on error
+    }
+  }
+
+  /**
+   * Get or fetch data with caching and ETag validation
    */
   async getOrFetch<T>(
     key: string,
     fetchFn: () => Promise<T>,
-    ttl?: number
+    ttl?: number,
+    url?: string
   ): Promise<T> {
-    const cached = this.get<T>(key, ttl);
+    const entry = this.store.get(key);
+    const expirationTime = ttl || this.defaultTTL;
     
-    if (cached !== null) {
-      return cached;
+    // Fast path: Cache exists and hasn't expired
+    if (entry) {
+      const isExpired = Date.now() - entry.timestamp > expirationTime;
+      
+      if (!isExpired) {
+        console.log(`✅ Cache HIT: ${key}`);
+        return entry.data as T;
+      }
+      
+      // Cache expired but has ETag - validate with backend
+      if (entry.etag && entry.url) {
+        const stillValid = await this.validateWithETag(entry.url, entry.etag);
+        
+        if (stillValid) {
+          // Data unchanged - refresh timestamp and return cached data
+          this.refreshTimestamp(key);
+          return entry.data as T;
+        }
+      }
     }
 
+    // Cache miss or validation failed - fetch fresh data
     console.log(`❌ Cache MISS: ${key} - Fetching...`);
     const data = await fetchFn();
-    this.set(key, data);
+    
+    // Store with URL for future ETag validation
+    this.set(key, data, undefined, url);
+    return data;
+  }
+
+  /**
+   * Wrapper for getOrFetch that extracts ETag from axios response
+   * Use this for API calls that return axios responses
+   */
+  async getOrFetchWithETag<T>(
+    key: string,
+    fetchFn: () => Promise<any>, // axios response
+    ttl?: number,
+    url?: string
+  ): Promise<T> {
+    // Check cache first
+    const entry = this.store.get(key);
+    const expirationTime = ttl || this.defaultTTL;
+    
+    // Fast path: Cache exists and hasn't expired
+    if (entry) {
+      const isExpired = Date.now() - entry.timestamp > expirationTime;
+      
+      if (!isExpired) {
+        console.log(`✅ Cache HIT: ${key}`);
+        return entry.data as T;
+      }
+      
+      // Cache expired but has ETag - validate with backend
+      if (entry.etag && entry.url) {
+        const stillValid = await this.validateWithETag(entry.url, entry.etag);
+        
+        if (stillValid) {
+          // Data unchanged - refresh timestamp and return cached data
+          this.refreshTimestamp(key);
+          return entry.data as T;
+        }
+      }
+    }
+
+    // Cache miss or validation failed - fetch fresh data
+    console.log(`❌ Cache MISS: ${key} - Fetching...`);
+    const response = await fetchFn();
+    
+    // Extract data and ETag from axios response
+    const data = response.data as T;
+    const etag = response.headers?.['etag'] || (response.config as any)?.etag;
+    
+    // Store with ETag and URL
+    this.set(key, data, etag, url);
     return data;
   }
 

@@ -121,10 +121,19 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handle token refresh
+// Response interceptor - Handle token refresh and capture ETags
 axiosInstance.interceptors.response.use(
   (response) => {
     console.log('✅ Response:', response.config.method?.toUpperCase(), response.config.url, 'Status:', response.status);
+    
+    // Extract and log ETag if present
+    const etag = response.headers['etag'];
+    if (etag) {
+      console.log(`🏷️ ETag received: ${etag.substring(0, 30)}...`);
+      // Attach ETag to response config for cache to access (using type assertion)
+      (response.config as any).etag = etag;
+    }
+    
     return response;
   },
   async (error) => {

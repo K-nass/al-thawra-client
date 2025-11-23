@@ -6,7 +6,7 @@ import { EmptyState } from "../components/EmptyState";
 import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
 import { cache, CacheTTL } from "../lib/cache";
-import { ScrollAnimation } from "../components/ScrollAnimation";
+import { motion } from "framer-motion";
 
 // Loader function for server-side data fetching
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -115,7 +115,12 @@ export default function CategoryPage() {
   return (
     <div className="space-y-6">
       {/* Category Header */}
-      <ScrollAnimation key={selectedSubcategory || 'all'} animation="slideUp" duration={0.6}>
+      <motion.div 
+        key={selectedSubcategory || 'all'} 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+      >
         <div className="bg-white border border-gray-200 rounded-lg p-4">
         <div className="flex items-center gap-6 flex-wrap">
           {/* Category Title */}
@@ -160,7 +165,7 @@ export default function CategoryPage() {
           <p className="text-gray-600 mt-2">{category.description}</p>
         )}
         </div>
-      </ScrollAnimation>
+      </motion.div>
 
       {/* Category Posts Grid */}
       {posts.length > 0 ? (
