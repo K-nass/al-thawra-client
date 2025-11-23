@@ -14,6 +14,7 @@ import "./app.css";
 import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
 import { NavigationLoader } from "./components/NavigationLoader";
+import { ToastContainer } from "./components/Toast";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
 import { cache, CacheTTL } from "./lib/cache";
@@ -64,6 +65,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <ToastContainer />
         {children}
         <ScrollRestoration />
         <Scripts />

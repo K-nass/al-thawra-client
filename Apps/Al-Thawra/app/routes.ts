@@ -18,6 +18,7 @@ export default [
   route("forgot-password", "routes/forgot-password.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
   route("profile", "routes/profile.tsx"),
+  route("cart", "routes/cart.tsx"),
   route("admin", "routes/admin.tsx"),
   route("podcast", "routes/podcast.tsx"),
   route("tv", "routes/tv.tsx")
