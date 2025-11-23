@@ -37,7 +37,7 @@ export function Header({ categories = [] }: HeaderProps) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
-
+  
   useEffect(() => {
     // Get current user from cookies
     const user = authService.getCurrentUser();
