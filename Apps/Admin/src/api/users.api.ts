@@ -69,6 +69,7 @@ export interface UpdateUserParams {
 }
 
 export interface UserProfile {
+  id?: string;
   userName: string;
   lastSeen: string;
   memberSince: string;
@@ -115,6 +116,18 @@ export const usersApi = {
         'Content-Type': 'multipart/form-data',
       },
     });
+    return response.data;
+  },
+
+  // Delete user
+  delete: async (id: string) => {
+    const response = await apiClient.delete(`/users/${id}`);
+    return response.data;
+  },
+
+  // Ban user
+  ban: async (id: string) => {
+    const response = await apiClient.post(`/users/${id}/ban`);
     return response.data;
   },
 };

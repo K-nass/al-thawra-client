@@ -3,9 +3,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faSave, faUpload, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faSave, faUpload, faUser, faTrash, faBan } from "@fortawesome/free-solid-svg-icons";
 import { usersApi, type UpdateUserParams } from "@/api/users.api";
 import Loader from "@/components/Common/Loader";
+import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 
 export default function EditUser() {
     const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function EditUser() {
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [error, setError] = useState<string>("");
     const [successMessage, setSuccessMessage] = useState<string>("");
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showBanDialog, setShowBanDialog] = useState(false);
 
     // Fetch user profile using username
     const { data: userProfile, isLoading: isLoadingProfile } = useQuery({
@@ -109,9 +112,82 @@ export default function EditUser() {
         },
     });
 
+    const deleteUserMutation = useMutation({
+        mutationFn: () => usersApi.delete(id!),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            setSuccessMessage("User deleted successfully");
+            setError("");
+            setTimeout(() => {
+                navigate("/admin/users");
+            }, 1500);
+        },
+        onError: (err) => {
+            setSuccessMessage("");
+            if (axios.isAxiosError(err)) {
+                const responseData = err.response?.data;
+                if (responseData?.title) {
+                    setError(responseData.title);
+                } else if (responseData?.message) {
+                    setError(responseData.message);
+                } else {
+                    setError(err.message || "Failed to delete user");
+                }
+            } else {
+                setError("An unexpected error occurred");
+            }
+        },
+    });
+
+    const banUserMutation = useMutation({
+        mutationFn: () => usersApi.ban(id!),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            queryClient.invalidateQueries({ queryKey: ["userProfile", username] });
+            setSuccessMessage("User banned successfully");
+            setError("");
+            setTimeout(() => {
+                navigate("/admin/users");
+            }, 1500);
+        },
+        onError: (err) => {
+            setSuccessMessage("");
+            if (axios.isAxiosError(err)) {
+                const responseData = err.response?.data;
+                if (responseData?.title) {
+                    setError(responseData.title);
+                } else if (responseData?.message) {
+                    setError(responseData.message);
+                } else {
+                    setError(err.message || "Failed to ban user");
+                }
+            } else {
+                setError("An unexpected error occurred");
+            }
+        },
+    });
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         updateUserMutation.mutate(formData);
+    };
+
+    const handleDelete = () => {
+        setShowDeleteDialog(true);
+    };
+
+    const handleBan = () => {
+        setShowBanDialog(true);
+    };
+
+    const confirmDelete = () => {
+        setShowDeleteDialog(false);
+        deleteUserMutation.mutate();
+    };
+
+    const confirmBan = () => {
+        setShowBanDialog(false);
+        banUserMutation.mutate();
     };
 
     if (isLoadingProfile) return <Loader />;
@@ -134,13 +210,31 @@ export default function EditUser() {
             {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 sm:p-6 bg-white border-b border-slate-200">
                 <h1 className="text-xl sm:text-2xl font-semibold text-slate-800">Edit User</h1>
-                <Link
-                    to="/admin/users"
-                    className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors text-sm"
-                >
-                    <FontAwesomeIcon icon={faArrowLeft} />
-                    Back to Users
-                </Link>
+                <div className="flex gap-2 flex-wrap">
+                    <button
+                        onClick={handleBan}
+                        disabled={banUserMutation.isPending}
+                        className="flex items-center gap-2 px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <FontAwesomeIcon icon={faBan} />
+                        {banUserMutation.isPending ? "Banning..." : "Ban User"}
+                    </button>
+                    <button
+                        onClick={handleDelete}
+                        disabled={deleteUserMutation.isPending}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <FontAwesomeIcon icon={faTrash} />
+                        {deleteUserMutation.isPending ? "Deleting..." : "Delete User"}
+                    </button>
+                    <Link
+                        to="/admin/users"
+                        className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded transition-colors text-sm"
+                    >
+                        <FontAwesomeIcon icon={faArrowLeft} />
+                        Back to Users
+                    </Link>
+                </div>
             </div>
 
             {/* Content */}
@@ -300,7 +394,7 @@ export default function EditUser() {
                         <button
                             type="submit"
                             disabled={updateUserMutation.isPending}
-                            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm"
+                            className="flex items-center gap-2 px-6 py-2.5 bg-primary text-green-500 rounded-md cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-sm"
                         >
                             <FontAwesomeIcon icon={faSave} />
                             {updateUserMutation.isPending ? "Saving Changes..." : "Save Changes"}
@@ -308,6 +402,29 @@ export default function EditUser() {
                     </div>
                 </form>
             </div>
+
+            {/* Confirm Dialogs */}
+            <ConfirmDialog
+                isOpen={showDeleteDialog}
+                title="Delete User"
+                message="Are you sure you want to delete this user? This action cannot be undone."
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={confirmDelete}
+                onCancel={() => setShowDeleteDialog(false)}
+                type="danger"
+            />
+
+            <ConfirmDialog
+                isOpen={showBanDialog}
+                title="Ban User"
+                message="Are you sure you want to ban this user? This will deactivate their account."
+                confirmText="Ban"
+                cancelText="Cancel"
+                onConfirm={confirmBan}
+                onCancel={() => setShowBanDialog(false)}
+                type="warning"
+            />
         </div>
     );
 }
