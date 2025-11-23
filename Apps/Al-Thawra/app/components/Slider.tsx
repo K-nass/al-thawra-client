@@ -50,7 +50,8 @@ export function Slider({ posts, buildLink }: SliderProps) {
               src={currentPost.image}
               alt={currentPost.title}
               className="w-full h-full object-cover"
-              loading="eager"
+              loading={currentIndex === 0 ? "eager" : "lazy"}
+              decoding="async"
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600" />

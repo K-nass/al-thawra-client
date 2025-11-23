@@ -5,6 +5,7 @@ import axiosInstance from "~/lib/axios";
 import { FileText, Calendar, Download, ChevronLeft, ChevronRight } from "lucide-react";
 import { cache, CacheTTL } from "~/lib/cache";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "~/components/ScrollAnimation";
+import { generateMetaTags } from "~/utils/seo";
 
 interface Magazine {
   issueNumber: string;
@@ -24,10 +25,12 @@ interface MagazinesResponse {
 }
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "أرشيف الثورة - جميع الأعداد" },
-    { name: "description", content: "تصفح جميع أعداد صحيفة الثورة" },
-  ];
+  return generateMetaTags({
+    title: "المجلات",
+    description: "تصفح مجموعة متنوعة من المجلات الإلكترونية من الثورة. محتوى متخصص في مختلف المجالات",
+    url: "/magazines",
+    type: "website",
+  });
 }
 
 export async function loader({ request }: Route.LoaderArgs) {

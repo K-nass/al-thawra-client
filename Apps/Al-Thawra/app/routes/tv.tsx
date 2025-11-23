@@ -7,12 +7,15 @@ import { videoService, type Video } from "../services/videoService";
 import { categoriesService, type Category } from "../services/categoriesService";
 import { cache, CacheTTL } from "../lib/cache";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "../components/ScrollAnimation";
+import { generateMetaTags } from "~/utils/seo";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "التلفزيون - الثورة" },
-    { name: "description", content: "شاهد أحدث البرامج والحلقات التلفزيونية" },
-  ];
+  return generateMetaTags({
+    title: "البث المباشر - تلفزيون الثورة",
+    description: "شاهد البث المباشر لتلفزيون الثورة. تغطية حية للأحداث والأخبار العاجلة على مدار الساعة",
+    url: "/tv",
+    type: "website",
+  });
 }
 
 // Loader function for server-side data fetching

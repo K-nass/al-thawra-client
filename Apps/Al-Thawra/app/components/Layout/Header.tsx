@@ -71,9 +71,9 @@ export function Header({ categories = [] }: HeaderProps) {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white shadow-md"
       dir="rtl"
       lang="ar"
+      className="sticky top-0 z-50 bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] shadow-md"
     >
       {/* Top Bar - Social & Info */}
       <div className="bg-gray-100 border-b border-gray-300">
@@ -138,7 +138,7 @@ export function Header({ categories = [] }: HeaderProps) {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="bg-[var(--color-primary)]">
+      <div className="border-t border-white/20">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-3">
             {/* Right Side - Navigation & Logo */}

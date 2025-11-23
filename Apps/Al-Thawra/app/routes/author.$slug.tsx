@@ -83,6 +83,39 @@ export async function loader({ params }: { params: { slug: string } }) {
   }
 }
 
+import { generateMetaTags, generatePersonSchema } from "~/utils/seo";
+import type { Route } from "./+types/author.$slug";
+
+export function meta({ data, params }: Route.MetaArgs) {
+  if (!data) {
+    return [
+      { title: "كاتب غير موجود | الثورة" },
+      { name: "robots", content: "noindex" },
+    ];
+  }
+
+  const { author, posts } = data as AuthorLoaderData;
+  
+  return [
+    ...generateMetaTags({
+      title: author.userName,
+      description: author.aboutMe || `اقرأ جميع مقالات ${author.userName} على موقع الثورة. ${posts.length} مقال منشور`,
+      image: author.profileImageUrl,
+      url: `/author/${params.slug}`,
+      type: "profile",
+    }),
+    {
+      "script:ld+json": generatePersonSchema({
+        name: author.userName,
+        slug: params.slug || "",
+        bio: author.aboutMe,
+        image: author.profileImageUrl,
+        socialAccounts: author.socialAccounts,
+      }),
+    },
+  ];
+}
+
 export default function AuthorPage() {
   const { author, posts } = useLoaderData<AuthorLoaderData>();
   const navigation = useNavigation();

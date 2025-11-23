@@ -10,12 +10,15 @@ import { EmptyState } from "../components/EmptyState";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
 import { cache, CacheTTL } from "../lib/cache";
+import { generateMetaTags } from "~/utils/seo";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "الثورة - الصفحة الرئيسية" },
-    { name: "description", content: "أخبار ومقالات الثورة" },
-  ];
+  return generateMetaTags({
+    title: "الصفحة الرئيسية",
+    description: "موقع الثورة - مصدرك الموثوق للأخبار العربية، المقالات، التحليلات السياسية، والآراء. تابع آخر الأخبار المحلية والعالمية لحظة بلحظة",
+    url: "/",
+    type: "website",
+  });
 }
 
 // Loading fallback for hydration
