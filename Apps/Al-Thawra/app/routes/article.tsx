@@ -7,6 +7,7 @@ import { PostCard, type Post } from "../components/PostCard";
 import { ArticlePageSkeleton } from "../components/skeletons";
 import axiosInstance from "~/lib/axios";
 import { cache, CacheTTL } from "~/lib/cache";
+import { generateMetaTags, generateArticleSchema, generateBreadcrumbSchema } from "~/utils/seo";
 
 interface ArticleResponse {
   id: string;
@@ -66,11 +67,46 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 export function meta({ loaderData }: Route.MetaArgs) {
   const article = loaderData?.article;
 
+  if (!article) {
+    return [
+      { title: "مقالة غير موجودة | الثورة" },
+      { name: "robots", content: "noindex" },
+    ];
+  }
+
   return [
-    { title: article?.title || "مقالة - الثورة" },
+    ...generateMetaTags({
+      title: article.title,
+      description: article.summary || article.content.substring(0, 155),
+      image: article.image,
+      url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
+      type: "article",
+      publishedTime: article.publishedAt,
+      modifiedTime: article.publishedAt,
+      author: article.authorName,
+      section: article.categoryName,
+      tags: article.tags,
+    }),
     {
-      name: "description",
-      content: article?.summary || article?.content.substring(0, 160) || "اقرأ المزيد على الثورة",
+      "script:ld+json": generateArticleSchema({
+        title: article.title,
+        description: article.summary,
+        image: article.image,
+        publishedAt: article.publishedAt,
+        updatedAt: article.publishedAt, // Add updatedAt field if available in API
+        authorName: article.authorName,
+        authorSlug: article.authorId, // Use authorId as slug for now
+        categoryName: article.categoryName,
+        content: article.content,
+        url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
+      }),
+    },
+    {
+      "script:ld+json": generateBreadcrumbSchema([
+        { name: "الرئيسية", url: "/" },
+        { name: article.categoryName, url: `/category/${article.categorySlug}` },
+        { name: article.title, url: `/posts/categories/${article.categorySlug}/articles/${article.slug}` },
+      ]),
     },
   ];
 }

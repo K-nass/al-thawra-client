@@ -2,12 +2,15 @@ import { useState } from "react";
 import type { Route } from "./+types/contact";
 import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { generateMetaTags } from "~/utils/seo";
 
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "اتصل بنا - صحيفة الثورة" },
-    { name: "description", content: "تواصل معنا في صحيفة الثورة" },
-  ];
+  return generateMetaTags({
+    title: "اتصل بنا",
+    description: "تواصل مع فريق الثورة. نحن هنا للإجابة على استفساراتكم واستقبال ملاحظاتكم",
+    url: "/contact",
+    type: "website",
+  });
 }
 
 export default function ContactPage() {

@@ -25,11 +25,15 @@ export function PostCard({ post, buildLink }: PostCardProps) {
       {/* Image */}
       <Link to={linkHref} className="block relative aspect-16/10 overflow-hidden">
         {post.image ? (
-          <img
-            src={post.image}
-            alt={post.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          />
+          <div className="relative aspect-video rounded-lg overflow-hidden mb-3 bg-[var(--color-secondary-light)]">
+            <img
+              src={post.image}
+              alt={post.imageDescription || post.title}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         ) : (
           <div className="w-full h-full bg-[var(--color-divider)] flex items-center justify-center">
             <span className="text-[var(--color-text-secondary)] text-sm">لا توجد صورة</span>

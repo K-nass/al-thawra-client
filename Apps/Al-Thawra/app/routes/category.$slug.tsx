@@ -1,5 +1,7 @@
 import type { Route } from "./+types/category.$slug";
 import { useLoaderData, useSearchParams } from "react-router";
+import { ScrollAnimation } from "../components/ScrollAnimation";
+import { generateMetaTags, generateCollectionPageSchema } from "~/utils/seo";
 import { PostsGrid } from "../components/PostsGrid";
 import { CategoryPageSkeleton } from "../components/skeletons";
 import { EmptyState } from "../components/EmptyState";
@@ -55,8 +57,8 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 export function meta({ data }: Route.MetaArgs) {
   if (!data) {
     return [
-      { title: "Category Not Found - الثورة" },
-      { name: "description", content: "The requested category could not be found." },
+      { title: "قسم غير موجود | الثورة" },
+      { name: "robots", content: "noindex" },
     ];
   }
 
@@ -66,17 +68,26 @@ export function meta({ data }: Route.MetaArgs) {
     : null;
   
   const title = subcategory 
-    ? `${subcategory.name} - ${category.name} - الثورة`
-    : `${category.name} - الثورة`;
+    ? `${subcategory.name} - ${category.name}`
+    : category.name;
   
-  const description = category.description || `تصفح أحدث الأخبار والمقالات في قسم ${category.name}`;
+  const description = subcategory?.description || category.description || 
+    `تصفح أحدث الأخبار والمقالات في قسم ${title}. تحديثات يومية وتحليلات معمقة من الثورة`;
 
   return [
-    { title },
-    { name: "description", content: description },
-    { property: "og:title", content: title },
-    { property: "og:description", content: description },
-    { property: "og:type", content: "website" },
+    ...generateMetaTags({
+      title,
+      description,
+      url: `/category/${category.slug}${selectedSubcategory ? `?sub=${selectedSubcategory}` : ''}`,
+      type: "website",
+    }),
+    {
+      "script:ld+json": generateCollectionPageSchema({
+        name: title,
+        slug: category.slug,
+        description,
+      }),
+    },
   ];
 }
 

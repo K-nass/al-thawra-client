@@ -124,6 +124,8 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
                           src={post.authorImage}
                           alt={post.authorName}
                           className="w-12 h-12 rounded-lg object-cover border-2 border-white/30"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-12 h-12 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">

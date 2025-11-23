@@ -18,19 +18,26 @@ import { ToastContainer } from "./components/Toast";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
 import { cache, CacheTTL } from "./lib/cache";
+import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 
-export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
-];
+export const links: Route.LinksFunction = () => {
+  // Get current URL for canonical - will be set per-route if needed
+  // For now, using a simple implementation
+  return [
+    // Preconnect to external domains for faster resource loading
+    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    {
+      rel: "preconnect",
+      href: "https://fonts.gstatic.com",
+      crossOrigin: "anonymous",
+    },
+    // Load fonts with font-display: swap for better performance
+    {
+      rel: "stylesheet",
+      href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    },
+  ];
+};
 
 // Loader function for root layout with caching
 export async function loader() {
@@ -56,11 +63,26 @@ export async function loader() {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  // Generate global JSON-LD schemas
+  const organizationSchema = generateOrganizationSchema();
+  const websiteSchema = generateWebSiteSchema();
+  
   return (
     <html lang="ar" dir="rtl">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Global JSON-LD Schemas */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        
         <Meta />
         <Links />
       </head>

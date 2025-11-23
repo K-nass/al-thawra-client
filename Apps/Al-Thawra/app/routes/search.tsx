@@ -54,12 +54,20 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
+import { generateMetaTags } from "~/utils/seo";
+
 export function meta({ data }: Route.MetaArgs) {
   const query = data?.query || "";
-  return [
-    { title: query ? `نتائج البحث عن: ${query} - الثورة` : "البحث - الثورة" },
-    { name: "description", content: `نتائج البحث في صحيفة الثورة` },
-  ];
+  const totalPosts = data?.totalPosts || 0;
+  
+  return generateMetaTags({
+    title: query ? `نتائج البحث: "${query}"` : "البحث",
+    description: query 
+      ? `عثرنا على ${totalPosts} نتيجة للبحث عن "${query}" في الثورة`
+      : "ابحث في آلاف المقالات والأخبار على موقع الثورة",
+    url: `/search${query ? `?q=${encodeURIComponent(query)}` : ''}`,
+    noindex: true, // Don't index search results
+  });
 }
 
 export default function SearchPage() {

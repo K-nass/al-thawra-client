@@ -163,6 +163,8 @@ export function Profile() {
                       src={avatarPreview || profile.avatarImageUrl!}
                       alt={profile.userName}
                       className={`w-32 h-32 rounded-full border-4 border-white shadow-lg object-cover ${isUploading ? 'opacity-50' : ''}`}
+                      loading="lazy"
+                      decoding="async"
                     />
                     {isUploading && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-full">
@@ -232,9 +234,9 @@ export function Profile() {
                   <div className="mb-8">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4">حسابات التواصل الاجتماعي</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {profile.socialAccounts.facebook && (
+                      {(profile.socialAccounts.Facebook || profile.socialAccounts.facebook) && (
                         <a
-                          href={profile.socialAccounts.facebook}
+                          href={profile.socialAccounts.Facebook || profile.socialAccounts.facebook}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
@@ -243,9 +245,9 @@ export function Profile() {
                           <span className="text-sm font-medium text-blue-600">Facebook</span>
                         </a>
                       )}
-                      {profile.socialAccounts.twitter && (
+                      {(profile.socialAccounts.Twitter || profile.socialAccounts.twitter) && (
                         <a
-                          href={profile.socialAccounts.twitter}
+                          href={profile.socialAccounts.Twitter || profile.socialAccounts.twitter}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 p-3 bg-sky-50 hover:bg-sky-100 rounded-lg transition-colors"
@@ -254,9 +256,9 @@ export function Profile() {
                           <span className="text-sm font-medium text-sky-600">Twitter</span>
                         </a>
                       )}
-                      {profile.socialAccounts.instagram && (
+                      {(profile.socialAccounts.Instagram || profile.socialAccounts.instagram) && (
                         <a
-                          href={profile.socialAccounts.instagram}
+                          href={profile.socialAccounts.Instagram || profile.socialAccounts.instagram}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 p-3 bg-pink-50 hover:bg-pink-100 rounded-lg transition-colors"
@@ -265,9 +267,9 @@ export function Profile() {
                           <span className="text-sm font-medium text-pink-600">Instagram</span>
                         </a>
                       )}
-                      {profile.socialAccounts.linkedin && (
+                      {(profile.socialAccounts.LinkedIn || profile.socialAccounts.linkedin) && (
                         <a
-                          href={profile.socialAccounts.linkedin}
+                          href={profile.socialAccounts.LinkedIn || profile.socialAccounts.linkedin}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
@@ -392,7 +394,7 @@ export function Profile() {
                       type="url"
                       id="facebook"
                       name="facebook"
-                      defaultValue={profile.socialAccounts?.facebook || ""}
+                      defaultValue={profile.socialAccounts?.Facebook || profile.socialAccounts?.facebook || ""}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                       placeholder="https://facebook.com/username"
                       disabled={isSubmitting}
@@ -407,7 +409,7 @@ export function Profile() {
                       type="url"
                       id="twitter"
                       name="twitter"
-                      defaultValue={profile.socialAccounts?.twitter || ""}
+                      defaultValue={profile.socialAccounts?.Twitter || profile.socialAccounts?.twitter || ""}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                       placeholder="https://twitter.com/username"
                       disabled={isSubmitting}
@@ -422,7 +424,7 @@ export function Profile() {
                       type="url"
                       id="instagram"
                       name="instagram"
-                      defaultValue={profile.socialAccounts?.instagram || ""}
+                      defaultValue={profile.socialAccounts?.Instagram || profile.socialAccounts?.instagram || ""}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                       placeholder="https://instagram.com/username"
                       disabled={isSubmitting}
@@ -437,7 +439,7 @@ export function Profile() {
                       type="url"
                       id="linkedin"
                       name="linkedin"
-                      defaultValue={profile.socialAccounts?.linkedin || ""}
+                      defaultValue={profile.socialAccounts?.LinkedIn || profile.socialAccounts?.linkedin || ""}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
                       placeholder="https://linkedin.com/in/username"
                       disabled={isSubmitting}

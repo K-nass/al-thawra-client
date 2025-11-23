@@ -1,16 +1,24 @@
 interface PostImageProps {
   src: string;
   alt: string;
+  description?: string;
 }
 
-export function PostImage({ src, alt }: PostImageProps) {
+export function PostImage({ src, alt, description }: PostImageProps) {
   return (
-    <div className="my-6">
+    <figure className="my-6">
       <img
-        alt={alt}
-        className="w-full h-auto rounded-lg object-cover"
         src={src}
+        alt={alt}
+        className="w-full rounded-lg shadow-md"
+        loading="lazy"
+        decoding="async"
       />
-    </div>
+      {description && (
+        <figcaption className="mt-2 text-sm text-[var(--color-text-secondary)] text-center">
+          {description}
+        </figcaption>
+      )}
+    </figure>
   );
 }
