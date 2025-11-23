@@ -81,7 +81,7 @@ export function Header({ categories = [] }: HeaderProps) {
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Right Side - Editor Info */}
             <div className="flex items-center gap-6 text-gray-700">
-              <span className="font-medium">
+              <span className="font-bold text-base">
                 رئيس مجلس الادارة: سام الغبارى{" "}
               </span>
             </div>
@@ -151,7 +151,7 @@ export function Header({ categories = [] }: HeaderProps) {
                 <img
                   src="/logo.png"
                   alt="الثورة لوجو"
-                  style={{ width: "100px" }}
+                  style={{ width: "130px" }}
                 />
               </Link>
 
