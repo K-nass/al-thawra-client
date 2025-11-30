@@ -127,7 +127,8 @@ export function StaggerContainer({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: 0.2 }}
+      animate="visible"
+      viewport={{ once, amount: 0.1 }}
       variants={containerVariants}
     >
       {children}
