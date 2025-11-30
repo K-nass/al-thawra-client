@@ -21,6 +21,7 @@ import { postsService } from "./services/postsService";
 import { cache, CacheTTL } from "./lib/cache";
 import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { MiniViewContainer } from "./components/VideoPlayer/MiniView/MiniViewContainer";
 
 export const links: Route.LinksFunction = () => {
   // Get current URL for canonical - will be set per-route if needed
@@ -97,6 +98,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <body>
         <ThemeProvider>
           <ToastContainer />
+          <MiniViewContainer />
           {children}
           <ScrollRestoration />
           <Scripts />
