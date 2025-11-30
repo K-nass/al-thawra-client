@@ -2,7 +2,7 @@ import Loader from "@/components/Common/Loader";
 import PostActionsDropdown from "@/components/Common/PostActionsDropdown";
 import { useCategories } from "@/hooks/useCategories";
 import { useFetchPosts } from "@/hooks/useFetchPosts";
-import { useFetchPages } from "@/hooks/useFetchPages";
+import { useFetchPages, useDeletePage } from "@/hooks/useFetchPages";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -10,6 +10,8 @@ import { useTranslation } from "react-i18next";
 import { postsApi } from "@/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ApiNotification from "@/components/Common/ApiNotification";
+import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
+
 
 export default function DashboardPosts({ label }: { label?: string }) {
     const navigate = useNavigate();
@@ -25,10 +27,20 @@ export default function DashboardPosts({ label }: { label?: string }) {
         type: "success" | "error";
         message: string;
     } | null>(null);
+    const [confirmDialog, setConfirmDialog] = useState<{
+        isOpen: boolean;
+        itemId: string | null;
+        itemTitle: string;
+    }>({
+        isOpen: false,
+        itemId: null,
+        itemTitle: "",
+    });
     let isSlider = false;
     let isFeatured = false;
     let isBreaking = false;
     const isPages = label === "pages";
+
 
 
     if (label == "Slider Posts") isSlider = true;
@@ -59,14 +71,13 @@ export default function DashboardPosts({ label }: { label?: string }) {
     const isLoading = isPages ? isLoadingPages : isLoadingPosts;
     const hasError = isPages && pagesError;
 
-    // Delete mutation
-    const deleteMutation = useMutation({
+    // Delete mutation for posts
+    const deletePostMutation = useMutation({
         mutationFn: async ({ postId, categoryId, postType }: { postId: string; categoryId: string; postType: string }) => {
             return await postsApi.deletePost(categoryId, postId, postType);
         },
         onSuccess: () => {
             setNotification({ type: "success", message: "Post deleted successfully" });
-            // Refetch posts after deletion
             queryClient.invalidateQueries({ queryKey: ["posts"] });
         },
         onError: (error: any) => {
@@ -75,29 +86,83 @@ export default function DashboardPosts({ label }: { label?: string }) {
         },
     });
 
-    const handleDelete = (postId: string) => {
-        const post = (data as any)?.data?.items?.find((p: any) => p.id === postId);
-        if (!post) return;
+    // Delete mutation for pages
+    const deletePageMutation = useDeletePage();
 
-        console.log('Post data for deletion:', post);
+    const handleDelete = (itemId: string) => {
+        if (isPages) {
+            // Handle page deletion
+            const page = (data as any)?.items?.find((p: any) => p.id === itemId);
+            if (!page) return;
 
-        const postType = post?.postType?.toLowerCase() || 'article';
-        // Try both categoryId and category_id field names
-        const categoryId = post?.categoryId || post?.category_id;
+            setConfirmDialog({
+                isOpen: true,
+                itemId: itemId,
+                itemTitle: page.title,
+            });
+        } else {
+            // Handle post deletion
+            const post = (data as any)?.data?.items?.find((p: any) => p.id === itemId);
+            if (!post) return;
 
-        if (!categoryId) {
-            console.error('Category ID not found in post:', post);
-            setNotification({ type: "error", message: "Category ID not found. Please refresh the page and try again." });
-            return;
-        }
+            console.log('Post data for deletion:', post);
 
-        console.log('Deleting post:', { postId, categoryId, postType });
+            const postType = post?.postType?.toLowerCase() || 'article';
+            const categoryId = post?.categoryId || post?.category_id;
 
-        // Show confirmation dialog
-        if (window.confirm(`Are you sure you want to delete "${post.title}"? This action cannot be undone.`)) {
-            deleteMutation.mutate({ postId, categoryId, postType });
+            if (!categoryId) {
+                console.error('Category ID not found in post:', post);
+                setNotification({ type: "error", message: "Category ID not found. Please refresh the page and try again." });
+                return;
+            }
+
+            console.log('Deleting post:', { postId: itemId, categoryId, postType });
+
+            setConfirmDialog({
+                isOpen: true,
+                itemId: itemId,
+                itemTitle: post.title,
+            });
         }
     };
+
+    const handleConfirmDelete = () => {
+        if (!confirmDialog.itemId) return;
+
+        if (isPages) {
+            deletePageMutation.mutate(confirmDialog.itemId, {
+                onSuccess: () => {
+                    setNotification({ type: "success", message: "Page deleted successfully" });
+                    setConfirmDialog({ isOpen: false, itemId: null, itemTitle: "" });
+                },
+                onError: (error: any) => {
+                    const message = error?.response?.data?.title || error?.response?.data?.message || "Failed to delete page";
+                    setNotification({ type: "error", message });
+                    setConfirmDialog({ isOpen: false, itemId: null, itemTitle: "" });
+                },
+            });
+        } else {
+            const post = (data as any)?.data?.items?.find((p: any) => p.id === confirmDialog.itemId);
+            if (!post) return;
+
+            const postType = post?.postType?.toLowerCase() || 'article';
+            const categoryId = post?.categoryId || post?.category_id;
+
+            deletePostMutation.mutate(
+                { postId: confirmDialog.itemId, categoryId, postType },
+                {
+                    onSuccess: () => {
+                        setConfirmDialog({ isOpen: false, itemId: null, itemTitle: "" });
+                    },
+                    onError: () => {
+                        setConfirmDialog({ isOpen: false, itemId: null, itemTitle: "" });
+                    },
+                }
+            );
+        }
+    };
+
+
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -119,11 +184,12 @@ export default function DashboardPosts({ label }: { label?: string }) {
                     <button
                         type="button"
                         className="flex items-center space-x-2 px-4 py-2 text-sm font-semibold bg-[#13967B] hover:bg-[#0e7a64] text-white rounded-lg shadow-md transition-all"
-                        onClick={() => navigate("/admin/add-post")}
+                        onClick={() => navigate(isPages ? "/admin/add-page" : "/admin/add-post")}
                     >
-                        <span>{t('post.addPost')}</span>
+                        <span>{isPages ? "Add Page" : t('post.addPost')}</span>
                     </button>
                 </div>
+
 
                 {/* Filters */}
                 <form className="bg-white p-5 rounded-lg shadow-sm mb-6 border border-gray-100">
@@ -334,7 +400,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                         <PostActionsDropdown
                                                             postId={item.id}
                                                             onEdit={(id) => navigate(`/admin/edit-page/${id}`)}
-                                                            onDelete={(id) => console.log('Delete page:', id)}
+                                                            onDelete={handleDelete}
                                                         />
                                                     </td>
                                                 </tr>
@@ -451,9 +517,20 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                     ›
                                 </button>
                             </div>
-                        )}
-                </div>
+                        )}\n                </div>
             </div>
+
+            {/* Confirm Delete Dialog */}
+            <ConfirmDialog
+                isOpen={confirmDialog.isOpen}
+                title={`Delete ${isPages ? 'Page' : 'Post'}`}
+                message={`Are you sure you want to delete "${confirmDialog.itemTitle}"? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setConfirmDialog({ isOpen: false, itemId: null, itemTitle: "" })}
+                type="danger"
+            />
         </div>
     );
 }

@@ -14,8 +14,10 @@ import {
   faKey,
   faFileAlt,
   faUsers,
+  faBook,
   type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
+
 
 import DashboardProfileCard from "./DashboardProfileCard/DashboardProfileCard";
 import DashboardSidebarItem from "./DashboardSidebarItem/DashboardSidebarItem";
@@ -86,6 +88,12 @@ const getSidebarItems = (): SidebarItemInterface[] => [
     path: "/admin/categories",
   },
   {
+    id: 11,
+    labelKey: "dashboard.magazines",
+    icon: faBook,
+    path: "/admin/magazines",
+  },
+  {
     id: 9,
     labelKey: "Roles&Permissions",
     icon: faKey,
@@ -98,6 +106,7 @@ const getSidebarItems = (): SidebarItemInterface[] => [
     path: "/admin/users",
   },
 ];
+
 
 export default function DashboardSidebar() {
   const [expandedItems, setExpandedItems] = useState<Set<number>>(new Set());

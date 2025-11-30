@@ -1,4 +1,5 @@
 import * as signalR from "@microsoft/signalr";
+import { getAuthToken } from "@/api/client";
 
 type UploadProgressCallback = (data: { mediaId: string; percentage: number; message: string }) => void;
 type UploadCompletedCallback = (data: { mediaId: string; url: string }) => void;
@@ -39,7 +40,10 @@ class SignalRService {
         }
 
         this.connection = new signalR.HubConnectionBuilder()
-            .withUrl(`${serverUrl}${finalHubUrl}`)
+            .withUrl(`${serverUrl}${finalHubUrl}`, {
+                accessTokenFactory: () => getAuthToken() || "",
+                withCredentials: false
+            })
             .withAutomaticReconnect()
             .build();
 

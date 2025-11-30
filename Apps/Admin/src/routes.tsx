@@ -7,6 +7,8 @@ import DashboardEditPost from "./components/Admin/Dashboard/DashboardEditPost/Da
 import DashboardPosts from "./components/Admin/Dashboard/DashboardPosts/DashboardPosts";
 import DashboardCategories from "./components/Admin/Dashboard/DashboardCategories/DashboardCategories";
 import DashboardAddCategory from "./components/Admin/Dashboard/DashboardAddCategory/DashboardAddCategory";
+import PageForm from "./components/Admin/Dashboard/DashboardPages/PageForm";
+import Magazines from "./components/Admin/Magazines/Magazines";
 import Login from "./components/Auth/Login";
 import Register from "./components/Auth/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -20,6 +22,8 @@ import EditRole from "./components/Admin/Dashboard/EditRole/EditRole";
 import Users from "./components/Admin/Dashboard/Users/Users";
 import EditUser from "./components/Admin/Dashboard/EditUser/EditUser";
 import Home from "./components/Home/Home";
+
+
 
 // Wrapper component to redirect authenticated users away from login/register
 function AuthPageWrapper({ children }: { children: React.ReactNode }) {
@@ -69,7 +73,11 @@ export const routes = createBrowserRouter([
           { path: "posts/featured-posts", element: <DashboardPosts label="Featured Posts" /> },
           { path: "posts/breaking-news", element: <DashboardPosts label="Breaking News" /> },
           { path: "pages", element: <DashboardPosts label="pages" /> },
+          { path: "add-page", element: <PageForm /> },
+          { path: "edit-page/:id", element: <PageForm /> },
+          { path: "magazines", element: <Magazines /> },
           { path: "roles-permissions", element: <Roles /> },
+
           { path: "add-role", element: <AddRole /> },
           { path: "edit-role/:id", element: <EditRole /> },
           { path: "users", element: <Users /> },
@@ -77,6 +85,7 @@ export const routes = createBrowserRouter([
           { path: "categories", element: <DashboardCategories /> },
           { path: "add-category", element: <DashboardAddCategory /> },
           { path: "edit-category/:id", element: <DashboardAddCategory /> }
+
         ]
       }
     ]

@@ -1,63 +1,78 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiClient } from "@/api/client";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { pagesApi } from "@/api/pages.api";
+import type { GetPagesParams, CreatePageRequest, Page } from "@/api/pages.api";
 
-interface PageItem {
-  id: string;
-  title: string;
-  slug: string;
-  language: string;
-  location: string;
-  visibility: boolean;
-  menuOrder: number;
-  parentName: string | null;
-  parentType: string | null;
-  createdAt: string;
-}
 
-interface PagesResponse {
-  pageSize: number;
-  pageNumber: number;
-  totalCount: number;
-  totalPages: number;
-  itemsFrom: number;
-  itemsTo: number;
-  items: PageItem[];
-}
-
-interface FetchPagesParams {
-  language?: string | null;
-  location?: string | null;
-  visibility?: boolean;
-  parentMenuLinkId?: string | null;
-  parentPageId?: string | null;
-  sortBy?: string | null;
-  sortDirection?: string | null;
-  pageNumber?: number;
-  pageSize?: number;
-  searchPhrase?: string | null;
-}
-
-export function useFetchPages(params: FetchPagesParams) {
+export function useFetchPages(params: GetPagesParams) {
   return useQuery({
     queryKey: ["pages", params],
     queryFn: async () => {
-      const queryParams = new URLSearchParams();
-      
-      if (params.language) queryParams.append("Language", params.language);
-      if (params.location) queryParams.append("Location", params.location);
-      if (params.visibility !== undefined) queryParams.append("Visibility", String(params.visibility));
-      if (params.parentMenuLinkId) queryParams.append("ParentMenuLinkId", params.parentMenuLinkId);
-      if (params.parentPageId) queryParams.append("ParentPageId", params.parentPageId);
-      if (params.sortBy) queryParams.append("SortBy", params.sortBy);
-      if (params.sortDirection) queryParams.append("SortDirection", params.sortDirection);
-      if (params.pageNumber) queryParams.append("PageNumber", String(params.pageNumber));
-      if (params.pageSize) queryParams.append("PageSize", String(params.pageSize));
-      if (params.searchPhrase) queryParams.append("SearchPhrase", params.searchPhrase);
-
-      const response = await apiClient.get<PagesResponse>(`/pages?${queryParams.toString()}`);
-      return response.data;
+      return await pagesApi.getAll(params);
     },
-    retry: false, // Don't retry on 404
-    enabled: true, // Always enabled, but we'll handle errors in the component
+    retry: false,
+    enabled: true,
   });
 }
+
+export function usePage(id: string, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["page", id],
+    queryFn: async () => {
+      return await pagesApi.getById(id);
+    },
+    enabled: enabled && !!id,
+    retry: false,
+  });
+}
+
+export function usePageBySlug(slug: string, language?: "English" | "Arabic", enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["page", "slug", slug, language],
+    queryFn: async () => {
+      return await pagesApi.getBySlug(slug, language);
+    },
+    enabled: enabled && !!slug,
+    retry: false,
+  });
+}
+
+export function useCreatePage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: CreatePageRequest) => {
+      return await pagesApi.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+    },
+  });
+}
+
+export function useUpdatePage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: CreatePageRequest }) => {
+      return await pagesApi.update(id, data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+      queryClient.invalidateQueries({ queryKey: ["page", variables.id] });
+    },
+  });
+}
+
+export function useDeletePage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      return await pagesApi.delete(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["pages"] });
+    },
+  });
+}
+
