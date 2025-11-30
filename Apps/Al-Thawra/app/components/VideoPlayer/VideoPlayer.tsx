@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import type { VideoPlayerProps } from './types';
 import { useVideoPlayer } from './hooks/useVideoPlayer';
@@ -9,6 +9,7 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { Controls } from './components/Controls';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ErrorOverlay } from './components/ErrorOverlay';
+import { useMiniViewStore } from '~/stores/miniViewStore';
 
 export function VideoPlayer({
   src,
@@ -74,13 +75,65 @@ export function VideoPlayer({
   const { isFullscreen, toggleFullscreen, isSupported: isFullscreenSupported } = useFullscreen(containerRef);
   const { isPiP, togglePiP, isSupported: isPiPSupported } = usePictureInPicture(videoRef);
 
+  // Mini View integration
+  const {
+    isActive: isMiniViewActive,
+    setVideoElement,
+    deactivate: deactivateMiniView,
+    activationCount,
+  } = useMiniViewStore();
+
+  // Sync video element to Mini View store when active OR when video ref changes
+  useEffect(() => {
+    if (videoRef.current) {
+      console.log('VideoPlayer - Setting video element in store:', videoRef.current);
+      setVideoElement(videoRef.current);
+    }
+  }, [videoRef.current, setVideoElement]);
+
+  // Clear video element from store when component unmounts (only if Mini View is not active)
+  useEffect(() => {
+    return () => {
+      // Don't clear if Mini View is active - let Mini View manage its own lifecycle
+      if (!isMiniViewActive) {
+        console.log('VideoPlayer - Clearing video element from store');
+        setVideoElement(null);
+      } else {
+        console.log('VideoPlayer - Not clearing video element (Mini View is active)');
+      }
+    };
+  }, [setVideoElement, isMiniViewActive]);
+
+  // Additional safety: on second and subsequent Mini View activations, ensure the
+  // main video element is paused so both cannot play together.
+  useEffect(() => {
+    const isSubsequentActivation = activationCount > 1;
+
+    if (isMiniViewActive && isSubsequentActivation && videoRef.current && !videoRef.current.paused) {
+      videoRef.current.pause();
+      console.log('VideoPlayer - main video paused because Mini View is active');
+    }
+  }, [isMiniViewActive, activationCount, videoRef]);
+
   const changeQuality = (quality: string) => {
     setState(prev => ({ ...prev, currentQuality: quality }));
     onQualityChange?.(quality);
   };
 
+  // Ensure only one player is active: if Mini View is active, toggling play from the main
+  // player should first deactivate Mini View (its cleanup will restore playback to main).
+  const guardedTogglePlayPause = () => {
+    if (isMiniViewActive) {
+      deactivateMiniView();
+      return;
+    }
+
+    baseControls.togglePlayPause();
+  };
+
   const enhancedControls = {
     ...baseControls,
+    togglePlayPause: guardedTogglePlayPause,
     toggleFullscreen,
     togglePiP,
     toggleTheaterMode,
@@ -137,10 +190,20 @@ export function VideoPlayer({
       aria-label={title}
       tabIndex={0}
     >
+      {/* Mini View Placeholder */}
+      {isMiniViewActive && (
+        <div className="absolute inset-0 bg-black flex items-center justify-center">
+          <div className="text-center text-white/60">
+            <p className="text-lg mb-2">الفيديو يعمل في وضع العرض المصغر</p>
+            <p className="text-sm">يمكنك سحب النافذة المصغرة إلى أي مكان</p>
+          </div>
+        </div>
+      )}
+
       {/* Video Element */}
       <video
         ref={videoRef}
-        className={`w-full h-full object-contain cursor-pointer ${videoClassName}`}
+        className={`w-full h-full object-contain cursor-pointer ${isMiniViewActive ? 'hidden' : ''} ${videoClassName}`}
         src={src}
         poster={poster}
         loop={loop}
@@ -229,6 +292,9 @@ export function VideoPlayer({
             availableQualities={availableQualities}
             isPiPSupported={enablePiP && isPiPSupported}
             isFullscreenSupported={isFullscreenSupported}
+            videoSrc={src}
+            videoPoster={poster}
+            videoTitle={title}
           />
         </div>
       )}

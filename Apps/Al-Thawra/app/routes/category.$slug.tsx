@@ -9,6 +9,7 @@ import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
 import { cache, CacheTTL } from "../lib/cache";
 import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 
 // Loader function for server-side data fetching
 export async function loader({ params, request }: Route.LoaderArgs) {
@@ -102,6 +103,20 @@ export function HydrateFallback() {
 export default function CategoryPage() {
   const { category, posts, totalPosts, currentPage, totalPages, selectedSubcategory } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   // Handle subcategory filter change via URL params (SSR-based)
   const handleSubcategoryFilter = (subcategorySlug: string | null) => {
@@ -111,6 +126,7 @@ export default function CategoryPage() {
     }
     // Always reset to page 1 when filtering
     setSearchParams(newParams);
+    setIsDropdownOpen(false); // Close dropdown after selection
   };
   
   // Handle pagination
@@ -157,7 +173,9 @@ export default function CategoryPage() {
                 >
                   الكل
                 </button>
-                {category.subCategories.map((subcategory) => (
+                
+                {/* Show first 5 subcategories */}
+                {category.subCategories.slice(0, 5).map((subcategory) => (
                   <button
                     key={subcategory.slug}
                     onClick={() => handleSubcategoryFilter(subcategory.slug)}
@@ -170,6 +188,51 @@ export default function CategoryPage() {
                     {subcategory.name}
                   </button>
                 ))}
+                
+                {/* Dropdown for more subcategories */}
+                {category.subCategories.length > 5 && (
+                  <div className="relative" ref={dropdownRef}>
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="px-3 py-1 text-sm transition-all font-medium border rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] border-[var(--color-divider)] flex items-center gap-1"
+                    >
+                      المزيد
+                      <svg 
+                        className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    {isDropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 bg-white border border-[var(--color-divider)] rounded-lg shadow-lg overflow-hidden z-10 min-w-[200px]"
+                      >
+                        {category.subCategories.slice(5).map((subcategory) => (
+                          <button
+                            key={subcategory.slug}
+                            onClick={() => handleSubcategoryFilter(subcategory.slug)}
+                            className={`w-full text-right px-4 py-2 text-sm transition-colors ${
+                              selectedSubcategory === subcategory.slug
+                                ? 'bg-[var(--color-primary)] text-white'
+                                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-background-light)] hover:text-[var(--color-primary)]'
+                            }`}
+                          >
+                            {subcategory.name}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </div>
+                )}
               </nav>
             </>
           )}

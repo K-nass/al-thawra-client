@@ -8,6 +8,7 @@ import { SettingsMenu, SettingsButton } from './SettingsMenu';
 import { ControlButton } from './ControlButton';
 import type { VideoPlayerState, VideoPlayerControls } from '../types';
 import { PLAYBACK_RATES, SEEK_STEP } from '../utils/constants';
+import { MiniViewToggle } from '../MiniView/MiniViewToggle';
 
 interface ControlsProps {
   state: VideoPlayerState;
@@ -17,6 +18,9 @@ interface ControlsProps {
   availableQualities?: string[];
   isPiPSupported: boolean;
   isFullscreenSupported: boolean;
+  videoSrc: string;
+  videoPoster?: string;
+  videoTitle: string;
 }
 
 function ControlsComponent({
@@ -27,6 +31,9 @@ function ControlsComponent({
   availableQualities = ['auto'],
   isPiPSupported,
   isFullscreenSupported,
+  videoSrc,
+  videoPoster,
+  videoTitle,
 }: ControlsProps) {
   const {
     isPlaying,
@@ -137,6 +144,13 @@ function ControlsComponent({
               active={isPiP}
             />
           )}
+
+          {/* Mini View Toggle */}
+          <MiniViewToggle
+            videoSrc={videoSrc}
+            videoPoster={videoPoster}
+            videoTitle={videoTitle}
+          />
 
           {/* Fullscreen */}
           {isFullscreenSupported && (

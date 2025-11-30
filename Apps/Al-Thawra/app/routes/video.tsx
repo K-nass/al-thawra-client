@@ -2,7 +2,7 @@ import type { Route } from "./+types/video";
 import axiosInstance from "~/lib/axios";
 import { cache, CacheTTL } from "~/lib/cache";
 import type { Video } from "../services/videoService";
-import { VideoPlayer } from '../components/VideoPlayer';
+import { VideoPlayer } from '../components/VideoPlayer/VideoPlayer'
 // Loader for video details with caching
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const { slug, categorySlug } = params;
