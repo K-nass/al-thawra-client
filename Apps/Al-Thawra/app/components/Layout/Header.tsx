@@ -102,9 +102,9 @@ export function Header({ categories = [] }: HeaderProps) {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Right Side - Editor Info */}
-            <div className="flex items-center gap-6 text-[var(--color-text-primary)]">
-              <span className="font-bold text-base">
-                رئيس مجلس الادارة: سام الغبارى{" "}
+            <div className="flex items-center">
+              <span className="font-bold">
+                رئيس مجلس الادارة: سام عبد الله الغبارى
               </span>
             </div>
             {/* Left Side - Social Icons */}
