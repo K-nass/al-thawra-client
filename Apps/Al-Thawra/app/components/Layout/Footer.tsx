@@ -29,7 +29,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[var(--color-background-light)] text-[var(--color-text-primary)] mt-12 relative border-t border-[var(--color-divider)]" dir="rtl" lang="ar">
+    <footer className="bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-[var(--color-text-light)] mt-12 relative border-t border-[var(--color-divider)]" dir="rtl" lang="ar">
       {/* Top Gradient Bar */}
       <div className="h-2 bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] w-full absolute top-0 left-0" />
 
@@ -53,7 +53,7 @@ export function Footer() {
 
           {/* Middle Section - Important Links (Dynamic) */}
           <div className="flex flex-col items-start text-right">
-            <h3 className="text-lg font-bold mb-6 text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-2 inline-block">
+            <h3 className="text-lg font-bold mb-6 text-white border-b-2 border-white pb-2 inline-block">
               روابط هامة
             </h3>
             <nav className="grid grid-cols-2 gap-x-8 gap-y-3 w-full">
@@ -66,7 +66,7 @@ export function Footer() {
                 footerPages.map((page) => (
                   <Link
                     key={page.id}
-                    className="text-[var(--color-text-primary)] hover:text-[var(--color-primary)] transition-colors text-sm font-medium flex items-center gap-2"
+                    className="text-white hover:text-[var(--color-secondary)] transition-colors text-sm font-medium flex items-center gap-2"
                     to={`/pages/${page.slug}`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></span>
@@ -79,32 +79,32 @@ export function Footer() {
 
           {/* Left Section - Social Media */}
           <div className="flex flex-col items-start text-right">
-            <h3 className="text-lg font-bold mb-6 text-[var(--color-primary)] border-b-2 border-[var(--color-primary)] pb-2 inline-block">
+            <h3 className="text-lg font-bold mb-6 text-white border-b-2 border-[var(--color-primary)] pb-2 inline-block">
               تابعنا
             </h3>
             <div className="flex items-center gap-3 flex-wrap mb-6">
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#229ED9] hover:border-[#229ED9] transition-all duration-300 shadow-sm" href="https://t.me/althawra" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#229ED9] hover:border-[#229ED9] transition-all duration-300 shadow-sm" href="https://t.me/althawra" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
                 <Send className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#FF0000] hover:border-[#FF0000] transition-all duration-300 shadow-sm" href="https://youtube.com/@althawra" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#FF0000] hover:border-[#FF0000] transition-all duration-300 shadow-sm" href="https://youtube.com/@althawra" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
                 <Youtube className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#1DA1F2] hover:border-[#1DA1F2] transition-all duration-300 shadow-sm" href="https://twitter.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#1DA1F2] hover:border-[#1DA1F2] transition-all duration-300 shadow-sm" href="https://twitter.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#1877F2] hover:border-[#1877F2] transition-all duration-300 shadow-sm" href="https://facebook.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#1877F2] hover:border-[#1877F2] transition-all duration-300 shadow-sm" href="https://facebook.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#E4405F] hover:border-[#E4405F] transition-all duration-300 shadow-sm" href="https://instagram.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#E4405F] hover:border-[#E4405F] transition-all duration-300 shadow-sm" href="https://instagram.com/althawra" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#0A66C2] hover:border-[#0A66C2] transition-all duration-300 shadow-sm" href="https://linkedin.com/company/althawra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#0A66C2] hover:border-[#0A66C2] transition-all duration-300 shadow-sm" href="https://linkedin.com/company/althawra" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#000000] hover:border-[#000000] transition-all duration-300 shadow-sm" href="https://tiktok.com/@althawra" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#000000] hover:border-[#000000] transition-all duration-300 shadow-sm" href="https://tiktok.com/@althawra" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
                 <Music className="w-5 h-5" />
               </a>
-              <a className="w-10 h-10 rounded-full bg-[var(--color-background-light)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-300 shadow-sm" href="https://wa.me/96512345678" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-300 shadow-sm" href="https://wa.me/96512345678" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
                 <MessageCircle className="w-5 h-5" />
               </a>
             </div>
