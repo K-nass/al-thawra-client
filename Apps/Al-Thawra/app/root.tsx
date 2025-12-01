@@ -63,7 +63,7 @@ export async function loader() {
       ),
       cache.getOrFetch(
         "posts:featured:15",
-        () => postsService.getFeaturedPosts(15,'Article'),
+        () => postsService.getFeaturedPosts(15, 'Article'),
         CacheTTL.MEDIUM
       ),
     ]);
@@ -79,13 +79,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
   // Generate global JSON-LD schemas
   const organizationSchema = generateOrganizationSchema();
   const websiteSchema = generateWebSiteSchema();
-  
+
   return (
     <html lang="ar" dir="rtl">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         {/* Global JSON-LD Schemas */}
         <script
           type="application/ld+json"
@@ -95,7 +95,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
-        
+
         <Meta />
         <Links />
       </head>
@@ -115,7 +115,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const location = useLocation();
   const { categories, trendingPosts } = useLoaderData<typeof loader>();
-  
+
   // Check if current route has disableLayout handle
   const matches = useMatches();
   const disableLayout = matches.some((match: any) => match.handle?.disableLayout);

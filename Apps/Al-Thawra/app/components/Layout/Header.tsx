@@ -41,7 +41,7 @@ export function Header({ categories = [] }: HeaderProps) {
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
-  
+
   useEffect(() => {
     // Get current user from cookies
     const user = authService.getCurrentUser();
@@ -103,7 +103,7 @@ export function Header({ categories = [] }: HeaderProps) {
           <div className="flex justify-between items-center py-2 text-sm">
             {/* Right Side - Editor Info */}
             <div className="flex items-center">
-              <span className="font-bold">
+              <span className="font-bold font-thuluth text-lg">
                 رئيس مجلس الادارة: سام عبد الله الغبارى
               </span>
             </div>
@@ -181,8 +181,8 @@ export function Header({ categories = [] }: HeaderProps) {
               <nav className="hidden lg:flex items-center gap-6">
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/"
                 >
@@ -192,8 +192,8 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/magazines"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/magazines"
                 >
@@ -203,8 +203,8 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/writers-opinions"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/writers-opinions"
                 >
@@ -213,21 +213,19 @@ export function Header({ categories = [] }: HeaderProps) {
                 </Link>
 
                 <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${
-                    location.pathname === "/tv" 
-                      ? "border-white font-bold" 
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
+                      ? "border-white font-bold"
                       : "border-transparent hover:border-white/50"
-                  }`}
+                    }`}
                   to="/tv"
                 >
                   <Tv className="w-4 h-4" />
                   <span>التلفزيون</span>
                 </Link>
-                
+
                 <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${
-                    location.pathname === "/podcast" 
-                      ? "border-white font-bold" 
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/podcast"
+                      ? "border-white font-bold"
                       : "border-transparent hover:border-white/50"
                     }`}
                   to="/podcast"
@@ -237,11 +235,10 @@ export function Header({ categories = [] }: HeaderProps) {
                 </Link>
 
                 <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${
-                    location.pathname === "/profile" 
-                      ? "border-white font-bold" 
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/profile"
+                      ? "border-white font-bold"
                       : "border-transparent hover:border-white/50"
-                  }`}
+                    }`}
                   to="/profile"
                 >
                   <User className="w-4 h-4" />
@@ -273,7 +270,7 @@ export function Header({ categories = [] }: HeaderProps) {
               >
                 <ShoppingCart className="w-5 h-5" />
               </Link>
-              
+
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"

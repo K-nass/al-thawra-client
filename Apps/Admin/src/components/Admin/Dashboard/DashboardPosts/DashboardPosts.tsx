@@ -5,13 +5,12 @@ import { useFetchPosts } from "@/hooks/useFetchPosts";
 import { useFetchPages, useDeletePage } from "@/hooks/useFetchPages";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { postsApi } from "@/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ApiNotification from "@/components/Common/ApiNotification";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
-
 
 export default function DashboardPosts({ label }: { label?: string }) {
     const navigate = useNavigate();
@@ -21,7 +20,15 @@ export default function DashboardPosts({ label }: { label?: string }) {
     const [category, setCategory] = useState<string | null>(null);
     const [language, setLanguage] = useState<string | null>(null);
     const [searchPhrase, setSearchPhrase] = useState<string | null>(null);
-    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const pageNumber = Number(searchParams.get("page")) || 1;
+    const setPageNumber = (page: number | ((prev: number) => number)) => {
+        const newPage = typeof page === "function" ? page(pageNumber) : page;
+        setSearchParams((prev) => {
+            prev.set("page", newPage.toString());
+            return prev;
+        });
+    };
     const [pageSize, setPageSize] = useState<number>(15);
     const [notification, setNotification] = useState<{
         type: "success" | "error";
@@ -162,7 +169,16 @@ export default function DashboardPosts({ label }: { label?: string }) {
         }
     };
 
-
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "-";
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return "-";
+        return date.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
@@ -390,11 +406,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                     <td className="px-6 py-4">{item.parentName || "-"}</td>
                                                     <td className="px-6 py-4">{item.menuOrder}</td>
                                                     <td className="px-6 py-4">
-                                                        {new Date(item.createdAt).toLocaleDateString("en-US", {
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                        })}
+                                                        {formatDate(item.createdAt)}
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <PostActionsDropdown
@@ -427,20 +439,22 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                         <span className="font-medium text-gray-900">{item.title}</span>
                                                     </td>
                                                     <td className="px-6 py-4">{item.language}</td>
-                                                    <td className="px-6 py-4">Article</td>
+                                                    <td className="px-6 py-4">{item.postType}</td>
                                                     <td className="px-6 py-4">
-                                                        <span className="px-2 py-1 text-xs font-medium text-white bg-[#13967B] rounded-full">
+                                                        <span
+                                                            className="px-2 py-1 text-xs font-medium text-white rounded-full inline-block"
+                                                            style={{
+                                                                backgroundColor: categories?.data?.find((c: any) => c.slug === item.categorySlug || c.name === item.categoryName)?.colorHex || "#13967B",
+                                                                whiteSpace: "nowrap"
+                                                            }}
+                                                        >
                                                             {item.categoryName}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4">{item.authorName || "Created by"}</td>
                                                     <td className="px-6 py-4">{item.viewsCount}</td>
                                                     <td className="px-6 py-4">
-                                                        {new Date(item.updatedAt).toLocaleDateString("en-US", {
-                                                            year: "numeric",
-                                                            month: "long",
-                                                            day: "numeric",
-                                                        })}
+                                                        {formatDate(item.createdAt)}
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         <PostActionsDropdown
@@ -448,7 +462,7 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                                             onEdit={(id) => {
                                                                 const post = (data as any)?.data?.items?.find((p: any) => p.id === id);
                                                                 // Convert postType to lowercase (API returns "Article", "Gallery", etc.)
-                                                                const postType = post?.postType?.toLowerCase() || 'article';
+                                                                const postType = post?.postType?.toLowerCase();
                                                                 navigate(`/admin/edit-post/${id}?type=${postType}`, {
                                                                     state: {
                                                                         post,
@@ -510,14 +524,14 @@ export default function DashboardPosts({ label }: { label?: string }) {
                                     }
                                     disabled={pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)}
                                     className={`px-3 py-1 border rounded-md cursor-pointer ${pageNumber === (isPages ? (data as any)?.totalPages : (data as any)?.data?.totalPages)
-                                            ? "text-gray-400 border-gray-200 cursor-not-allowed"
-                                            : "text-gray-700 hover:bg-gray-100"
+                                        ? "text-gray-400 border-gray-200 cursor-not-allowed"
+                                        : "text-gray-700 hover:bg-gray-100"
                                         }`}
                                 >
                                     ›
                                 </button>
                             </div>
-                        )}\n                </div>
+                        )}                </div>
             </div>
 
             {/* Confirm Delete Dialog */}

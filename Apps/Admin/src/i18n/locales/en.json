@@ -81,7 +81,9 @@
     "notFound": "Page Not Found",
     "notFoundMessage": "The page you are looking for doesn't exist or has been moved.",
     "goHome": "Go to Home",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "deleteConfirmTitle": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{{item}}\"? This action cannot be undone."
   },
   "app": {
     "name": "Al-Thawra",

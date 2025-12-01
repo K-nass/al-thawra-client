@@ -1,14 +1,55 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "DecoType Thuluth";
+  src: url("/fonts/decotype-thuluth-iii.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ArbFONTS Amiri";
+  src: url("/fonts/ArbFONTS-Amiri.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ArbFONTS Amiri";
+  src: url("/fonts/ArbFONTS-Amiri Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Dialogue";
+  src: url("/fonts/Dialogue-Variable-ME-Roman-TRIAL.ttf") format("truetype");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Yakout";
+  src: url("/fonts/YakoutLinotypeLight-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
+  --font-sans: "Inter", "Dialogue", "Yakout", ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-serif: "Amiri", ui-serif, Georgia, serif;
+  --font-serif: "Inter", "ArbFONTS Amiri", "Amiri", ui-serif, Georgia, serif;
 }
 
 /* Global Arabic font preference */
+/* Global Arabic font preference */
 html[dir="rtl"] {
-  --font-family-base: "Amiri", ui-serif, Georgia, serif;
+  --font-family-base: "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif;
 }
 
 html[dir="rtl"] body,
@@ -18,38 +59,56 @@ html[dir="rtl"] * {
 
 :root {
   /* Primary Colors (Dark Navy) */
-  --color-primary-dark: #021024;      /* Darkest Blue */
-  --color-primary: #052659;           /* Deep Blue */
-  --color-primary-light: #345B83;     /* Medium Blue */
+  --color-primary-dark: #021024;
+  /* Darkest Blue */
+  --color-primary: #052659;
+  /* Deep Blue */
+  --color-primary-light: #345B83;
+  /* Medium Blue */
 
   /* Secondary Colors (Lighter Shades) */
-  --color-secondary: #7DA0CA;         /* Light Blue */
-  --color-secondary-light: #C1E8FF;   /* Very Light Blue */
+  --color-secondary: #7DA0CA;
+  /* Light Blue */
+  --color-secondary-light: #C1E8FF;
+  /* Very Light Blue */
 
   /* Accent Color */
-  --color-accent: #C1E8FF;            /* Accent Highlight */
+  --color-accent: #C1E8FF;
+  /* Accent Highlight */
 
   /* Background Colors */
-  --color-background-light: #FFFFFF;  /* White background for light mode */
-  --color-background-dark: #021024;   /* Dark background (same as primary-dark) */
-  --color-card: #052659;              /* Card background darker tone */
-  
+  --color-background-light: #FFFFFF;
+  /* White background for light mode */
+  --color-background-dark: #021024;
+  /* Dark background (same as primary-dark) */
+  --color-card: #052659;
+  /* Card background darker tone */
+
   /* Text Colors */
-  --color-text-primary: #021024;      /* Dark text for light mode */
-  --color-text-secondary: #7DA0CA;    /* Soft blue for secondary text */
-  --color-text-light: #FFFFFF;        /* White text for dark backgrounds */
-  
+  --color-text-primary: #021024;
+  /* Dark text for light mode */
+  --color-text-secondary: #7DA0CA;
+  /* Soft blue for secondary text */
+  --color-text-light: #FFFFFF;
+  /* White text for dark backgrounds */
+
   /* Neutral Colors */
   --color-white: #FFFFFF;
   --color-black: #000000;
-  --color-gray: #B2B2B2;              /* Light gray */
-  --color-soft-blue: #7DA0CA;         /* Soft grayish blue */
-  --color-divider: #E0E0E0;           /* Light gray for dividers */
+  --color-gray: #B2B2B2;
+  /* Light gray */
+  --color-soft-blue: #7DA0CA;
+  /* Soft grayish blue */
+  --color-divider: #E0E0E0;
+  /* Light gray for dividers */
 
   /* Status Colors */
-  --color-error: #D32F2F;             /* Red for errors */
-  --color-success: #388E3C;           /* Green for success */
-  --color-error-icon: #D32F2F;        /* Dark Red for error icons */
+  --color-error: #D32F2F;
+  /* Red for errors */
+  --color-success: #388E3C;
+  /* Green for success */
+  --color-error-icon: #D32F2F;
+  /* Dark Red for error icons */
 }
 
 /* Dark Mode Theme */
@@ -60,28 +119,41 @@ html[dir="rtl"] * {
   /* --color-primary-light: stays #345B83 */
 
   /* Dark Mode - Secondary Colors */
-  --color-secondary: #22d3ee;         /* Cyan */
-  --color-secondary-light: #334155;   /* Dark slate */
+  --color-secondary: #22d3ee;
+  /* Cyan */
+  --color-secondary-light: #334155;
+  /* Dark slate */
 
   /* Dark Mode - Accent */
-  --color-accent: #60a5fa;            /* Light blue accent */
+  --color-accent: #60a5fa;
+  /* Light blue accent */
 
   /* Dark Mode - Backgrounds */
-  --color-background-light: #0f172a;  /* Dark navy background */
-  --color-background-dark: #020617;   /* Darker navy */
-  --color-card: #1e293b;              /* Card background */
-  --color-white: #1e293b;             /* Surface color */
+  --color-background-light: #0f172a;
+  /* Dark navy background */
+  --color-background-dark: #020617;
+  /* Darker navy */
+  --color-card: #1e293b;
+  /* Card background */
+  --color-white: #1e293b;
+  /* Surface color */
 
   /* Dark Mode - Text Colors */
-  --color-text-primary: #f1f5f9;      /* Light text */
-  --color-text-secondary: #94a3b8;    /* Muted text */
-  --color-text-light: #f1f5f9;        /* Light text */
+  --color-text-primary: #f1f5f9;
+  /* Light text */
+  --color-text-secondary: #94a3b8;
+  /* Muted text */
+  --color-text-light: #f1f5f9;
+  /* Light text */
 
   /* Dark Mode - Neutral Colors */
   --color-black: #ffffff;
-  --color-gray: #64748b;              /* Slate gray */
-  --color-soft-blue: #60a5fa;         /* Soft blue */
-  --color-divider: #334155;           /* Darker divider */
+  --color-gray: #64748b;
+  /* Slate gray */
+  --color-soft-blue: #60a5fa;
+  /* Soft blue */
+  --color-divider: #334155;
+  /* Darker divider */
 
   /* Dark Mode - Status Colors (slightly adjusted) */
   --color-error: #ef4444;
@@ -103,6 +175,7 @@ body {
 
 /* Dark mode text color overrides */
 [data-theme="dark"] {
+
   /* Override all hardcoded gray text colors */
   .text-gray-900,
   .text-gray-800,
@@ -169,19 +242,20 @@ body {
 
   /* Loading bar should be light blue in dark mode */
   .bg-\[var\(--color-primary\)\] {
-    background-color: #60a5fa !important; /* Light blue for better visibility */
+    background-color: #60a5fa !important;
+    /* Light blue for better visibility */
   }
 
   /* Ensure all text elements inherit proper color, but don't override explicit classes */
-  h1:not([class*="text-"]), 
-  h2:not([class*="text-"]), 
-  h3:not([class*="text-"]), 
-  h4:not([class*="text-"]), 
-  h5:not([class*="text-"]), 
-  h6:not([class*="text-"]), 
-  p:not([class*="text-"]), 
-  span:not([class*="text-"]), 
-  div:not([class*="text-"]), 
+  h1:not([class*="text-"]),
+  h2:not([class*="text-"]),
+  h3:not([class*="text-"]),
+  h4:not([class*="text-"]),
+  h5:not([class*="text-"]),
+  h6:not([class*="text-"]),
+  p:not([class*="text-"]),
+  span:not([class*="text-"]),
+  div:not([class*="text-"]),
   a:not([class*="text-"]) {
     color: inherit;
   }
@@ -214,7 +288,7 @@ body {
 
 /* A.Thuluth font utility class */
 .font-thuluth {
-  font-family: 'A.Thuluth', serif;
+  font-family: "DecoType Thuluth", serif;
   font-weight: normal;
   font-style: normal;
 }
@@ -224,9 +298,11 @@ body {
   0% {
     transform: translateX(-100%);
   }
+
   50% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -236,9 +312,11 @@ body {
   0% {
     width: 0%;
   }
+
   50% {
     width: 50%;
   }
+
   100% {
     width: 100%;
   }
@@ -249,6 +327,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -258,6 +337,7 @@ body {
   from {
     opacity: 1;
   }
+
   to {
     opacity: 0;
   }
@@ -268,6 +348,7 @@ body {
     transform: translateY(20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -279,6 +360,7 @@ body {
     transform: scale(0.9);
     opacity: 0;
   }
+
   to {
     transform: scale(1);
     opacity: 1;
@@ -289,6 +371,7 @@ body {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -336,6 +419,7 @@ body {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
