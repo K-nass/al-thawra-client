@@ -107,53 +107,97 @@ export function Header({ categories = [] }: HeaderProps) {
                 رئيس مجلس الادارة: سام عبد الله الغبارى
               </span>
             </div>
-            {/* Left Side - Social Icons */}
+            {/* Left Side - Icons & Actions */}
             <div className="flex items-center gap-3">
-              <a
-                href="https://t.me/althawra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="Telegram"
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+                aria-label={theme === "light" ? "التبديل إلى الوضع الداكن" : "التبديل إلى الوضع الفاتح"}
+                title={theme === "light" ? "الوضع الداكن" : "الوضع الفاتح"}
               >
-                <Send className="w-4 h-4" />
-              </a>
-              <a
-                href="https://youtube.com/@althawra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="YouTube"
+                {theme === "light" ? (
+                  <Moon className="w-4 h-4" />
+                ) : (
+                  <Sun className="w-4 h-4" />
+                )}
+              </button>
+
+              <Link
+                to="/cart"
+                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+                aria-label="السلة"
               >
-                <Youtube className="w-4 h-4" />
-              </a>
-              <a
-                href="https://twitter.com/althawra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="Twitter"
+                <ShoppingCart className="w-4 h-4" />
+              </Link>
+
+              <button
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
+                aria-label="بحث"
               >
-                <Twitter className="w-4 h-4" />
-              </a>
-              <a
-                href="https://facebook.com/althawra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="Facebook"
+                <Search className="w-4 h-4" />
+              </button>
+
+              <Link
+                to="/contact"
+                className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
               >
-                <Facebook className="w-4 h-4" />
-              </a>
-              <a
-                href="https://instagram.com/althawra"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="w-4 h-4" />
-              </a>
+                <Mail className="w-4 h-4" />
+                <span className="hidden sm:inline">اتصل بنا</span>
+              </Link>
+
+              {/* Profile Dropdown or Login Button */}
+              {currentUser ? (
+                <div className="relative" ref={profileDropdownRef}>
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
+                      <User className="w-3 h-3 text-white" />
+                    </div>
+                    <span className="hidden sm:inline">{currentUser.userName || currentUser.username}</span>
+                    <ChevronDown className={`w-3 h-3 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isProfileMenuOpen && (
+                    <div
+                      className="absolute top-full right-0 mt-1 w-48 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
+                    >
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
+                        onClick={() => setIsProfileMenuOpen(false)}
+                      >
+                        <User className="w-4 h-4" />
+                        <span>صفحتي</span>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          authService.logout();
+                          setCurrentUser(null);
+                          setIsProfileMenuOpen(false);
+                          window.location.href = '/';
+                        }}
+                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 transition-colors font-medium text-right"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        <span>تسجيل الخروج</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">تسجيل الدخول</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -249,96 +293,16 @@ export function Header({ categories = [] }: HeaderProps) {
 
             {/* Left Side - Actions */}
             <div className="flex items-center gap-2">
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
-                aria-label={theme === "light" ? "التبديل إلى الوضع الداكن" : "التبديل إلى الوضع الفاتح"}
-                title={theme === "light" ? "الوضع الداكن" : "الوضع الفاتح"}
-              >
-                {theme === "light" ? (
-                  <Moon className="w-5 h-5" />
-                ) : (
-                  <Sun className="w-5 h-5" />
-                )}
-              </button>
 
-              <Link
-                to="/cart"
-                className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
-                aria-label="السلة"
-              >
-                <ShoppingCart className="w-5 h-5" />
-              </Link>
-
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-[var(--color-text-light)] hover:bg-[var(--color-white)] hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300"
-                aria-label="بحث"
-              >
-                <Search className="w-5 h-5" />
-              </button>
-
-              <Link
-                to="/contact"
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300 font-medium"
-              >
-                <Mail className="w-4 h-4" />
-                <span>اتصل بنا</span>
-              </Link>
-
-              {/* Profile Dropdown or Login Button */}
-              {currentUser ? (
-                <div className="relative hidden md:block" ref={profileDropdownRef}>
-                  <button
-                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-2 text-[var(--color-primary)] bg-[var(--color-white)] hover:bg-[var(--color-secondary-light)] rounded-lg transition-colors duration-300 font-medium"
-                  >
-                    {/* Profile Picture or Icon */}
-                    <div className="w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                    <span>{currentUser.userName || currentUser.username}</span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  {isProfileMenuOpen && (
-                    <div
-                      className="absolute top-full right-0 mt-1 w-48 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
-                    >
-                      <Link
-                        to="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
-                        onClick={() => setIsProfileMenuOpen(false)}
-                      >
-                        <User className="w-4 h-4" />
-                        <span>صفحتي</span>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          authService.logout();
-                          setCurrentUser(null);
-                          setIsProfileMenuOpen(false);
-                          window.location.href = '/';
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 transition-colors font-medium text-right"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>تسجيل الخروج</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="hidden md:flex items-center gap-2 px-4 py-2 text-[var(--color-primary)] bg-white hover:bg-white/80 hover:text-[var(--color-primary)] rounded-lg transition-colors duration-300 font-medium"
-                >
-                  <User className="w-4 h-4" />
-                  <span>تسجيل الدخول</span>
-                </Link>
-              )}
+              {/* President Image - Large Circular */}
+              <div className="">
+                <img
+                  src="/images/rashad-al-alimi.jpg"
+                  alt="رئيس المجلس الرئاسي - رشاد العليمي"
+                  title="رئيس المجلس الرئاسي - رشاد العليمي"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
+                />
+              </div>
 
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
