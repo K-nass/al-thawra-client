@@ -76,7 +76,7 @@ export function ScrollAnimation({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount }}
+      viewport={{ once, amount: 0 }}
       variants={animations[animation]}
     >
       {children}
@@ -127,7 +127,7 @@ export function StaggerContainer({
       className={className}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, amount: 0.1 }}
+      viewport={{ once, amount: 0 }}
       variants={containerVariants}
     >
       {children}
