@@ -46,7 +46,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
   try {
     const cacheKey = `article:${categorySlug}:${slug}`;
-    
+
     const response = await cache.getOrFetch(
       cacheKey,
       () => axiosInstance.get<ArticleResponse>(
@@ -54,7 +54,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
       ),
       CacheTTL.MEDIUM
     );
-    
+
     return {
       article: response.data,
     };
@@ -130,6 +130,8 @@ export default function ArticlePage({
       title={article.title}
       date={formattedDate}
       commentsCount={0}
+      authorName={article.authorName}
+      authorHref={`/author/${article.authorId}`}
       imageSrc={article.image}
       imageAlt={article.imageDescription}
       content={article.content}
