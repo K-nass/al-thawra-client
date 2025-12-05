@@ -214,8 +214,8 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/tv"
                 >
@@ -225,8 +225,8 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/podcast"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/podcast"
                 >
@@ -236,8 +236,8 @@ export function Header({ categories = [] }: HeaderProps) {
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/profile"
-                      ? "border-white font-bold"
-                      : "border-transparent hover:border-white/50"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
                     }`}
                   to="/profile"
                 >
@@ -359,6 +359,26 @@ export function Header({ categories = [] }: HeaderProps) {
       {/* Bottom Navigation Bar - Categories */}
       <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
         <div className="container mx-auto px-4">
+          {/* Mobile Navigation (Scrollable, All Categories) */}
+          <nav className="lg:hidden flex items-center justify-start gap-1 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+            <Link
+              to="/"
+              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
+            >
+              عدد اليوم
+            </Link>
+            {allMenuCategories.map((category) => (
+              <Link
+                key={category.id}
+                className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
+                to={`/category/${category.slug}`}
+              >
+                {category.name}
+              </Link>
+            ))}
+          </nav>
+
+          {/* Desktop Navigation (Fixed, Dropdown for More) */}
           <nav className="hidden lg:flex items-center justify-start gap-1 py-2">
             <Link
               to="/"
@@ -376,9 +396,9 @@ export function Header({ categories = [] }: HeaderProps) {
               </Link>
             ))}
 
-            {/* More dropdown menu - only show if there are more categories */}
+            {/* More dropdown menu */}
             {moreCategories.length > 0 && (
-              <div className="relative" id="more-menu-container">
+              <div className="relative shrink-0" id="more-menu-container">
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
                   className="flex items-center gap-1 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
