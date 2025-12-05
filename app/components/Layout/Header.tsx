@@ -104,7 +104,7 @@ export function Header({ categories = [] }: HeaderProps) {
             {/* Right Side - Editor Info */}
             <div className="flex items-center">
               <span className="font-bold font-thuluth text-lg">
-                رئيس مجلس الادارة: سام عبد الله الغبارى
+                رٍئيس مجٍلُِس الُِادِارٍة: سام عٍبَدِ الُِلُِه الُِغبَارٍى
               </span>
             </div>
             {/* Left Side - Icons & Actions */}
