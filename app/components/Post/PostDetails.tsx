@@ -13,6 +13,8 @@ interface PostDetailsProps {
   title: string;
   date: string;
   commentsCount: number;
+  authorName?: string;
+  authorHref?: string;
 
   // Image props
   imageSrc: string;
@@ -41,6 +43,8 @@ export function PostDetails({
   title,
   date,
   commentsCount,
+  authorName,
+  authorHref,
   imageSrc,
   imageAlt,
   content,
@@ -58,11 +62,13 @@ export function PostDetails({
         {/* Article Header */}
         <ScrollAnimation animation="slideUp" duration={0.6}>
           <PostHeader
-          category={category}
-          categoryHref={categoryHref}
-          title={title}
-          date={date}
-          commentsCount={commentsCount}
+            category={category}
+            categoryHref={categoryHref}
+            title={title}
+            date={date}
+            commentsCount={commentsCount}
+            authorName={authorName}
+            authorHref={authorHref}
           />
         </ScrollAnimation>
 

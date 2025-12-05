@@ -60,12 +60,12 @@ export const loader = async ({ params }: LoaderArgs) => {
 
   try {
     const cacheKey = `writers-opinion:${slug}`;
-    
+
     const article = await cache.getOrFetch(
       cacheKey,
       async () => {
         console.log("📡 Step 1: Fetching posts with HasAuthor=true");
-        
+
         // Step 1: Search for the post with HasAuthor=true to get the categorySlug
         const searchResponse = await axiosInstance.get<{
           items: Array<{ categorySlug: string; slug: string }>;
@@ -99,16 +99,16 @@ export const loader = async ({ params }: LoaderArgs) => {
         // /api/v1/posts/categories/{CategorySlug}/articles/{Slug}
         const articleUrl = `/posts/categories/${matchingPost.categorySlug}/articles/${slug}`;
         console.log("📡 Step 2: Fetching article from:", articleUrl);
-        
+
         const articleResponse = await axiosInstance.get<ArticleResponse>(articleUrl);
-        
+
         console.log("✅ Article loaded successfully:", articleResponse.data.title);
-        
+
         return articleResponse.data;
       },
       CacheTTL.MEDIUM
     );
-    
+
     return {
       article,
     };
@@ -128,7 +128,7 @@ export function meta({ data }: MetaArgs) {
   }
 
   const article = data.article;
-  
+
   return [
     ...generateMetaTags({
       title: `${article.title} - كتاب وآراء`,
@@ -215,6 +215,8 @@ export default function WritersOpinionDetailPage() {
         title={article.title}
         date={formattedDate}
         commentsCount={0}
+        authorName={article.authorName}
+        authorHref={`/author/${article.authorId}`}
         imageSrc={article.image}
         imageAlt={article.imageDescription}
         content={article.content}
