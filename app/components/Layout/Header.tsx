@@ -122,14 +122,14 @@ export function Header({ categories = [] }: HeaderProps) {
                   <Sun className="w-4 h-4" />
                 )}
               </button>
-
-              <Link
+              {/* remove cart for now */}
+              {/* <Link
                 to="/cart"
                 className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
                 aria-label="السلة"
               >
                 <ShoppingCart className="w-4 h-4" />
-              </Link>
+              </Link> */}
 
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
