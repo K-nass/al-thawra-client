@@ -1,4 +1,4 @@
-  import axiosInstance from "../lib/axios";
+import axiosInstance from "../lib/axios";
 import { cache, CacheTTL } from "../lib/cache";
 
 export interface UserProfile {
@@ -20,6 +20,10 @@ export interface UserProfile {
   };
 }
 
+export interface ChiefEditor {
+  fullName: string | undefined, userName: string | undefined, slug: string | undefined, avatarUrl: string | null;
+}
+
 export interface UserProfileParams {
   username: string;
   pageNumber?: number;
@@ -35,10 +39,10 @@ class UserService {
   async getUserProfile(params: UserProfileParams): Promise<UserProfile> {
     try {
       const { username, pageNumber = 1, pageSize = 10 } = params;
-      
+
       // Use cache for better performance
       const cacheKey = `user-profile-${username}-${pageNumber}-${pageSize}`;
-      
+
       return await cache.getOrFetch<UserProfile>(
         cacheKey,
         async () => {
@@ -51,7 +55,7 @@ class UserService {
           const response = await axiosInstance.get<UserProfile>(
             `${this.baseUrl}/profile/${username}?${queryParams.toString()}`
           );
-          
+
           return response.data;
         },
         CacheTTL.MEDIUM
@@ -68,12 +72,12 @@ class UserService {
   async getUserPostsByCategory(username: string, categorySlug?: string): Promise<any[]> {
     try {
       const profile = await this.getUserProfile({ username });
-      
+
       if (!categorySlug) {
         return profile.posts.items || [];
       }
-      
-      return (profile.posts.items || []).filter((post: any) => 
+
+      return (profile.posts.items || []).filter((post: any) =>
         post.categorySlug === categorySlug
       );
     } catch (error: any) {
@@ -85,15 +89,15 @@ class UserService {
   /**
    * Get user categories with post counts
    */
-  async getUserCategories(username: string): Promise<Array<{slug: string, name: string, count: number}>> {
+  async getUserCategories(username: string): Promise<Array<{ slug: string, name: string, count: number }>> {
     try {
       const profile = await this.getUserProfile({ username });
       const posts = profile.posts.items || [];
-      
+
       // Category name mapping
       const categoryNameMap: Record<string, string> = {
         "alriyadah": "الرياضة",
-        "technology": "التكنولوجيا", 
+        "technology": "التكنولوجيا",
         "entertainment-television": "الترفيه والتلفزيون",
         "entertainment-awards": "الجوائز والترفيه",
         "mahalliyat-خدمات-ومرافق": "الخدمات والمرافق",
@@ -111,10 +115,10 @@ class UserService {
         "health": "الصحة",
         "education": "التعل��م"
       };
-      
+
       // Count posts by category
-      const categoryStats: Record<string, {slug: string, name: string, count: number}> = {};
-      
+      const categoryStats: Record<string, { slug: string, name: string, count: number }> = {};
+
       posts.forEach((post: any) => {
         if (post.categorySlug) {
           if (!categoryStats[post.categorySlug]) {
@@ -127,12 +131,29 @@ class UserService {
           categoryStats[post.categorySlug].count++;
         }
       });
-      
+
       return Object.values(categoryStats).sort((a, b) => b.count - a.count);
     } catch (error: any) {
       console.error("Error fetching user categories:", error.response?.data || error.message);
       throw error;
     }
+  }
+
+  /**
+   * Get chief editor information
+   */
+  async getChiefEditor(): Promise<ChiefEditor> {
+    const cacheKey = "chief-editor";
+    return await cache.getOrFetch<ChiefEditor>(
+      cacheKey,
+      async () => {
+        const response = await axiosInstance.get<ChiefEditor>(
+          `${this.baseUrl}/chief-editor`
+        );
+        return response.data;
+      },
+      CacheTTL.LONG
+    );
   }
 }
 

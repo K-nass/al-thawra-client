@@ -54,6 +54,8 @@ export interface PostQueryParams {
   isBreaking?: boolean;
   isSlider?: boolean;
   isRecommended?: boolean;
+  isArgent?: boolean;
+  isChiefEditorPost?: boolean;
   language?: string;
   type?: string;
   from?: string;
@@ -80,12 +82,14 @@ class PostsService {
       // Add optional filters with correct casing
       if (params?.categorySlug) apiParams.CategorySlug = params.categorySlug;
       if (params?.authorName) apiParams.AuthorName = params.authorName;
-      if (params?.hasAuthor !== undefined) apiParams.HasAuthor = params.hasAuthor;
+      apiParams.HasAuthor = params?.hasAuthor ?? false;
       if (params?.status) apiParams.Status = params.status;
       if (params?.isFeatured !== undefined) apiParams.IsFeatured = params.isFeatured;
       if (params?.isBreaking !== undefined) apiParams.IsBreaking = params.isBreaking;
       if (params?.isSlider !== undefined) apiParams.IsSlider = params.isSlider;
       if (params?.isRecommended !== undefined) apiParams.IsRecommended = params.isRecommended;
+      apiParams.IsArgent = params?.isArgent ?? false;
+      apiParams.IsChiefEditorPost = params?.isChiefEditorPost ?? false;
       if (params?.language) apiParams.Language = params.language;
       if (params?.type) apiParams.Type = params.type;
       if (params?.from) apiParams.From = params.from;
@@ -96,8 +100,8 @@ class PostsService {
       const response = await axios.get<PaginatedPostsResponse>(this.baseUrl, {
         params: apiParams,
       });
-    //   console.log("################")
-    //   console.log(response.data);
+      //   console.log("################")
+      //   console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.error("Error fetching posts:", error.response?.data || error.message);
@@ -108,7 +112,7 @@ class PostsService {
   /**
    * Get slider posts
    */
-  async getSliderPosts(pageSize: number = 15, type="Article"): Promise<Post[]> {
+  async getSliderPosts(pageSize: number = 15, type = "Article"): Promise<Post[]> {
     try {
       const response = await this.getPosts({
         isSlider: true,
@@ -125,7 +129,7 @@ class PostsService {
   /**
    * Get featured posts
    */
-  async getFeaturedPosts(pageSize: number = 15, type="Article"): Promise<Post[]> {
+  async getFeaturedPosts(pageSize: number = 15, type = "Article"): Promise<Post[]> {
     try {
       const response = await this.getPosts({
         isFeatured: true,
@@ -142,7 +146,7 @@ class PostsService {
   /**
    * Get recommended posts
    */
-  async getRecommendedPosts(pageSize: number = 15, type="Article"): Promise<Post[]> {
+  async getRecommendedPosts(pageSize: number = 15, type = "Article"): Promise<Post[]> {
     try {
       const response = await this.getPosts({
         isRecommended: true,
@@ -159,7 +163,7 @@ class PostsService {
   /**
    * Get breaking news posts
    */
-  async getBreakingNews(pageSize: number = 15, type="Article"): Promise<Post[]> {
+  async getBreakingNews(pageSize: number = 15, type = "Article"): Promise<Post[]> {
     try {
       const response = await this.getPosts({
         isBreaking: true,
@@ -174,9 +178,41 @@ class PostsService {
   }
 
   /**
+   * Get urgent news posts
+   */
+  async getUrgentPosts(pageSize: number = 15): Promise<Post[]> {
+    try {
+      const response = await this.getPosts({
+        isArgent: true,
+        pageSize,
+      });
+      return response.items;
+    } catch (error: any) {
+      console.error("Error fetching urgent posts:", error.message);
+      throw error;
+    }
+  }
+
+  /**
+   * Get chief editor posts
+   */
+  async getChiefEditorPosts(pageSize: number = 15): Promise<Post[]> {
+    try {
+      const response = await this.getPosts({
+        isChiefEditorPost: true,
+        pageSize,
+      });
+      return response.items;
+    } catch (error: any) {
+      console.error("Error fetching chief editor posts:", error.message);
+      throw error;
+    }
+  }
+
+  /**
    * Get posts with authors (Writers & Opinions)
    */
-  async getPostsWithAuthors(pageSize: number = 15, type="Article"): Promise<Post[]> {
+  async getPostsWithAuthors(pageSize: number = 15, type = "Article"): Promise<Post[]> {
     try {
       const response = await this.getPosts({
         hasAuthor: true,
@@ -196,7 +232,7 @@ class PostsService {
   async getPostsByCategory(
     categorySlug: string,
     params?: Omit<PostQueryParams, "categorySlug">,
-    type="Article"
+    type = "Article"
   ): Promise<PaginatedPostsResponse> {
     try {
       return await this.getPosts({
@@ -237,7 +273,7 @@ class PostsService {
       return response.data;
     } catch (error: any) {
       console.error(`Error fetching post ${slug}:`, error.message);
-      throw error; 
+      throw error;
     }
   }
 

@@ -64,24 +64,51 @@ class MagazinesService {
    */
   async getMagazineByDate(date: string): Promise<Magazine | null> {
     try {
+      console.log(`Fetching magazine for date: ${date}`);
+
+      // Ensure date is in RFC 3339 format (ISO 8601) if it's just YYYY-MM-DD
+      let apiDate = date;
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (dateRegex.test(date)) {
+        apiDate = `${date}T00:00:00Z`;
+      }
+
+      console.log(`Formatted API date: ${apiDate}`);
+
       const response = await axios.get<Magazine>(`${this.baseUrl}/by-date`, {
         params: {
-          Date: date,
+          Date: apiDate,
         },
       });
+      console.log('Magazine by date response:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching magazine for date ${date}:`, error.message);
+      console.error(`Error fetching magazine for date ${date}:`, {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        url: error.config?.url,
+        params: error.config?.params,
+      });
       return null;
     }
   }
 
   /**
-   * Get today's magazine
+   * Get today's magazine, or fall back to the latest magazine if none exists for today
    */
   async getTodaysMagazine(): Promise<Magazine | null> {
     const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
-    return this.getMagazineByDate(today);
+    const todaysMagazine = await this.getMagazineByDate(today);
+
+    // If no magazine for today, fall back to latest
+    if (!todaysMagazine) {
+      console.log('No magazine for today, falling back to latest...');
+      return this.getLatestMagazine();
+    }
+
+    return todaysMagazine;
   }
 
   /**
