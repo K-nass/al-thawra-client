@@ -16,8 +16,10 @@ import { Layout as PageLayout } from "./components/Layout";
 import { Sidebar } from "./components/Sidebar";
 import { NavigationLoader } from "./components/NavigationLoader";
 import { ToastContainer } from "./components/Toast";
+import NotFoundPage from "./routes/not-found";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
+import { userService, type ChiefEditor } from "./services/userService";
 import { cache, CacheTTL } from "./lib/cache";
 import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -54,25 +56,53 @@ export const links: Route.LinksFunction = () => {
 
 // Loader function for root layout with caching
 export async function loader() {
-  try {
-    const [categories, trendingPosts] = await Promise.all([
-      cache.getOrFetch(
-        "categories:menu:Arabic",
-        () => categoriesService.getMenuCategories("Arabic"),
-        CacheTTL.LONG
-      ),
-      cache.getOrFetch(
-        "posts:featured:15",
-        () => postsService.getFeaturedPosts(15, 'Article'),
-        CacheTTL.MEDIUM
-      ),
-    ]);
+  // Each call has its own try-catch - failures don't block others
+  let categories: any[] = [];
+  let trendingPosts: any[] = [];
+  let chiefEditor: ChiefEditor | null = null;
+  let chiefEditorPosts: any[] = [];
 
-    return { categories, trendingPosts };
+  try {
+    categories = await cache.getOrFetch(
+      "categories:menu:Arabic",
+      () => categoriesService.getMenuCategories("Arabic"),
+      CacheTTL.LONG
+    );
   } catch (error) {
-    console.error("Error loading data in root:", error);
-    return { categories: [], trendingPosts: [] };
+    console.error("Error fetching categories:", error);
   }
+
+  try {
+    trendingPosts = await cache.getOrFetch(
+      "posts:featured:15",
+      () => postsService.getFeaturedPosts(15, "Article"),
+      CacheTTL.MEDIUM
+    );
+  } catch (error) {
+    console.error("Error fetching trending posts:", error);
+  }
+
+  try {
+    chiefEditor = await cache.getOrFetch(
+      "chief-editor:info",
+      () => userService.getChiefEditor(),
+      CacheTTL.LONG
+    );
+  } catch (error) {
+    console.error("Error fetching chief editor:", error);
+  }
+
+  try {
+    chiefEditorPosts = await cache.getOrFetch(
+      "chief-editor:posts",
+      () => postsService.getChiefEditorPosts(15),
+      CacheTTL.MEDIUM
+    );
+  } catch (error) {
+    console.error("Error fetching chief editor posts:", error);
+  }
+
+  return { categories, trendingPosts, chiefEditor, chiefEditorPosts };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -114,15 +144,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { categories, trendingPosts } = useLoaderData<typeof loader>();
+  const { categories, trendingPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
 
   // Check if current route has disableLayout handle
   const matches = useMatches();
   const disableLayout = matches.some((match: any) => match.handle?.disableLayout);
+  const disableSidebar = matches.some((match: any) => match.handle?.disableSidebar);
 
   // Routes that should not have sidebar
   const noSidebarRoutes = ["/login", "/register", "/forgot-password", "/reset-password"];
-  const shouldShowSidebar = !noSidebarRoutes.includes(location.pathname);
+  const shouldShowSidebar = !noSidebarRoutes.includes(location.pathname) && !disableSidebar;
 
   return (
     <>
@@ -141,7 +172,11 @@ export default function App() {
                 </div>
                 {/* Sidebar */}
                 <div className="lg:w-72 flex-shrink-0">
-                  <Sidebar trendingPosts={trendingPosts} />
+                  <Sidebar
+                    trendingPosts={trendingPosts}
+                    chiefEditor={chiefEditor}
+                    chiefEditorPosts={chiefEditorPosts}
+                  />
                 </div>
               </div>
             </div>
@@ -154,17 +189,18 @@ export default function App() {
   );
 }
 
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
+    if (error.status === 404) {
+      return <NotFoundPage />;
+    }
+    message = error.statusText || "Error";
+    details = error.data || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;

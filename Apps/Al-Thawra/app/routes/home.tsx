@@ -14,7 +14,7 @@ import { magazinesService, type Magazine } from "../services/magazinesService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 
-export function meta({}: Route.MetaArgs) {
+export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
     title: "الصفحة الرئيسية",
     description: "موقع الثورة - مصدرك الموثوق للأخبار العربية، المقالات، التحليلات السياسية، والآراء. تابع آخر الأخبار المحلية والعالمية لحظة بلحظة",
@@ -32,27 +32,27 @@ export async function loader({ request }: Route.LoaderArgs) {
   try {
     // Note: Categories are now fetched in root loader and accessed via useRouteLoaderData
     // We'll get them in the component instead of here
-    
+
     // Fetch slider posts separately with caching
     const sliderPosts = await cache.getOrFetch(
       "posts:slider:15:Article",
       () => postsService.getSliderPosts(15, "Article"),
       CacheTTL.SHORT
     ).catch(() => []);
-    
+
     // Fetch writers & opinions posts with caching
     const writersPosts = await cache.getOrFetch(
       "posts:writers-opinions:15:Article",
       () => postsService.getPostsWithAuthors(15, "Article"),
       CacheTTL.SHORT
     ).catch(() => []);
-    
+
     // Fetch the latest magazine (today's issue or most recent)
     console.log('Fetching latest magazine...');
-    
+
     let latestMagazine = await cache.getOrFetch(
       'magazine:latest',
-      () => magazinesService.getLatestMagazine(),
+      () => magazinesService.getTodaysMagazine(),
       CacheTTL.SHORT
     ).catch((error) => {
       console.error('Error fetching latest magazine:', error);
@@ -63,31 +63,43 @@ export async function loader({ request }: Route.LoaderArgs) {
       });
       return null;
     });
-    
+
+    // Fetch urgent news
+    const urgentPosts = await cache.getOrFetch(
+      "posts:urgent:15",
+      () => postsService.getUrgentPosts(15),
+      CacheTTL.SHORT
+    ).catch(() => []);
+
+    //! DELETE ME
+
     // If getLatestMagazine returns null, try fetching from all magazines
-    if (!latestMagazine) {
-      console.log('Latest magazine returned null, trying to fetch from all magazines...');
-      try {
-        const allMagazines = await magazinesService.getMagazines({ pageSize: 15, pageNumber: 1 });
-        console.log('All magazines response:', allMagazines);
-        latestMagazine = allMagazines.items.length > 0 ? allMagazines.items[0] : null;
-        console.log('First magazine from list:', latestMagazine);
-      } catch (error: any) {
-        console.error('Error fetching all magazines:', error);
-        console.error('Error details:', {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status,
-        });
-      }
-    }
-    
+    // if (!latestMagazine) {
+    //   console.log('Latest magazine returned null, trying to fetch from all magazines...');
+    //   try {
+    //     const allMagazines = await magazinesService.getMagazines({ pageSize: 15, pageNumber: 1 });
+    //     console.log('All magazines response:', allMagazines);
+    //     latestMagazine = allMagazines.items.length > 0 ? allMagazines.items[0] : null;
+    //     console.log('First magazine from list:', latestMagazine);
+    //   } catch (error: any) {
+    //     console.error('Error fetching all magazines:', error);
+    //     console.error('Error details:', {
+    //       message: error.message,
+    //       response: error.response?.data,
+    //       status: error.response?.status,
+    //     });
+    //   }
+    // }
+
+    //
+
     console.log('Final latest magazine data:', latestMagazine);
-    
-    return {  
+
+    return {
       sliderPosts,
       writersPosts,
       latestMagazine,
+      urgentPosts,
       // Categories will be accessed from root loader in component
     };
   } catch (error: any) {
@@ -96,16 +108,17 @@ export async function loader({ request }: Route.LoaderArgs) {
       sliderPosts: [],
       writersPosts: [],
       latestMagazine: null,
+      urgentPosts: [],
     };
   }
 }
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, latestMagazine, urgentPosts } = useLoaderData<typeof loader>();
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
-  
+
   const navigation = useNavigation();
   const [categoryPosts, setCategoryPosts] = useState<Array<{ category: Category; posts: Post[] }>>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
@@ -114,12 +127,12 @@ export default function Home() {
   useEffect(() => {
     async function fetchCategoryPosts() {
       setIsLoadingCategories(true);
-      
+
       // Sort and limit categories
       const limitedCategories = categories
         .sort((a: Category, b: Category) => a.order - b.order)
         .slice(0, 6);
-      
+
       const results = [];
       for (const category of limitedCategories) {
         try {
@@ -135,7 +148,7 @@ export default function Home() {
             },
             CacheTTL.SHORT
           );
-          
+
           if (posts.length > 0) {
             results.push({
               category,
@@ -146,11 +159,11 @@ export default function Home() {
           console.error(`Error fetching posts for category ${category.slug}:`, error);
         }
       }
-      
+
       setCategoryPosts(results);
       setIsLoadingCategories(false);
     }
-    
+
     if (categories.length > 0) {
       fetchCategoryPosts();
     } else {
@@ -166,7 +179,7 @@ export default function Home() {
   // Show empty state if no data at all
   if (sliderPosts.length === 0 && categoryPosts.length === 0 && writersPosts.length === 0) {
     return (
-      <EmptyState 
+      <EmptyState
         title="لا توجد مقالات متاحة"
         description="نعمل على إضافة محتوى جديد. يرجى المحاولة مرة أخرى لاحقاً"
         showRefresh={true}
@@ -183,24 +196,32 @@ export default function Home() {
       )}
 
       {/* Today's Issue Section */}
-      <TodaysIssue 
+      <TodaysIssue
         issueNumber={latestMagazine ? `العدد ${latestMagazine.issueNumber}` : undefined}
-        date={latestMagazine ? new Date(latestMagazine.createdAt).toLocaleDateString("ar-EG", { 
-          weekday: "long", 
-          year: "numeric", 
-          month: "long", 
-          day: "numeric" 
+        date={latestMagazine ? new Date(latestMagazine.createdAt).toLocaleDateString("ar-EG", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
         }) : undefined}
         magazineCover={latestMagazine?.thumbnailUrl}
-        magazineDate={latestMagazine ? new Date(latestMagazine.createdAt).toISOString().split('T')[0] : undefined}
+        magazineDate={latestMagazine ? (() => {
+          const d = new Date(latestMagazine.createdAt);
+          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        })() : undefined}
+        urgentNews={urgentPosts?.map(post => ({
+          title: post.title,
+          slug: post.slug,
+          categorySlug: post.categorySlug
+        }))}
       />
 
       {/* First Category Section */}
       {categoryPosts.length > 0 && categoryPosts[0] && (
-        <PostsGrid 
+        <PostsGrid
           key={categoryPosts[0].category.id}
-          posts={categoryPosts[0].posts} 
-          categoryName={categoryPosts[0].category.name} 
+          posts={categoryPosts[0].posts}
+          categoryName={categoryPosts[0].category.name}
           categorySlug={categoryPosts[0].category.slug}
           showCategoryHeader={true}
         />
@@ -214,10 +235,10 @@ export default function Home() {
       {/* Remaining Category Sections */}
       {categoryPosts.length > 1 && (
         categoryPosts.slice(1).map(({ category, posts }: { category: Category; posts: Post[] }) => (
-          <PostsGrid 
+          <PostsGrid
             key={category.id}
-            posts={posts} 
-            categoryName={category.name} 
+            posts={posts}
+            categoryName={category.name}
             categorySlug={category.slug}
             showCategoryHeader={true}
           />
@@ -226,7 +247,7 @@ export default function Home() {
 
       {/* Show empty state only if no categories at all */}
       {categoryPosts.length === 0 && writersPosts.length === 0 && (
-        <EmptyState 
+        <EmptyState
           title="لا توجد أقسام متاحة"
           description="لم نتمكن من تحميل الأقسام في الوقت الحالي"
         />

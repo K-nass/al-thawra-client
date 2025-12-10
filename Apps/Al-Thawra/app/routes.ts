@@ -26,5 +26,6 @@ export default [
   route("admin", "routes/admin.tsx"),
   route("podcast", "routes/podcast.tsx"),
   route("tv", "routes/tv.tsx"),
-  route("pages/:slug", "routes/pages.$slug.tsx")
+  route("pages/:slug", "routes/pages.$slug.tsx"),
+  route("*", "routes/not-found.tsx")
 ] satisfies RouteConfig;
