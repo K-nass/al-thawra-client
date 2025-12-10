@@ -83,7 +83,7 @@ export function Footer() {
               تابعنا
             </h3>
             <div className="flex items-center gap-3 flex-wrap mb-6">
-              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#229ED9] hover:border-[#229ED9] transition-all duration-300 shadow-sm" href="https://al-thawra-client.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Telegram">
+              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#229ED9] hover:border-[#229ED9] transition-all duration-300 shadow-sm" href="https://al-thawra-client.vercel.app/" target="_self" rel="noopener noreferrer" aria-label="Telegram">
                 <Send className="w-5 h-5" />
               </a>
               <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#FF0000] hover:border-[#FF0000] transition-all duration-300 shadow-sm" href="https://al-thawra-client.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
@@ -94,12 +94,6 @@ export function Footer() {
               </a>
               <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#1877F2] hover:border-[#1877F2] transition-all duration-300 shadow-sm" href="https://www.facebook.com/share/1BWsoa7hbV/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#E4405F] hover:border-[#E4405F] transition-all duration-300 shadow-sm" href="https://al-thawra-client.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#0A66C2] hover:border-[#0A66C2] transition-all duration-300 shadow-sm" href="https://al-thawra-client.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                <Linkedin className="w-5 h-5" />
               </a>
               <a className="w-10 h-10 rounded-full  flex items-center justify-center text-[var(--color-text-secondary)] hover:text-white hover:bg-[#25D366] hover:border-[#25D366] transition-all duration-300 shadow-sm" href="https://whatsapp.com/channel/0029VbBeGZFInlqGhtMLs31i" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
                 <MessageCircle className="w-5 h-5" />
