@@ -11,6 +11,7 @@ export default [
   route("author/:slug", "routes/author.$slug.tsx"),
   route("category/:slug", "routes/category.$slug.tsx"),
   route("search", "routes/search.tsx"),
+  route("reels", "routes/reels.tsx"),
   route("magazines", "routes/magazines.tsx"),
   route("magazines/date/:date", "routes/magazines.date.$date.tsx"),
   route("magazines/issue/:issueNumber", "routes/magazines.issue.$issueNumber.tsx"),

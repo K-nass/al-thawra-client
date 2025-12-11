@@ -23,6 +23,7 @@ import {
   PenTool,
   Moon,
   Sun,
+  Film,
 } from "lucide-react";
 import type { Category } from "../../services/categoriesService";
 import authService from "../../services/authService";
@@ -245,7 +246,7 @@ export function Header({ categories = [] }: HeaderProps) {
                   <span>أرشيف الثورة</span>
                 </Link>
 
-                <Link
+                {/* <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/writers-opinions"
                     ? "border-white font-bold"
                     : "border-transparent hover:border-white/50"
@@ -254,7 +255,7 @@ export function Header({ categories = [] }: HeaderProps) {
                 >
                   <PenTool className="w-4 h-4" />
                   <span>كتاب وآراء</span>
-                </Link>
+                </Link> */}
 
                 <Link
                   className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
@@ -265,6 +266,17 @@ export function Header({ categories = [] }: HeaderProps) {
                 >
                   <Tv className="w-4 h-4" />
                   <span>التلفزيون</span>
+                </Link>
+
+                <Link
+                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/reels"
+                    ? "border-white font-bold"
+                    : "border-transparent hover:border-white/50"
+                    }`}
+                  to="/reels"
+                >
+                  <Film className="w-4 h-4" />
+                  <span>ريلز</span>
                 </Link>
 
                 <Link
@@ -295,14 +307,14 @@ export function Header({ categories = [] }: HeaderProps) {
             <div className="flex items-center gap-2">
 
               {/* President Image - Large Circular */}
-              <div className="">
+              {/* <div className="">
                 <img
                   src="/images/rashad-al-alimi.jpg"
                   alt="رئيس المجلس الرئاسي - رشاد العليمي"
                   title="رئيس المجلس الرئاسي - رشاد العليمي"
                   className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
                 />
-              </div>
+              </div> */}
 
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -455,19 +467,26 @@ export function Header({ categories = [] }: HeaderProps) {
             >
               أرشيف الثورة
             </Link>
-            <Link
+            {/* <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
               to="/writers-opinions"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               كتاب وآراء
-            </Link>
+            </Link> */}
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
               to="/tv"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               التلفزيون
+            </Link>
+            <Link
+              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+              to="/reels"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              ريلز
             </Link>
             <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
