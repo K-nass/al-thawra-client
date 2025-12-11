@@ -19,8 +19,8 @@ export function ScrollAnimation({
   duration = 0.6,
   animation = "fade",
   once = false,
-  amount = 0.3,
-}: ScrollAnimationProps) {
+  immediate = false,
+}: ScrollAnimationProps & { immediate?: boolean }) {
   const animations: Record<string, Variants> = {
     fade: {
       hidden: { opacity: 0 },
@@ -70,6 +70,19 @@ export function ScrollAnimation({
       },
     },
   };
+
+  if (immediate) {
+    return (
+      <motion.div
+        className={className}
+        initial="hidden"
+        animate="visible"
+        variants={animations[animation]}
+      >
+        {children}
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

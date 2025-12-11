@@ -11,8 +11,10 @@ import { EmptyState } from "../components/EmptyState";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
 import { magazinesService, type Magazine } from "../services/magazinesService";
+import { userService } from "../services/userService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
+import { ChiefEditorSection } from "../components/ChiefEditorSection";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -71,27 +73,29 @@ export async function loader({ request }: Route.LoaderArgs) {
       CacheTTL.SHORT
     ).catch(() => []);
 
-    //! DELETE ME
+    // Fetch chief editor data
+    let chiefEditor = null;
+    let chiefEditorPosts: Post[] = [];
+    
+    try {
+      chiefEditor = await cache.getOrFetch(
+        "chief-editor:info",
+        () => userService.getChiefEditor(),
+        CacheTTL.LONG
+      );
 
-    // If getLatestMagazine returns null, try fetching from all magazines
-    // if (!latestMagazine) {
-    //   console.log('Latest magazine returned null, trying to fetch from all magazines...');
-    //   try {
-    //     const allMagazines = await magazinesService.getMagazines({ pageSize: 15, pageNumber: 1 });
-    //     console.log('All magazines response:', allMagazines);
-    //     latestMagazine = allMagazines.items.length > 0 ? allMagazines.items[0] : null;
-    //     console.log('First magazine from list:', latestMagazine);
-    //   } catch (error: any) {
-    //     console.error('Error fetching all magazines:', error);
-    //     console.error('Error details:', {
-    //       message: error.message,
-    //       response: error.response?.data,
-    //       status: error.response?.status,
-    //     });
-    //   }
-    // }
-
-    //
+      if (chiefEditor) {
+        // Fetch posts - Minimum page size is 15
+        const response = await cache.getOrFetch(
+          "chief-editor:posts:home",
+          () => postsService.getChiefEditorPosts(15),
+          CacheTTL.SHORT
+        );
+        chiefEditorPosts = response.slice(0, 5); // Take only first 5
+      }
+    } catch (error) {
+      console.error("Error fetching chief editor data:", error);
+    }
 
     console.log('Final latest magazine data:', latestMagazine);
 
@@ -100,7 +104,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       writersPosts,
       latestMagazine,
       urgentPosts,
-      // Categories will be accessed from root loader in component
+      chiefEditor,
+      chiefEditorPosts,
     };
   } catch (error: any) {
     console.error('Error loading home page:', error.response?.data || error.message);
@@ -109,13 +114,15 @@ export async function loader({ request }: Route.LoaderArgs) {
       writersPosts: [],
       latestMagazine: null,
       urgentPosts: [],
+      chiefEditor: null,
+      chiefEditorPosts: [],
     };
   }
 }
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 
@@ -215,6 +222,14 @@ export default function Home() {
           categorySlug: post.categorySlug
         }))}
       />
+
+      {/* Chief Editor Section */}
+      {chiefEditor && chiefEditorPosts.length > 0 && (
+        <ChiefEditorSection 
+          editor={chiefEditor} 
+          posts={chiefEditorPosts} 
+        />
+      )}
 
       {/* First Category Section */}
       {categoryPosts.length > 0 && categoryPosts[0] && (
