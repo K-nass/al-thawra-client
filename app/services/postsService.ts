@@ -100,8 +100,8 @@ class PostsService {
       const response = await axios.get<PaginatedPostsResponse>(this.baseUrl, {
         params: apiParams,
       });
-      //   console.log("################")
-      //   console.log(response.data);
+        console.log("################")
+        console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.error("Error fetching posts:", error.response?.data || error.message);

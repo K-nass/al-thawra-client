@@ -109,8 +109,8 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
                   </div>
 
                   {/* Middle Section - Title */}
-                  <div className="flex-1 flex items-center">
-                    <h3 className="text-xl font-bold leading-tight line-clamp-3 group-hover:scale-105 transition-transform duration-300">
+                  <div className="flex-1 flex pt-2">
+                    <h3 className="text-2xl font-bold leading-snug tracking-wide line-clamp-3">
                       {post.title}
                     </h3>
                   </div>
@@ -123,13 +123,13 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
                         <img
                           src={post.authorImage}
                           alt={post.authorName}
-                          className="w-12 h-12 rounded-lg object-cover border-2 border-white/30"
+                          className="w-16 h-16 rounded-lg object-cover border-2 border-white/30"
                           loading="lazy"
                           decoding="async"
                         />
                       ) : (
-                        <div className="w-12 h-12 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
-                          <span className="text-lg font-bold">
+                        <div className="w-16 h-16 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+                          <span className="text-xl font-bold">
                             {post.authorName?.charAt(0) || "ك"}
                           </span>
                         </div>
@@ -138,7 +138,7 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
 
                     {/* Author Name & Date */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm truncate">
+                      <p className="font-bold text-lg truncate">
                         {post.authorName}
                       </p>
                       <p className="text-xs text-white/80 mt-0.5">

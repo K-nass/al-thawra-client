@@ -60,7 +60,7 @@ export function PostDetails({
     <section className="lg:col-span-2">
       <article className="rounded-lg p-6 shadow-sm" style={{ backgroundColor: "var(--color-background-light)", color: "var(--color-text-primary)" }}>
         {/* Article Header */}
-        <ScrollAnimation animation="slideUp" duration={0.6}>
+        <ScrollAnimation animation="slideUp" duration={0.6} immediate={true}>
           <PostHeader
             category={category}
             categoryHref={categoryHref}
