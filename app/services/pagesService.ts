@@ -67,12 +67,19 @@ class PagesService {
    */
   async getFooterPages(language: string = "Arabic"): Promise<Page[]> {
     try {
+      // Fetch all pages first to ensure we don't miss any due to backend filtering issues
       const response = await this.getPages({
-        location: "Footer",
         language,
+        pageSize: 90
       });
-      // Sort by menuOrder
-      return response.items.sort((a, b) => a.menuOrder - b.menuOrder);
+      
+      console.log("PagesService fetched total items:", response.items.length);
+      const footerItems = response.items.filter(page => page.location === "Footer");
+      console.log("PagesService filtering for Footer:", footerItems.length);
+
+      // Filter client-side for Footer location and sort
+      return footerItems
+        .sort((a, b) => a.menuOrder - b.menuOrder);
     } catch (error: any) {
       console.error("Error fetching footer pages:", error.message);
       return [];

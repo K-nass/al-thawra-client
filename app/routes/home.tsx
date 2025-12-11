@@ -204,7 +204,7 @@ export default function Home() {
 
       {/* Today's Issue Section */}
       <TodaysIssue
-        issueNumber={latestMagazine ? `العدد ${latestMagazine.issueNumber}` : undefined}
+        issueNumber={latestMagazine ? latestMagazine.issueNumber : undefined}
         date={latestMagazine ? new Date(latestMagazine.createdAt).toLocaleDateString("ar-EG", {
           weekday: "long",
           year: "numeric",

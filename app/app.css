@@ -48,8 +48,16 @@
 
 /* Global Arabic font preference */
 /* Global Arabic font preference */
+/* Force Western Arabic Numerals (0-9) */
+@font-face {
+  font-family: "WesternDigits";
+  src: local("Arial"), local("Helvetica"), local("Inter"), local("sans-serif");
+  unicode-range: U+0030-0039;
+}
+
 html[dir="rtl"] {
-  --font-family-base: "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif;
+  /* Prepend WesternDigits to ensure numbers are always rendered with Western fonts */
+  --font-family-base: "WesternDigits", "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif;
 }
 
 html[dir="rtl"] body,

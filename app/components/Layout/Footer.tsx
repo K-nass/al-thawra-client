@@ -1,27 +1,13 @@
 import { Link } from "react-router";
 import { Send, Youtube, Twitter, Facebook, Instagram, Linkedin, Music, MessageCircle, ArrowUp } from "lucide-react";
-import { useEffect, useState } from "react";
-import { pagesService, type Page } from "~/services/pagesService";
+import type { Page } from "~/services/pagesService";
 
-export function Footer() {
-  const [footerPages, setFooterPages] = useState<Page[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+interface FooterProps {
+  pages?: Page[];
+}
 
-  useEffect(() => {
-    const loadFooterPages = async () => {
-      try {
-        const pages = await pagesService.getFooterPages("Arabic");
-        setFooterPages(pages);
-      } catch (error) {
-        console.error("Failed to load footer pages:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadFooterPages();
-  }, []);
-
+export function Footer({ pages = [] }: FooterProps) {
+  console.log("Footer Received Pages:", pages.length, pages);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -57,23 +43,16 @@ export function Footer() {
               روابط هامة
             </h3>
             <nav className="grid grid-cols-2 gap-x-8 gap-y-3 w-full">
-              {isLoading ? (
-                // Loading skeleton
-                [1, 2, 3, 4, 5, 6].map((i) => (
-                  <div key={i} className="h-5 w-24 bg-gray-200 rounded animate-pulse"></div>
-                ))
-              ) : (
-                footerPages.map((page) => (
-                  <Link
-                    key={page.id}
-                    className="text-white hover:text-[var(--color-secondary)] transition-colors text-sm font-medium flex items-center gap-2"
-                    to={`/pages/${page.slug}`}
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></span>
-                    {page.title}
-                  </Link>
-                ))
-              )}
+              {pages.map((page) => (
+                <Link
+                  key={page.id}
+                  className="text-white hover:text-[var(--color-secondary)] transition-colors text-sm font-medium flex items-center gap-2"
+                  to={`/pages/${page.slug}`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></span>
+                  {page.title}
+                </Link>
+              ))}
             </nav>
           </div>
 

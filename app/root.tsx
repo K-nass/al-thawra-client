@@ -19,40 +19,12 @@ import { ToastContainer } from "./components/Toast";
 import NotFoundPage from "./routes/not-found";
 import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
+import { pagesService } from "./services/pagesService";
 import { userService, type ChiefEditor } from "./services/userService";
 import { cache, CacheTTL } from "./lib/cache";
 import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { MiniViewContainer } from "./components/VideoPlayer/MiniView/MiniViewContainer";
-
-export const links: Route.LinksFunction = () => {
-  // Get current URL for canonical - will be set per-route if needed
-  // For now, using a simple implementation
-  return [
-    // Favicon - using logo
-    { rel: "icon", type: "image/png", href: "/logo.png" },
-    { rel: "apple-touch-icon", href: "/logo.png" },
-    // react-pdf CSS
-    { rel: "stylesheet", href: "https://unpkg.com/react-pdf@9.1.1/dist/esm/Page/AnnotationLayer.css" },
-    { rel: "stylesheet", href: "https://unpkg.com/react-pdf@9.1.1/dist/esm/Page/TextLayer.css" },
-    // Preconnect to external domains for faster resource loading
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
-    {
-      rel: "preconnect",
-      href: "https://fonts.gstatic.com",
-      crossOrigin: "anonymous",
-    },
-    // Load fonts with font-display: swap for better performance
-    {
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-    },
-    {
-      rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap",
-    },
-  ];
-};
 
 // Loader function for root layout with caching
 export async function loader() {
@@ -61,6 +33,7 @@ export async function loader() {
   let trendingPosts: any[] = [];
   let chiefEditor: ChiefEditor | null = null;
   let chiefEditorPosts: any[] = [];
+  let footerPages: any[] = [];
 
   try {
     categories = await cache.getOrFetch(
@@ -70,6 +43,17 @@ export async function loader() {
     );
   } catch (error) {
     console.error("Error fetching categories:", error);
+  }
+
+  try {
+    footerPages = await cache.getOrFetch(
+      "pages:footer:Arabic:v2",
+      () => pagesService.getFooterPages("Arabic"),
+      CacheTTL.LONG
+    );
+    console.log("Root Loader Footer Pages:", footerPages.length);
+  } catch (error) {
+    console.error("Error fetching footer pages:", error);
   }
 
   try {
@@ -102,9 +86,10 @@ export async function loader() {
     console.error("Error fetching chief editor posts:", error);
   }
 
-  return { categories, trendingPosts, chiefEditor, chiefEditorPosts };
+  return { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages };
 }
 
+// ... existing Layout component ...
 export function Layout({ children }: { children: React.ReactNode }) {
   // Generate global JSON-LD schemas
   const organizationSchema = generateOrganizationSchema();
@@ -144,7 +129,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { categories, trendingPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
+  const { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages } = useLoaderData<typeof loader>();
 
   // Check if current route has disableLayout handle
   const matches = useMatches();
@@ -162,7 +147,7 @@ export default function App() {
         // Full-width layout for PDF viewer (no header, sidebar, footer)
         <Outlet context={{ categories }} />
       ) : (
-        <PageLayout categories={categories}>
+        <PageLayout categories={categories} footerPages={footerPages}>
           {shouldShowSidebar ? (
             <div className="container mx-auto px-4 py-8 max-w-7xl">
               <div className="flex flex-col lg:flex-row gap-6">
