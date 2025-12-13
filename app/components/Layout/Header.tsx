@@ -31,9 +31,10 @@ import { useTheme } from "../../contexts/ThemeContext";
 
 interface HeaderProps {
   categories?: Category[];
+  ceoName?: string;
 }
 
-export function Header({ categories = [] }: HeaderProps) {
+export function Header({ categories = [], ceoName }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -105,7 +106,7 @@ export function Header({ categories = [] }: HeaderProps) {
             {/* Right Side - Editor Info */}
             <div className="flex items-center">
               <span className="font-bold font-thuluth text-lg">
-                رٍئيس مجٍلُِس الُِادِارٍة: سام عٍبَدِ الُِلُِه الُِغبَارٍى
+                رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
               </span>
             </div>
             {/* Left Side - Icons & Actions */}

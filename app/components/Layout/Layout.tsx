@@ -7,12 +7,13 @@ interface LayoutProps {
   children: React.ReactNode;
   categories?: Category[];
   footerPages?: Page[];
+  logoSettings?: { ceoName: string };
 }
 
-export function Layout({ children, categories = [], footerPages = [] }: LayoutProps) {
+export function Layout({ children, categories = [], footerPages = [], logoSettings }: LayoutProps) {
   return (
     <div className="flex flex-col min-h-screen">
-      <Header categories={categories} />
+      <Header categories={categories} ceoName={logoSettings?.ceoName} />
       <main className="flex-grow">
         {children}
       </main>
