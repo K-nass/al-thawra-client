@@ -50,29 +50,42 @@ class ReelsService {
     }
   }
 
+  /**
+   * Fetch a single reel by ID
+   */
+  async getReelById(id: string): Promise<Reel> {
+    try {
+      const response = await axios.get<Reel>(`${this.baseUrl}/${id}`);
+      return response.data;
+    } catch (error: any) {
+      console.error(`Error fetching reel ${id}:`, error.response?.data || error.message);
+      throw error;
+    }
+  }
+
   /* 
    * Like a reel
    */
   async likeReel(id: string): Promise<void> {
-      try {
-        await axios.post(`${this.baseUrl}/${id}/like`);
-      } catch (error) {
-        console.error(`Error liking reel ${id}:`, error);
-        throw error;
-      }
+    try {
+      await axios.post(`${this.baseUrl}/${id}/like`);
+    } catch (error) {
+      console.error(`Error liking reel ${id}:`, error);
+      throw error;
     }
-  
-    /**
-     * Unlike a reel
-     */
-    async unlikeReel(id: string): Promise<void> {
-      try {
-        await axios.delete(`${this.baseUrl}/${id}/like`);
-      } catch (error) {
-        console.error(`Error unliking reel ${id}:`, error);
-        throw error;
-      }
+  }
+
+  /**
+   * Unlike a reel
+   */
+  async unlikeReel(id: string): Promise<void> {
+    try {
+      await axios.delete(`${this.baseUrl}/${id}/like`);
+    } catch (error) {
+      console.error(`Error unliking reel ${id}:`, error);
+      throw error;
     }
+  }
 }
 
 export const reelsService = new ReelsService();

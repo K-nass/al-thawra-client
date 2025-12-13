@@ -16,13 +16,36 @@ import "swiper/css/navigation";
 export async function loader({ request }: { request: Request }) {
   const url = new URL(request.url);
   const cursor = url.searchParams.get("cursor") || undefined;
+  const reelId = url.searchParams.get("reelId");
+
   const data = await reelsService.getReels(cursor);
+
+  if (reelId && !cursor) {
+    try {
+      const specificReel = await reelsService.getReelById(reelId);
+      // Prepend specific reel and remove duplicate if exists in main feed
+      const filteredReels = data.reels.filter(r => r.id !== reelId);
+      return {
+        ...data,
+        reels: [specificReel, ...filteredReels]
+      };
+    } catch (e) {
+      console.error("Error fetching specific reel:", e);
+      return data;
+    }
+  }
+
   return data;
 }
 
-export function meta() {
+export function meta({ data }: { data: ReelsResponse }) {
+  const firstReel = data?.reels?.[0];
+  const title = firstReel?.caption
+    ? `${firstReel.caption.substring(0, 60)}${firstReel.caption.length > 60 ? "..." : ""} | الثورة`
+    : "ريلز | الثورة";
+
   return [
-    { title: "ريلز | الثورة" },
+    { title },
     { name: "description", content: "شاهد أحدث الفيديوهات والريلز على صحيفة الثورة" },
   ];
 }
@@ -53,6 +76,22 @@ export default function ReelsPage() {
       }
     }
   }, [fetcher.data]);
+
+  // Update title on slide change
+  useEffect(() => {
+    if (reels[activeIndex]) {
+      const currentReel = reels[activeIndex];
+      const title = currentReel.caption
+        ? `${currentReel.caption.substring(0, 60)}${currentReel.caption.length > 60 ? "..." : ""} | الثورة`
+        : "ريلز | الثورة";
+      document.title = title;
+
+      // Update URL with reelId without reloading or adding to history stack
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.set("reelId", currentReel.id);
+      window.history.replaceState({}, "", newUrl.toString());
+    }
+  }, [activeIndex, reels]);
 
   // Handle Full Screen
   const toggleFullScreen = async () => {

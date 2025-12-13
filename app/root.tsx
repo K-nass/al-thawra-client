@@ -21,6 +21,7 @@ import { categoriesService } from "./services/categoriesService";
 import { postsService } from "./services/postsService";
 import { pagesService } from "./services/pagesService";
 import { userService, type ChiefEditor } from "./services/userService";
+import { settingsService, type LogoSettings } from "./services/settingsService";
 import { cache, CacheTTL } from "./lib/cache";
 import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -34,6 +35,7 @@ export async function loader() {
   let chiefEditor: ChiefEditor | null = null;
   let chiefEditorPosts: any[] = [];
   let footerPages: any[] = [];
+  let logoSettings: LogoSettings = { ceoName: "" };
 
   try {
     categories = await cache.getOrFetch(
@@ -86,7 +88,17 @@ export async function loader() {
     console.error("Error fetching chief editor posts:", error);
   }
 
-  return { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages };
+  try {
+    logoSettings = await cache.getOrFetch(
+      "settings:logo",
+      () => settingsService.getLogoSettings(),
+      CacheTTL.LONG
+    );
+  } catch (error) {
+    console.error("Error fetching logo settings:", error);
+  }
+
+  return { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings };
 }
 
 // ... existing Layout component ...
@@ -129,7 +141,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages } = useLoaderData<typeof loader>();
+  const { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings } = useLoaderData<typeof loader>();
 
   // Check if current route has disableLayout handle
   const matches = useMatches();
@@ -147,7 +159,7 @@ export default function App() {
         // Full-width layout for PDF viewer (no header, sidebar, footer)
         <Outlet context={{ categories }} />
       ) : (
-        <PageLayout categories={categories} footerPages={footerPages}>
+        <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings}>
           {shouldShowSidebar ? (
             <div className="container mx-auto px-4 py-8 max-w-7xl">
               <div className="flex flex-col lg:flex-row gap-6">
