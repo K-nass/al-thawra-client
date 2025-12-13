@@ -3,6 +3,7 @@ import axios from "../lib/axios";
 export interface Reel {
   id: string;
   videoUrl: string;
+  thumbnailUrl: string | null;
   caption: string;
   duration: string;
   viewsCount: number;
@@ -12,9 +13,10 @@ export interface Reel {
   isPublished: boolean;
   createdAt: string;
   userId: string;
-  userName: string;
-  userAvatarUrl: string;
+  userName: string | null;
+  userAvatarUrl: string | null;
   tags: string[];
+  isLikedByCurrentUser: boolean | null;
 }
 
 export interface ReelsResponse {

@@ -21,16 +21,29 @@ export async function loader({ request }: { request: Request }) {
   const data = await reelsService.getReels(cursor);
 
   if (reelId && !cursor) {
+    console.log("Loader: Processing reelId:", reelId);
     try {
       const specificReel = await reelsService.getReelById(reelId);
+      console.log("Loader: Specific reel fetched successfully:", specificReel?.id);
+
       // Prepend specific reel and remove duplicate if exists in main feed
       const filteredReels = data.reels.filter(r => r.id !== reelId);
+      const newReels = [specificReel, ...filteredReels];
+
+      console.log("Loader: returning reordered reels. First ID:", newReels[0].id);
       return {
         ...data,
-        reels: [specificReel, ...filteredReels]
+        reels: newReels
       };
     } catch (e) {
-      console.error("Error fetching specific reel:", e);
+      console.error("Loader: Error fetching specific reel:", e);
+      // Fallback: Check if the reel happens to be in the main feed
+      const foundInFeed = data.reels.find(r => r.id === reelId);
+      if (foundInFeed) {
+        console.log("Loader: specific reel found in main feed (fallback).");
+        const filteredReels = data.reels.filter(r => r.id !== reelId);
+        return { ...data, reels: [foundInFeed, ...filteredReels] };
+      }
       return data;
     }
   }
@@ -311,6 +324,7 @@ function ReelItem({ reel, isActive, isFullScreen, toggleFullScreen }: { reel: Re
           muted={isMuted}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
+          autoPlay
         />
 
         {/* Play/Pause Overlay Indicator */}
@@ -329,10 +343,10 @@ function ReelItem({ reel, isActive, isFullScreen, toggleFullScreen }: { reel: Re
         <div className="absolute bottom-0 left-0 right-0 p-4 pb-6 flex flex-col justify-end pointer-events-auto text-white">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-gray-700">
-              <img src={reel.userAvatarUrl} alt={reel.userName} className="w-full h-full object-cover" />
+              <img src={reel.userAvatarUrl || ""} alt={reel.userName || ""} className="w-full h-full object-cover" />
             </div>
             <div className="flex flex-col">
-              <span className="font-bold text-[15px] drop-shadow-md hover:underline cursor-pointer">@{reel.userName}</span>
+              <span className="font-bold text-[15px] drop-shadow-md hover:underline cursor-pointer">@{reel.userName || "Unknown"}</span>
               {/* Subscribe/Follow if needed */}
             </div>
             <button className="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full hover:bg-gray-200 transition-colors mr-2">
@@ -435,7 +449,7 @@ function ReelItem({ reel, isActive, isFullScreen, toggleFullScreen }: { reel: Re
 
           {/* Sound Thumb */}
           <div className="mt-4 w-10 h-10 rounded-lg overflow-hidden border-2 border-white/20">
-            <img src={reel.userAvatarUrl} className="w-full h-full object-cover animate-spin-slow" />
+            <img src={reel.userAvatarUrl || ""} className="w-full h-full object-cover animate-spin-slow" />
           </div>
         </div>
       )}
