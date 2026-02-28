@@ -14,7 +14,7 @@ import { magazinesService, type Magazine } from "../services/magazinesService";
 import { userService } from "../services/userService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
-import { ChiefEditorSection } from "../components/ChiefEditorSection";
+import { ChiefEditorSidebar } from "../components/ChiefEditorSidebar";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -76,7 +76,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Fetch chief editor data
     let chiefEditor = null;
     let chiefEditorPosts: Post[] = [];
-    
+
     try {
       chiefEditor = await cache.getOrFetch(
         "chief-editor:info",
@@ -197,15 +197,32 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      {/* Slider */}
-      {sliderPosts.length > 0 && (
-        <Slider posts={sliderPosts} />
-      )}
+      {/* Header Grid: Sidebar + Slider */}
+      <div className="container mx-auto px-4">
+        <div className="newspaper-grid grid grid-cols-1 lg:grid-cols-12 items-stretch border-t border-dashed border-[var(--color-divider)]">
+          {/* Right Side: Chief Editor Sidebar (on RTL starting edge) */}
+          <div className="lg:col-span-4 lg:py-8 lg:px-6">
+            {chiefEditor && (
+              <ChiefEditorSidebar
+                editor={chiefEditor as any}
+                posts={chiefEditorPosts}
+              />
+            )}
+          </div>
 
-      {/* Today's Issue Section */}
+          {/* Main Side: Slider */}
+          <div className="lg:col-span-8 lg:py-8 lg:px-6">
+            {sliderPosts.length > 0 && (
+              <Slider posts={sliderPosts} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Today's Issue & Urgent News Section */}
       <TodaysIssue
         issueNumber={latestMagazine ? latestMagazine.issueNumber : undefined}
-        date={latestMagazine ? new Date(latestMagazine.createdAt).toLocaleDateString("ar-EG", {
+        date={latestMagazine ? new Date(latestMagazine.createdAt).toLocaleDateString("ar-u-nu-latn", {
           weekday: "long",
           year: "numeric",
           month: "long",
@@ -222,14 +239,6 @@ export default function Home() {
           categorySlug: post.categorySlug
         }))}
       />
-
-      {/* Chief Editor Section */}
-      {chiefEditor && chiefEditorPosts.length > 0 && (
-        <ChiefEditorSection 
-          editor={chiefEditor} 
-          posts={chiefEditorPosts} 
-        />
-      )}
 
       {/* First Category Section */}
       {categoryPosts.length > 0 && categoryPosts[0] && (

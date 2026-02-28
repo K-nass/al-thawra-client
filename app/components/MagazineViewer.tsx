@@ -21,13 +21,13 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
   const [isNavigating, setIsNavigating] = useState<boolean>(false);
 
   // Pan/Zoom functionality
-  const { 
-    containerRef, 
-    transform, 
-    isDragging, 
-    zoomIn, 
-    zoomOut, 
-    setScale 
+  const {
+    containerRef,
+    transform,
+    isDragging,
+    zoomIn,
+    zoomOut,
+    setScale
   } = usePanZoom({
     minScale: 0.5,
     maxScale: 3.0,
@@ -44,16 +44,16 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
   } = usePageTransition(1, { debounceMs: 150 });
 
   // Use proxy URL to avoid CORS issues
-  const proxyUrl = useMemo(() => 
+  const proxyUrl = useMemo(() =>
     date ? `/api/pdf/date/${date}` : `/api/pdf/issue/${issueNumber}`,
     [date, issueNumber]
   );
 
   // Memoize file and options
   const fileConfig = useMemo(() => ({ url: proxyUrl }), [proxyUrl]);
-  const pdfOptions = useMemo(() => ({ 
-    cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/', 
-    cMapPacked: true 
+  const pdfOptions = useMemo(() => ({
+    cMapUrl: 'https://unpkg.com/pdfjs-dist@3.11.174/cmaps/',
+    cMapPacked: true
   }), []);
 
   // Load react-pdf dynamically (client-only)
@@ -64,7 +64,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
       try {
         const reactPdf = await import("react-pdf");
         reactPdf.pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${reactPdf.pdfjs.version}/build/pdf.worker.min.mjs`;
-        
+
         setPdfComponents({
           Document: reactPdf.Document,
           Page: reactPdf.Page,
@@ -74,7 +74,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
         console.error("Failed to load PDF library:", error);
       }
     };
-    
+
     loadPdf();
   }, []);
 
@@ -89,7 +89,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
       // Fetch the PDF file
       const response = await fetch(proxyUrl);
       const blob = await response.blob();
-      
+
       // Create a download link
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
@@ -97,7 +97,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
       link.download = `الثورة-العدد-${issueNumber}.pdf`;
       document.body.appendChild(link);
       link.click();
-      
+
       // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
@@ -227,12 +227,12 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
               >
                 <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               </button>
-              <motion.span 
+              <motion.span
                 key={currentPage}
                 initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.2 }}
-                className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px] text-center"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px] text-center font-sans-en"
               >
                 {currentPage} / {numPages}
               </motion.span>
@@ -256,7 +256,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
               >
                 <ZoomOut className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               </button>
-              <motion.span 
+              <motion.span
                 key={transform.scale}
                 initial={{ scale: 1.2, opacity: 0.5 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -325,35 +325,35 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
             }}
           >
             <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-lg overflow-hidden relative min-h-[calc(100vh-8rem)] flex items-center justify-center">
-                {/* Loading Overlay - Stable, no layout shift */}
-                <AnimatePresence>
-                  {isNavigating && (
-                    <motion.div 
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-20 flex items-center justify-center pointer-events-none"
-                      role="status"
-                      aria-live="polite"
-                    >
-                      <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="md" />
-                      <span className="sr-only">Loading page {currentPage}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              {/* Loading Overlay - Stable, no layout shift */}
+              <AnimatePresence>
+                {isNavigating && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-20 flex items-center justify-center pointer-events-none"
+                    role="status"
+                    aria-live="polite"
+                  >
+                    <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="md" />
+                    <span className="sr-only">Loading page {currentPage}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                <div className="min-h-[calc(100vh-8rem)] w-full flex items-center justify-center">
-                  <Document
-                    file={fileConfig}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                    options={pdfOptions}
-                    loading={
+              <div className="min-h-[calc(100vh-8rem)] w-full flex items-center justify-center">
+                <Document
+                  file={fileConfig}
+                  onLoadSuccess={onDocumentLoadSuccess}
+                  options={pdfOptions}
+                  loading={
                     // <div className="flex items-center justify-center w-full h-[calc(100vh-8rem)]">
-                      <PDFLoadingSpinner message="جاري تحميل المجلة..." size="lg" />
+                    <PDFLoadingSpinner message="جاري تحميل المجلة..." size="lg" />
                     // </div>
                   }
-                    error={
+                  error={
                     <div className="flex items-center justify-center w-full h-screen">
                       <div className="text-center">
                         <X className="w-16 h-16 text-red-600 mx-auto mb-4" />
@@ -367,20 +367,20 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
                       </div>
                     </div>
                   }
-                  >
-                    <Page
-                      pageNumber={currentPage}
-                      scale={transform.scale * 1.5}
-                      renderTextLayer={true}
-                      renderAnnotationLayer={true}
-                      onRenderSuccess={handlePageRenderComplete}
-                      loading={
-                        <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="lg" />
-                      }
-                    />
-                  </Document>
-                </div>
+                >
+                  <Page
+                    pageNumber={currentPage}
+                    scale={transform.scale * 1.5}
+                    renderTextLayer={false}
+                    renderAnnotationLayer={false}
+                    onRenderSuccess={handlePageRenderComplete}
+                    loading={
+                      <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="lg" />
+                    }
+                  />
+                </Document>
               </div>
+            </div>
           </motion.div>
         </div>
       </div>
