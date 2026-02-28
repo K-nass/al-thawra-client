@@ -46,7 +46,7 @@ export function TodaysIssue({
               </div>
               <div>
                 <h2 className="text-3xl font-black text-white mb-1">عدد اليوم</h2>
-                <div className="flex items-center gap-3 text-white/90">
+                <div className="flex items-center gap-3 text-white/90 font-sans-en">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
                     <span className="text-sm font-medium">{date}</span>

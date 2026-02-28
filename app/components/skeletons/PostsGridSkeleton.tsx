@@ -15,9 +15,9 @@ export function PostsGridSkeleton() {
           <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
         </div>
       </div>
-      
+
       {/* Posts grid skeleton */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="newspaper-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <PostCardSkeleton />
         <PostCardSkeleton />
         <PostCardSkeleton />

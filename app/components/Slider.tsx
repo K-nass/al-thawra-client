@@ -50,9 +50,8 @@ export function Slider({ posts, buildLink }: SliderProps) {
         {posts.map((post, index) => (
           <div
             key={post.id || index}
-            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
-              index === currentIndex ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${index === currentIndex ? "opacity-100" : "opacity-0"
+              }`}
           >
             {post.image ? (
               <img
@@ -77,9 +76,8 @@ export function Slider({ posts, buildLink }: SliderProps) {
           {/* Category Badge */}
           {currentPost.categoryName && (
             <div
-              className={`inline-block px-4 py-1.5 mb-3 text-sm font-bold bg-red-600 text-white rounded transition-opacity duration-500 ${
-                isTransitioning ? "opacity-0" : "opacity-100"
-              }`}
+              className={`inline-block px-4 py-1.5 mb-3 text-sm font-bold bg-red-600 text-white rounded transition-opacity duration-500 ${isTransitioning ? "opacity-0" : "opacity-100"
+                }`}
             >
               {currentPost.categoryName}
             </div>
@@ -88,9 +86,8 @@ export function Slider({ posts, buildLink }: SliderProps) {
           {/* Title */}
           <Link to={linkHref}>
             <h2
-              className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 line-clamp-2 hover:text-gray-200 transition-all duration-500 ${
-                isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
-              }`}
+              className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 line-clamp-2 hover:text-gray-200 transition-all duration-500 ${isTransitioning ? "opacity-0 translate-y-4" : "opacity-100 translate-y-0"
+                }`}
             >
               {currentPost.title}
             </h2>
@@ -98,11 +95,10 @@ export function Slider({ posts, buildLink }: SliderProps) {
 
           {/* Date */}
           <time
-            className={`text-gray-300 text-sm transition-opacity duration-500 ${
-              isTransitioning ? "opacity-0" : "opacity-100"
-            }`}
+            className={`text-gray-300 text-sm transition-opacity duration-500 font-sans-en ${isTransitioning ? "opacity-0" : "opacity-100"
+              }`}
           >
-            {new Date(currentPost.publishedAt || currentPost.createdAt).toLocaleDateString("ar-EG", {
+            {new Date(currentPost.publishedAt || currentPost.createdAt).toLocaleDateString("ar-u-nu-latn", {
               year: "numeric",
               month: "long",
               day: "numeric",
@@ -139,11 +135,10 @@ export function Slider({ posts, buildLink }: SliderProps) {
               setCurrentIndex(index);
               setTimeout(() => setIsTransitioning(false), 500);
             }}
-            className={`transition-all duration-300 rounded-full ${
-              index === currentIndex
-                ? "w-8 h-2.5 bg-white"
-                : "w-2.5 h-2.5 bg-white/50 hover:bg-white/75"
-            }`}
+            className={`transition-all duration-300 rounded-full ${index === currentIndex
+              ? "w-8 h-2.5 bg-white"
+              : "w-2.5 h-2.5 bg-white/50 hover:bg-white/75"
+              }`}
             aria-label={`الانتقال إلى الشريحة ${index + 1}`}
           />
         ))}

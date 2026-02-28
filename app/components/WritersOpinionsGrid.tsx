@@ -19,7 +19,7 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
 
   const totalPages = Math.ceil(posts.length / postsPerPage);
   const visiblePosts = posts.slice(currentIndex * postsPerPage, (currentIndex + 1) * postsPerPage);
-  
+
   const canGoNext = currentIndex < totalPages - 1;
   const canGoPrev = currentIndex > 0;
 
@@ -38,10 +38,10 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
   return (
     <section className="w-full" dir="rtl" lang="ar">
       {showHeader && (
-        <ScrollAnimation 
+        <ScrollAnimation
           key={`writers-header-${currentIndex}`}
-          animation="slideUp" 
-          once={false} 
+          animation="slideUp"
+          once={false}
           className="flex items-center justify-between mb-6"
         >
           <div className="flex items-center">
@@ -83,10 +83,10 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
         </ScrollAnimation>
       )}
 
-      <StaggerContainer 
+      <StaggerContainer
         key={`writers-grid-${currentIndex}`}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-        staggerDelay={0.15} 
+        className="newspaper-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        staggerDelay={0.15}
         once={false}
       >
         {visiblePosts.map((post) => (
@@ -95,10 +95,10 @@ export function WritersOpinionsGrid({ posts, showHeader = true, postsPerPage = 3
               to={`/writers-opinions/${post.slug}`}
               className="block group"
             >
-              <div className="relative h-[280px] rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="relative h-[280px] overflow-hidden transition-all duration-300">
                 {/* Gradient Background */}
                 <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-primary-light)] to-[var(--color-secondary)] opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
-                
+
                 {/* Content */}
                 <div className="relative h-full p-6 flex flex-col justify-between text-white">
                   {/* Top Section - Category */}

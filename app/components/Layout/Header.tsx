@@ -208,118 +208,99 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       {/* Main Navigation Bar */}
       <div className="border-t border-white/20">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-3">
-            {/* Right Side - Navigation & Logo */}
-            <div className="flex items-center gap-6">
-              {/* Logo */}
+          <div className="flex justify-between items-center py-3 relative">
+            {/* Navigation Links - Right Side (3 links) */}
+            <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 mr-10 group/right">
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/"
+              >
+                <Newspaper className="w-4 h-4" />
+                <span>الصحيفة</span>
+              </Link>
+
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/magazines"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/magazines"
+              >
+                <FileText className="w-4 h-4" />
+                <span>أرشيف الثورة</span>
+              </Link>
+
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/tv"
+              >
+                <Tv className="w-4 h-4" />
+                <span>التلفزيون</span>
+              </Link>
+            </nav>
+
+            {/* Logo - Always Centered */}
+            <div className="shrink-0 mx-6 order-last lg:order-none">
               <Link
                 to="/"
-                className="text-white hover:opacity-90 transition-opacity"
+                className="text-white hover:opacity-90 transition-opacity flex items-center"
               >
                 <img
                   src="/logo.png"
                   alt="الثورة لوجو"
                   style={{ width: "130px" }}
+                  className="mx-auto"
                 />
               </Link>
-
-              {/* Navigation Links */}
-              <nav className="hidden lg:flex items-center gap-6">
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/"
-                >
-                  <Newspaper className="w-4 h-4" />
-                  <span>الصحيفة</span>
-                </Link>
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/magazines"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/magazines"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>أرشيف الثورة</span>
-                </Link>
-
-                {/* <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/writers-opinions"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/writers-opinions"
-                >
-                  <PenTool className="w-4 h-4" />
-                  <span>كتاب وآراء</span>
-                </Link> */}
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/tv"
-                >
-                  <Tv className="w-4 h-4" />
-                  <span>التلفزيون</span>
-                </Link>
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/reels"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/reels"
-                >
-                  <Film className="w-4 h-4" />
-                  <span>ريلز</span>
-                </Link>
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/podcast"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/podcast"
-                >
-                  <Podcast className="w-4 h-4" />
-                  <span>بودكاست</span>
-                </Link>
-
-                <Link
-                  className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/profile"
-                    ? "border-white font-bold"
-                    : "border-transparent hover:border-white/50"
-                    }`}
-                  to="/profile"
-                >
-                  <User className="w-4 h-4" />
-                  <span>صفحتي</span>
-                </Link>
-              </nav>
             </div>
 
-            {/* Left Side - Actions */}
-            <div className="flex items-center gap-2">
+            {/* Navigation Links - Left Side (3 links) */}
+            <nav className="hidden lg:flex flex-1 items-center justify-start gap-6 ml-10 group/left">
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/reels"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/reels"
+              >
+                <Film className="w-4 h-4" />
+                <span>ريلز</span>
+              </Link>
 
-              {/* President Image - Large Circular */}
-              {/* <div className="">
-                <img
-                  src="/images/rashad-al-alimi.jpg"
-                  alt="رئيس المجلس الرئاسي - رشاد العليمي"
-                  title="رئيس المجلس الرئاسي - رشاد العليمي"
-                  className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg"
-                />
-              </div> */}
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/podcast"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/podcast"
+              >
+                <Podcast className="w-4 h-4" />
+                <span>بودكاست</span>
+              </Link>
 
+              <Link
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/profile"
+                  ? "border-white font-bold"
+                  : "border-transparent hover:border-white/50"
+                  }`}
+                to="/profile"
+              >
+                <User className="w-4 h-4" />
+                <span>صفحتي</span>
+              </Link>
+            </nav>
+
+            {/* Mobile Actions - Stays Left */}
+            <div className="lg:hidden absolute left-0 flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
+                className="p-2 text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
                 aria-label="القائمة"
               >
                 {isMobileMenuOpen ? (
@@ -409,110 +390,114 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       {/* Search Bar */}
-      {isSearchOpen && (
-        <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
-          <div className="container mx-auto px-4 py-4">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const query = formData.get("q") as string;
-                if (query.trim()) {
-                  window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
-                }
-              }}
-              className="flex items-center gap-2"
-            >
-              <input
-                type="search"
-                name="q"
-                placeholder="ابحث في الثورة..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
-                autoFocus
-                dir="rtl"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium"
+      {
+        isSearchOpen && (
+          <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
+            <div className="container mx-auto px-4 py-4">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const query = formData.get("q") as string;
+                  if (query.trim()) {
+                    window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+                  }
+                }}
+                className="flex items-center gap-2"
               >
-                بحث
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsSearchOpen(false)}
-                className="p-2 text-gray-600 hover:text-[var(--color-primary)] transition-colors"
-                aria-label="إغلاق"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </form>
+                <input
+                  type="search"
+                  name="q"
+                  placeholder="ابحث في الثورة..."
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
+                  autoFocus
+                  dir="rtl"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium"
+                >
+                  بحث
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="p-2 text-gray-600 hover:text-[var(--color-primary)] transition-colors"
+                  aria-label="إغلاق"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="lg:hidden bg-[var(--color-primary-dark)]">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-white">
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              الصحيفة
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/magazines"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              أرشيف الثورة
-            </Link>
-            {/* <Link
+      {
+        isMobileMenuOpen && (
+          <div className="lg:hidden bg-[var(--color-primary-dark)]">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-white">
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                الصحيفة
+              </Link>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/magazines"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                أرشيف الثورة
+              </Link>
+              {/* <Link
               className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
               to="/writers-opinions"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               كتاب وآراء
             </Link> */}
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/tv"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              التلفزيون
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/reels"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              ريلز
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/podcast"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              بودكاست
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/profile"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              صفحتي
-            </Link>
-            <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/contact"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              اتصل بنا
-            </Link>
-          </nav>
-        </div>
-      )}
-    </header>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/tv"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                التلفزيون
+              </Link>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/reels"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                ريلز
+              </Link>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/podcast"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                بودكاست
+              </Link>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/profile"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                صفحتي
+              </Link>
+              <Link
+                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                to="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                اتصل بنا
+              </Link>
+            </nav>
+          </div>
+        )
+      }
+    </header >
   );
 }

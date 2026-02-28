@@ -56,15 +56,15 @@ export function PostsGrid({
     <section className="w-full" dir="rtl" lang="ar">
       {/* Category Header */}
       {showCategoryHeader && categoryName && (
-        <ScrollAnimation 
+        <ScrollAnimation
           key={`header-${categorySlug}-${currentIndex}`}
-          animation="slideUp" 
-          once={false} 
+          animation="slideUp"
+          once={false}
           className="flex items-center justify-between mb-6"
         >
           <div className="flex items-center">
             {categorySlug && (
-              <Link 
+              <Link
                 to={`/category/${categorySlug}`}
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors group"
                 title={`عرض جميع مقالات ${categoryName}`}
@@ -103,10 +103,10 @@ export function PostsGrid({
       )}
 
       {/* Posts Grid */}
-      <StaggerContainer 
+      <StaggerContainer
         key={`posts-grid-${currentIndex}`}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" 
-        staggerDelay={0.15} 
+        className="newspaper-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+        staggerDelay={0.15}
         once={false}
         immediate={true}
       >

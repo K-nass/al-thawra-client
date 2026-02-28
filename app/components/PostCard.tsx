@@ -10,7 +10,7 @@ interface PostCardProps {
 
 export function PostCard({ post, buildLink }: PostCardProps) {
   const displayDate = post.publishedAt || post.createdAt;
-  const formattedDate = new Date(displayDate).toLocaleDateString("ar-EG", {
+  const formattedDate = new Date(displayDate).toLocaleDateString("ar-u-nu-latn", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -21,7 +21,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
     : `/posts/categories/${post.categorySlug}/articles/${post.slug}`;
 
   return (
-    <article className="group relative bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <article className="group relative bg-[var(--color-white)] overflow-hidden transition-all">
       {/* Image */}
       <Link to={linkHref} className="block relative aspect-16/10 overflow-hidden">
         {post.image ? (
@@ -39,7 +39,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
             <span className="text-[var(--color-text-secondary)] text-sm">لا توجد صورة</span>
           </div>
         )}
-        
+
         {/* Share Icon */}
         <button
           className="absolute top-3 left-3 w-8 h-8 bg-[var(--color-white)]/90 hover:bg-[var(--color-white)] rounded-full flex items-center justify-center shadow-sm transition-colors"
@@ -90,7 +90,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
         </Link>
 
         {/* Date */}
-        <time className="text-sm text-[var(--color-text-secondary)]" dateTime={displayDate}>
+        <time className="text-sm text-[var(--color-text-secondary)] font-sans-en" dateTime={displayDate}>
           {formattedDate}
         </time>
 
@@ -100,10 +100,10 @@ export function PostCard({ post, buildLink }: PostCardProps) {
             to={`/author/${post.authorName}`}
             className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--color-divider)] group/author hover:bg-[var(--color-background-light)] -mx-4 px-4 py-2 transition-colors"
           >
-            <img 
-              src={post.authorImage} 
-              alt={post.authorName} 
-              className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-200" 
+            <img
+              src={post.authorImage}
+              alt={post.authorName}
+              className="w-7 h-7 rounded-full object-cover flex-shrink-0 ring-1 ring-gray-200"
             />
             <span className="text-xs font-semibold text-gray-700 group-hover/author:text-[var(--color-primary)] transition-colors truncate">
               {post.authorName}

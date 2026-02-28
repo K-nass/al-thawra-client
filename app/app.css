@@ -46,23 +46,30 @@
   --font-serif: "Inter", "ArbFONTS Amiri", "Amiri", ui-serif, Georgia, serif;
 }
 
+/* Configure Tailwind 4's dark: variant to use our data-theme attribute */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /* Global Arabic font preference */
 /* Global Arabic font preference */
-/* Force Western Arabic Numerals (0-9) */
-@font-face {
-  font-family: "WesternDigits";
-  src: local("Arial"), local("Helvetica"), local("Inter"), local("sans-serif");
-  unicode-range: U+0030-0039;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap');
 
 html[dir="rtl"] {
-  /* Prepend WesternDigits to ensure numbers are always rendered with Western fonts */
-  --font-family-base: "WesternDigits", "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif;
+  /* Priority: Use Google Font 'Inter' or system sans-serif for digits/Latin, then fallback to Arabic fonts */
+  --font-family-base: "Inter", "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif, "Dialogue", "Yakout", "ArbFONTS Amiri";
 }
 
-html[dir="rtl"] body,
-html[dir="rtl"] * {
-  font-family: var(--font-family-base) !important;
+html[dir="rtl"] body {
+  font-family: var(--font-family-base);
+}
+
+/* Base font for all elements, allowing fallbacks to work correctly */
+html[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, p, span, div, a, li, button, input, textarea) {
+  font-family: var(--font-family-base);
+}
+
+/* Numeric/Latin Utility Class: Force standard sans-serif to avoid encoding issues */
+.font-sans-en {
+  font-family: "Inter", "Roboto", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 :root {
@@ -175,10 +182,11 @@ body {
   color: var(--color-text-primary);
   direction: rtl;
   transition: background-color 0.3s ease, color 0.3s ease;
+  color-scheme: light;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 /* Dark mode text color overrides */
@@ -486,4 +494,66 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
   /* Chrome, Safari and Opera */
+}
+
+/* ================================================
+   Newspaper-style dashed grid separators (RTL)
+   - Horizontal dashed lines between rows
+   - Vertical dashed lines between columns
+   - No borders on outer edges
+   ================================================ */
+.newspaper-grid>* {
+  padding: 1rem;
+  border-bottom: 1px dashed var(--color-divider);
+}
+
+/* Mobile (1-col): only horizontal separators, remove on last item */
+.newspaper-grid>*:last-child {
+  border-bottom: none;
+}
+
+/* md (2-col): vertical separators + last-row removal */
+@media (min-width: 768px) {
+  .newspaper-grid>* {
+    padding: 1.25rem;
+    border-left: 1px dashed var(--color-divider);
+  }
+
+  /* Remove left border on last column (every 2nd = leftmost in RTL) */
+  .newspaper-grid>*:nth-child(2n) {
+    border-left: none;
+  }
+
+  /* Last row: re-enable last-child bottom, remove last 2 items' bottom */
+  .newspaper-grid>*:last-child {
+    border-bottom: 1px dashed var(--color-divider);
+  }
+
+  .newspaper-grid>*:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+}
+
+/* lg (3-col): override md rules for 3 columns */
+@media (min-width: 1024px) {
+
+  /* Re-enable left border on 2nd child (removed by md 2n rule) */
+  .newspaper-grid>*:nth-child(2n) {
+    border-left: 1px dashed var(--color-divider);
+  }
+
+  /* Remove left border on every 3rd child (leftmost column in RTL) */
+  .newspaper-grid>*:nth-child(3n) {
+    border-left: none;
+  }
+
+  /* Re-enable bottom on items removed by md last-2 rule */
+  .newspaper-grid>*:nth-last-child(-n+2) {
+    border-bottom: 1px dashed var(--color-divider);
+  }
+
+  /* Remove bottom on last 3 items (last row in 3-col) */
+  .newspaper-grid>*:nth-last-child(-n+3) {
+    border-bottom: none;
+  }
 }
