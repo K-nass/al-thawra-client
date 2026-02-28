@@ -21,26 +21,21 @@ export async function loader({ request }: { request: Request }) {
   const data = await reelsService.getReels(cursor);
 
   if (reelId && !cursor) {
-    console.log("Loader: Processing reelId:", reelId);
     try {
       const specificReel = await reelsService.getReelById(reelId);
-      console.log("Loader: Specific reel fetched successfully:", specificReel?.id);
 
       // Prepend specific reel and remove duplicate if exists in main feed
       const filteredReels = data.reels.filter(r => r.id !== reelId);
       const newReels = [specificReel, ...filteredReels];
 
-      console.log("Loader: returning reordered reels. First ID:", newReels[0].id);
       return {
         ...data,
         reels: newReels
       };
     } catch (e) {
-      console.error("Loader: Error fetching specific reel:", e);
       // Fallback: Check if the reel happens to be in the main feed
       const foundInFeed = data.reels.find(r => r.id === reelId);
       if (foundInFeed) {
-        console.log("Loader: specific reel found in main feed (fallback).");
         const filteredReels = data.reels.filter(r => r.id !== reelId);
         return { ...data, reels: [foundInFeed, ...filteredReels] };
       }
@@ -113,7 +108,7 @@ export default function ReelsPage() {
         await containerRef.current?.requestFullscreen();
         setIsFullScreen(true);
       } catch (err) {
-        console.error("Error attempting to enable fullscreen:", err);
+        // Error attempting to enable fullscreen
       }
     } else {
       await document.exitFullscreen();
@@ -241,7 +236,6 @@ function ReelItem({ reel, isActive, isFullScreen, toggleFullScreen }: { reel: Re
       await navigator.clipboard.writeText(window.location.href);
       showToast("تم نسخ الرابط بنجاح", "success");
     } catch (err) {
-      console.error("Failed to copy link", err);
       showToast("فشل نسخ الرابط", "error");
     }
   };
@@ -251,7 +245,9 @@ function ReelItem({ reel, isActive, isFullScreen, toggleFullScreen }: { reel: Re
       const timer = setTimeout(() => {
         if (videoRef.current) {
           videoRef.current.currentTime = 0;
-          videoRef.current.play().then(() => setIsPlaying(true)).catch(e => console.log("Autoplay blocked/failed", e));
+          videoRef.current.play().then(() => setIsPlaying(true)).catch(e => {
+            // Autoplay blocked/failed
+          });
         }
       }, 300);
       return () => clearTimeout(timer);

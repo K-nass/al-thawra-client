@@ -65,7 +65,7 @@ export async function loader() {
           categoryVideos.push({ category, videos });
         }
       } catch (error) {
-        console.error(`Error fetching videos for category ${category.slug}:`, error);
+        // Error fetching videos for category
       }
     }
 
@@ -75,7 +75,6 @@ export async function loader() {
       categoryVideos,
     };
   } catch (error: any) {
-    console.error('Error loading videos:', error.response?.data || error.message);
     // Return empty data on error
     return {
       sliderVideos: [],

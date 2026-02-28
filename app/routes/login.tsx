@@ -79,8 +79,6 @@ export default function LoginPage() {
   // Handle successful login on client-side
   useEffect(() => {
     if (actionData?.success && actionData?.authData) {
-      console.log('✅ Login successful! Setting cookies on client-side...');
-      
       // Set cookies on client-side
       const { accessToken, refreshToken, user, expiresAt } = actionData.authData;
       
@@ -108,10 +106,6 @@ export default function LoginPage() {
           // We can only set Secure and SameSite from client-side
           const secure = window.location.protocol === 'https:' ? '; Secure' : '';
           document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/; SameSite=Strict${secure}`;
-          
-          if (httpOnly) {
-            console.warn(`⚠️ Cannot set HttpOnly flag for "${name}" from client-side. This must be done by the backend server.`);
-          }
         };
         
         // Set tokens (ideally these should be HttpOnly from backend)
@@ -120,8 +114,6 @@ export default function LoginPage() {
         // User data can be non-HttpOnly since it's not sensitive
         setCookie('user', JSON.stringify(user), expiresAt, false);
         
-        console.log('✅ Cookies set successfully on client-side!');
-        console.log('⚠️ Note: For maximum security, ask your backend to set HttpOnly cookies');
         authService.debugCookies();
         
         // Redirect to admin or home based on role

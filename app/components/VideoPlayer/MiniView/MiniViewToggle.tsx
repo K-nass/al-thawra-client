@@ -17,12 +17,9 @@ export function MiniViewToggle({
   const { isActive, activate, deactivate } = useMiniViewStore();
 
   const handleToggle = () => {
-    console.log('MiniViewToggle clicked - current isActive:', isActive);
     if (isActive) {
-      console.log('Deactivating Mini View');
       deactivate();
     } else {
-      console.log('Activating Mini View with data:', { src: videoSrc, poster: videoPoster, title: videoTitle });
       activate({
         src: videoSrc,
         poster: videoPoster,

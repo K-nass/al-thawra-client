@@ -55,17 +55,12 @@ export const loader = async ({ params }: LoaderArgs) => {
   // Decode the slug in case it's URL-encoded (for Arabic slugs)
   const slug = decodeURIComponent(params.slug || "");
 
-  console.log("🔍 Writers Opinion Loader - Slug:", slug);
-  console.log("🔍 Original param:", params.slug);
-
   try {
     const cacheKey = `writers-opinion:${slug}`;
 
     const article = await cache.getOrFetch(
       cacheKey,
       async () => {
-        console.log("📡 Step 1: Fetching posts with HasAuthor=true");
-
         // Step 1: Search for the post with HasAuthor=true to get the categorySlug
         const searchResponse = await axiosInstance.get<{
           items: Array<{ categorySlug: string; slug: string }>;
@@ -77,32 +72,20 @@ export const loader = async ({ params }: LoaderArgs) => {
           },
         });
 
-        console.log("📊 Total posts with authors:", searchResponse.data.totalCount);
-        console.log("📋 Posts found:", searchResponse.data.items.length);
-
         // Find the post with matching slug
         const matchingPost = searchResponse.data.items.find(
           (post) => post.slug === slug
         );
 
-        console.log("🎯 Matching post:", matchingPost ? "Found" : "Not found");
-
         if (!matchingPost) {
-          console.error("❌ Article not found with slug:", slug);
-          console.log("Available slugs:", searchResponse.data.items.map(p => p.slug).slice(0, 10));
           throw new Error("Article not found");
         }
-
-        console.log("✅ Found post with categorySlug:", matchingPost.categorySlug);
 
         // Step 2: Get full article details using the correct API endpoint
         // /api/v1/posts/categories/{CategorySlug}/articles/{Slug}
         const articleUrl = `/posts/categories/${matchingPost.categorySlug}/articles/${slug}`;
-        console.log("📡 Step 2: Fetching article from:", articleUrl);
 
         const articleResponse = await axiosInstance.get<ArticleResponse>(articleUrl);
-
-        console.log("✅ Article loaded successfully:", articleResponse.data.title);
 
         return articleResponse.data;
       },
@@ -113,8 +96,6 @@ export const loader = async ({ params }: LoaderArgs) => {
       article,
     };
   } catch (error: any) {
-    console.error("❌ Error loading writers opinion article:", error);
-    console.error("Error details:", error.response?.data || error.message);
     throw new Response("Article not found", { status: 404 });
   }
 };

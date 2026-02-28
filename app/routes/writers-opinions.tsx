@@ -45,7 +45,6 @@ export async function loader({ request }: LoaderArgs) {
       totalPages: response.totalPages,
     };
   } catch (error: any) {
-    console.error("Error loading writers opinions:", error);
     return {
       posts: [],
       totalPosts: 0,

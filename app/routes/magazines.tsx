@@ -65,8 +65,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       CacheTTL.MEDIUM
     );
 
-    console.log("Magazines response:", response.data);
-
     return {
       magazines: response.data.items,
       pageNumber: response.data.pageNumber,
@@ -77,10 +75,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       itemsTo: response.data.itemsTo,
     };
   } catch (error: any) {
-    console.error("Error loading magazines:", error);
-    console.error("Error response:", error.response?.data);
-    console.error("Error details:", error.response?.data?.errors);
-    
     // Return empty data on error
     return {
       magazines: [],

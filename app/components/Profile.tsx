@@ -53,12 +53,7 @@ export function Profile() {
 
   // Show success/error messages when profile is updated
   useEffect(() => {
-    console.log('📋 Profile update effect triggered');
-    console.log('📋 Fetcher data:', fetcher.data);
-    console.log('📋 Action data:', actionData);
-    
     if (fetcher.data?.success || actionData?.success) {
-      console.log('✅ Profile update successful!');
       showToast('تم حفظ التغييرات بنجاح', 'success');
       setShowSuccess(true);
       setIsEditing(false);
@@ -70,7 +65,6 @@ export function Profile() {
       }, 1000);
     } else if (fetcher.data?.error || actionData?.error) {
       const errorMsg = fetcher.data?.error || actionData?.error || 'حدث خطأ أثناء حفظ التغييرات';
-      console.log('❌ Profile update error:', errorMsg);
       showToast(errorMsg, 'error');
     }
   }, [fetcher.data, actionData]);

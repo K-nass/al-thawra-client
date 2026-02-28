@@ -86,7 +86,6 @@ export function VideoPlayer({
   // Sync video element to Mini View store when active OR when video ref changes
   useEffect(() => {
     if (videoRef.current) {
-      console.log('VideoPlayer - Setting video element in store:', videoRef.current);
       setVideoElement(videoRef.current);
     }
   }, [videoRef.current, setVideoElement]);
@@ -96,10 +95,7 @@ export function VideoPlayer({
     return () => {
       // Don't clear if Mini View is active - let Mini View manage its own lifecycle
       if (!isMiniViewActive) {
-        console.log('VideoPlayer - Clearing video element from store');
         setVideoElement(null);
-      } else {
-        console.log('VideoPlayer - Not clearing video element (Mini View is active)');
       }
     };
   }, [setVideoElement, isMiniViewActive]);
@@ -111,7 +107,6 @@ export function VideoPlayer({
 
     if (isMiniViewActive && isSubsequentActivation && videoRef.current && !videoRef.current.paused) {
       videoRef.current.pause();
-      console.log('VideoPlayer - main video paused because Mini View is active');
     }
   }, [isMiniViewActive, activationCount, videoRef]);
 

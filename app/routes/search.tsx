@@ -43,7 +43,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       totalPages: postsResponse.totalPages,
     };
   } catch (error: any) {
-    console.error("Error searching posts:", error.response?.data || error.message);
     return {
       query,
       posts: [],
@@ -107,7 +106,7 @@ export default function SearchPage() {
       setCurrentPage(nextPage);
       setDisplayCount(prev => prev + 6);
     } catch (error) {
-      console.error("Error loading more posts:", error);
+      // Error loading more posts
     } finally {
       setIsLoadingMore(false);
     }

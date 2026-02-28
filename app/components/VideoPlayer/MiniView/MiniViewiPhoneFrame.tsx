@@ -12,15 +12,7 @@ export function MiniViewiPhoneFrame() {
   const [duration, setDuration] = useState(0);
   const hasInitializedRef = useRef(false);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('MiniViewiPhoneFrame - videoData:', videoData, 'videoElement:', videoElement, 'hasInitialized:', hasInitializedRef.current);
-  }, [videoData, videoElement]);
-
-  // Initialize Mini View video
-  // - First activation: try to resume from original video element
-  // - Subsequent activations: restart from 0 using videoData.src
-  // In all cases: show video immediately (no waiting for loadeddata)
+  // Initialize video when component mounts or videoData changes
   useEffect(() => {
     if (!miniVideoRef.current || !videoData || hasInitializedRef.current) {
       return;
@@ -30,15 +22,10 @@ export function MiniViewiPhoneFrame() {
     const originalVideo = videoElement;
     const isFirstActivation = activationCount <= 1;
 
-    console.log('Initializing Mini View video (simplified)');
-    console.log('Activation count:', activationCount, 'hasOriginal:', !!originalVideo);
-
     if (isFirstActivation && originalVideo) {
-      console.log('Mini View - first activation, resuming from original video');
       miniVideo.src = originalVideo.src;
       miniVideo.currentTime = originalVideo.currentTime;
     } else {
-      console.log('Mini View - activation using videoData at t=0');
       miniVideo.src = videoData.src;
       miniVideo.currentTime = 0;
     }
@@ -54,7 +41,6 @@ export function MiniViewiPhoneFrame() {
     // so that both players cannot play together, even if mini autoplay is blocked.
     if (!isFirstActivation && originalVideo && !originalVideo.paused) {
       originalVideo.pause();
-      console.log('Original video paused immediately for subsequent Mini View activation');
     }
 
     hasInitializedRef.current = true;
@@ -73,17 +59,15 @@ export function MiniViewiPhoneFrame() {
     miniVideo
       .play()
       .then(() => {
-        console.log('Mini video playing');
         setIsPlaying(true);
 
         // Pause original to prevent double audio when it exists
         if (originalVideo && !originalVideo.paused) {
           originalVideo.pause();
-          console.log('Original video paused to prevent double audio');
         }
       })
       .catch(err => {
-        console.error('Mini View play error:', err);
+        // Mini View play error
       });
   }, [videoElement, videoData, activationCount]);
 
@@ -123,7 +107,6 @@ export function MiniViewiPhoneFrame() {
   // Cleanup: reset when Mini View closes completely
   useEffect(() => {
     return () => {
-      console.log('Mini View unmounting - cleaning up');
       hasInitializedRef.current = false;
       setIsVideoReady(false);
       
@@ -131,7 +114,7 @@ export function MiniViewiPhoneFrame() {
       if (videoElement && miniVideoRef.current && !miniVideoRef.current.paused) {
         videoElement.currentTime = miniVideoRef.current.currentTime;
         videoElement.play().catch(() => {
-          console.log('Could not restore original video playback');
+          // Could not restore original video playback
         });
       }
     };
@@ -156,7 +139,7 @@ export function MiniViewiPhoneFrame() {
           setIsPlaying(true);
         })
         .catch(err => {
-          console.error('Mini View manual play error:', err);
+          // Mini View manual play error
         });
     } else {
       video.pause();

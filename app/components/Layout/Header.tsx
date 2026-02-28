@@ -47,7 +47,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
   useEffect(() => {
     // Get current user from cookies
     const user = authService.getCurrentUser();
-    console.log("Header - Current user:", user);
     setCurrentUser(user);
   }, [location.pathname]);
 

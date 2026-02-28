@@ -50,19 +50,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     ).catch(() => []);
 
     // Fetch the latest magazine (today's issue or most recent)
-    console.log('Fetching latest magazine...');
-
     let latestMagazine = await cache.getOrFetch(
       'magazine:latest',
       () => magazinesService.getTodaysMagazine(),
       CacheTTL.SHORT
     ).catch((error) => {
-      console.error('Error fetching latest magazine:', error);
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-      });
       return null;
     });
 
@@ -94,10 +86,8 @@ export async function loader({ request }: Route.LoaderArgs) {
         chiefEditorPosts = response.slice(0, 5); // Take only first 5
       }
     } catch (error) {
-      console.error("Error fetching chief editor data:", error);
+      // Error fetching chief editor data
     }
-
-    console.log('Final latest magazine data:', latestMagazine);
 
     return {
       sliderPosts,
@@ -108,7 +98,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       chiefEditorPosts,
     };
   } catch (error: any) {
-    console.error('Error loading home page:', error.response?.data || error.message);
     return {
       sliderPosts: [],
       writersPosts: [],
@@ -163,7 +152,7 @@ export default function Home() {
             });
           }
         } catch (error) {
-          console.error(`Error fetching posts for category ${category.slug}:`, error);
+          // Error fetching posts for category
         }
       }
 

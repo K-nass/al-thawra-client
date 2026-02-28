@@ -45,7 +45,7 @@ export function usePictureInPicture(videoRef: React.RefObject<HTMLVideoElement |
         await document.exitPictureInPicture();
       }
     } catch (err) {
-      console.error('PiP error:', err);
+      // PiP error
     }
   }, [isPiP, videoRef, isClient]);
 

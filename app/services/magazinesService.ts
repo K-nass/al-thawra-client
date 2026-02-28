@@ -40,7 +40,6 @@ class MagazinesService {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching magazines:", error.response?.data || error.message);
       throw error;
     }
   }
@@ -54,7 +53,6 @@ class MagazinesService {
       const magazine = response.items.find(m => m.issueNumber === issueNumber);
       return magazine || null;
     } catch (error: any) {
-      console.error(`Error fetching magazine ${issueNumber}:`, error.message);
       return null;
     }
   }
@@ -73,24 +71,13 @@ class MagazinesService {
         apiDate = `${date}T00:00:00Z`;
       }
 
-      console.log(`Formatted API date: ${apiDate}`);
-
       const response = await axios.get<Magazine>(`${this.baseUrl}/by-date`, {
         params: {
           Date: apiDate,
         },
       });
-      console.log('Magazine by date response:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching magazine for date ${date}:`, {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: error.config?.url,
-        params: error.config?.params,
-      });
       return null;
     }
   }
@@ -104,7 +91,6 @@ class MagazinesService {
 
     // If no magazine for today, fall back to latest
     if (!todaysMagazine) {
-      console.log('No magazine for today, falling back to latest...');
       return this.getLatestMagazine();
     }
 
@@ -119,7 +105,6 @@ class MagazinesService {
       const response = await this.getMagazines({ pageSize: 15, pageNumber: 1 });
       return response.items.length > 0 ? response.items[0] : null;
     } catch (error: any) {
-      console.error("Error fetching latest magazine:", error.message);
       return null;
     }
   }

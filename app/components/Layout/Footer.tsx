@@ -7,7 +7,6 @@ interface FooterProps {
 }
 
 export function Footer({ pages = [] }: FooterProps) {
-  console.log("Footer Received Pages:", pages.length, pages);
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

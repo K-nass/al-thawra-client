@@ -8,7 +8,6 @@ export function NewsletterSubscription() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle newsletter subscription
-    console.log("Newsletter subscription:", { email, receiveLatestNews });
   };
 
   return (

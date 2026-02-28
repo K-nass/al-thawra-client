@@ -22,7 +22,6 @@ export const loader = async () => {
 
     return { editor, posts };
   } catch (error) {
-    console.error("Error loading chief editor articles:", error);
     throw new Response("Failed to load articles", { status: 500 });
   }
 };

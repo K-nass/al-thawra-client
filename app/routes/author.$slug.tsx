@@ -78,7 +78,6 @@ export async function loader({ params }: { params: { slug: string } }) {
 
     return { author, posts };
   } catch (error) {
-    console.error("Failed to load author data:", error);
     throw new Response("Author not found", { status: 404 });
   }
 }

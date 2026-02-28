@@ -70,7 +70,7 @@ export function useVideoPlayer(options: UseVideoPlayerOptions = {}) {
       await video.play();
       setState(prev => ({ ...prev, isPlaying: true, error: null }));
     } catch (err) {
-      console.error('Play error:', err);
+      // Play error
     }
   }, [isClient]);
 

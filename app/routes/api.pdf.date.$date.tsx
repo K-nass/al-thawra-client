@@ -37,7 +37,6 @@ export async function loader({ params }: LoaderFunctionArgs) {
       },
     });
   } catch (error) {
-    console.error("Error proxying PDF:", error);
     throw new Response("Failed to load PDF", { status: 500 });
   }
 }

@@ -23,7 +23,6 @@ export async function loader({ params }: { params: { issueNumber: string } }) {
 
     return { magazine };
   } catch (error) {
-    console.error("Error loading magazine:", error);
     throw new Response("Magazine not found", { status: 404 });
   }
 }

@@ -44,7 +44,7 @@ export async function loader() {
       CacheTTL.LONG
     );
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    // Error fetching categories
   }
 
   try {
@@ -53,9 +53,8 @@ export async function loader() {
       () => pagesService.getFooterPages("Arabic"),
       CacheTTL.LONG
     );
-    console.log("Root Loader Footer Pages:", footerPages.length);
   } catch (error) {
-    console.error("Error fetching footer pages:", error);
+    // Error fetching footer pages
   }
 
   try {
@@ -65,7 +64,7 @@ export async function loader() {
       CacheTTL.MEDIUM
     );
   } catch (error) {
-    console.error("Error fetching trending posts:", error);
+    // Error fetching trending posts
   }
 
   try {
@@ -75,7 +74,7 @@ export async function loader() {
       CacheTTL.LONG
     );
   } catch (error) {
-    console.error("Error fetching chief editor:", error);
+    // Error fetching chief editor
   }
 
   try {
@@ -85,7 +84,7 @@ export async function loader() {
       CacheTTL.MEDIUM
     );
   } catch (error) {
-    console.error("Error fetching chief editor posts:", error);
+    // Error fetching chief editor posts
   }
 
   try {
@@ -95,7 +94,7 @@ export async function loader() {
       CacheTTL.LONG
     );
   } catch (error) {
-    console.error("Error fetching logo settings:", error);
+    // Error fetching logo settings
   }
 
   return { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings };

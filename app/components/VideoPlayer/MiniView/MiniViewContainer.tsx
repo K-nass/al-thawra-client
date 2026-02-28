@@ -21,22 +21,13 @@ export function MiniViewContainer() {
     setMounted(true);
   }, []);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('MiniViewContainer - isActive:', isActive, 'mounted:', mounted, 'videoData:', videoData);
-  }, [isActive, mounted, videoData]);
-
   if (!mounted) {
-    console.log('MiniViewContainer - not mounted yet');
     return null;
   }
 
   if (!isActive) {
-    console.log('MiniViewContainer - not active');
     return null;
   }
-
-  console.log('MiniViewContainer - RENDERING PORTAL');
 
   return createPortal(
     <div 

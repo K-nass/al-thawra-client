@@ -31,7 +31,6 @@ class Cache {
       return null;
     }
 
-    console.log(`✅ Cache HIT: ${key}`);
     return entry.data as T;
   }
 
@@ -45,7 +44,6 @@ class Cache {
       etag,
       url,
     });
-    console.log(`💾 Cache SET: ${key}${etag ? ` (ETag: ${etag.substring(0, 20)}...)` : ''}`);
   }
 
   /**
@@ -55,7 +53,6 @@ class Cache {
     const entry = this.store.get(key);
     if (entry) {
       entry.timestamp = Date.now();
-      console.log(`🔄 Cache REFRESHED: ${key}`);
     }
   }
 
@@ -66,7 +63,6 @@ class Cache {
     const entry = this.store.get(key);
     if (entry) {
       entry.etag = etag;
-      console.log(`🏷️ ETag UPDATED: ${key} -> ${etag.substring(0, 20)}...`);
     }
   }
 
@@ -75,7 +71,6 @@ class Cache {
    */
   delete(key: string): void {
     this.store.delete(key);
-    console.log(`🗑️ Cache DELETE: ${key}`);
   }
 
   /**
@@ -83,7 +78,6 @@ class Cache {
    */
   clear(): void {
     this.store.clear();
-    console.log(`🗑️ Cache CLEARED`);
   }
 
   /**
@@ -95,10 +89,6 @@ class Cache {
       // Dynamic import to avoid circular dependency
       const { default: axios } = await import('./axios');
       
-      console.log(`🔍 [ETag] Validating cache with backend`);
-      console.log(`   URL: ${url}`);
-      console.log(`   Current ETag: ${etag.substring(0, 40)}...`);
-      
       const response = await axios.get(url, {
         headers: {
           'If-None-Match': etag,
@@ -107,20 +97,11 @@ class Cache {
       });
       
       if (response.status === 304) {
-        console.log(`✅ [ETag] 304 Not Modified - Cache is still valid`);
-        console.log(`   Action: Using cached data`);
         return true;
       } else {
-        const newETag = response.headers['etag'];
-        console.log(`🔄 [ETag] 200 OK - Data has changed on backend`);
-        console.log(`   Old ETag: ${etag.substring(0, 40)}...`);
-        console.log(`   New ETag: ${newETag?.substring(0, 40)}...`);
-        console.log(`   Action: Ignoring validation response, will fetch fresh data`);
         return false;
       }
     } catch (error) {
-      console.warn(`⚠️ [ETag] Validation failed, falling back to cached data`);
-      console.warn(`   Error:`, error);
       return true; // Fallback to cache on error
     }
   }
@@ -138,60 +119,41 @@ class Cache {
     const entry = this.store.get(key);
     const expirationTime = ttl || this.defaultTTL;
     
-    console.log(`📦 [Cache] Request for key: ${key}`);
-    
     // Check if cache exists
     if (entry) {
       const isExpired = Date.now() - entry.timestamp > expirationTime;
-      const age = Math.round((Date.now() - entry.timestamp) / 1000);
-      console.log(`   Cache exists (age: ${age}s, expired: ${isExpired})`);
       
       // If validateAlways is true and we have ETag, validate even if not expired
       if (validateAlways && entry.etag && entry.url && !isExpired) {
-        console.log(`🔄 [Cache] validateAlways=true, checking ETag even though cache is fresh`);
         const stillValid = await this.validateWithETag(entry.url, entry.etag);
         
         if (stillValid) {
-          console.log(`✅ [Cache] Returning cached data (validated with 304)`);
           return entry.data as T;
         } else {
-          console.log(`❌ [Cache] ETag validation failed (200 response)`);
-          console.log(`🔄 [Cache] Deleting stale cache and fetching fresh data`);
           this.delete(key);
           // Fall through to fetch fresh data
         }
       }
       // Fast path: Cache exists and hasn't expired (and not forcing validation)
       else if (!isExpired) {
-        console.log(`✅ [Cache] HIT - Returning cached data (no validation needed)`);
         return entry.data as T;
       }
       // Cache expired but has ETag - validate with backend
       else if (entry.etag && entry.url) {
-        console.log(`⏰ [Cache] Expired, validating with ETag`);
         const stillValid = await this.validateWithETag(entry.url, entry.etag);
         
         if (stillValid) {
-          console.log(`✅ [Cache] Validated with 304, refreshing TTL and returning cached data`);
           this.refreshTimestamp(key);
           return entry.data as T;
         } else {
-          console.log(`❌ [Cache] ETag validation failed (200 response)`);
-          console.log(`🔄 [Cache] Deleting stale cache and fetching fresh data`);
           this.delete(key);
           // Fall through to fetch fresh data
         }
-      } else {
-        console.log(`⏰ [Cache] Expired and no ETag, will fetch fresh data`);
       }
-    } else {
-      console.log(`   No cache entry found`);
     }
 
     // Cache miss or validation failed - fetch fresh data
-    console.log(`❌ [Cache] MISS - Fetching fresh data from source`);
     const data = await fetchFn();
-    console.log(`✅ [Cache] Fresh data fetched successfully`);
     
     // Store with URL for future ETag validation
     this.set(key, data, undefined, url);
@@ -217,7 +179,6 @@ class Cache {
       const isExpired = Date.now() - entry.timestamp > expirationTime;
       
       if (!isExpired) {
-        console.log(`✅ Cache HIT: ${key}`);
         return entry.data as T;
       }
       
@@ -234,7 +195,6 @@ class Cache {
     }
 
     // Cache miss or validation failed - fetch fresh data
-    console.log(`❌ Cache MISS: ${key} - Fetching...`);
     const response = await fetchFn();
     
     // Extract data and ETag from axios response

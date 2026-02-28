@@ -46,7 +46,6 @@ class MediaServiceImpl {
       .build();
 
     await this.connection.start();
-    console.log('🟢 SignalR Connected');
     return this.connection;
   }
 
@@ -108,11 +107,9 @@ class MediaServiceImpl {
       }
       
       // Timeout - return fileName only as fallback
-      console.warn('Upload status polling timeout, returning fileName only');
       return { fileName };
 
     } catch (error) {
-      console.error('Upload error:', error);
       throw error;
     }
   }

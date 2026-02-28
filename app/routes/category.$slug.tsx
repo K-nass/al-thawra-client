@@ -52,7 +52,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       selectedSubcategory: subcategorySlug,
     };
   } catch (error: any) {
-    console.error(`Error loading category ${slug}:`, error.response?.data || error.message);
     throw new Response("Category not found", { status: 404 });
   }
 }

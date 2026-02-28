@@ -59,7 +59,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
       article: response.data,
     };
   } catch (error) {
-    console.log(slug);
     throw new Response("Article not found", { status: 404 });
   }
 };

@@ -77,7 +77,6 @@ export function getCurrentUserFromRequest(request: Request) {
     try {
       return JSON.parse(cookies.user);
     } catch (e) {
-      console.error('Failed to parse user from cookie:', e);
       return null;
     }
   }

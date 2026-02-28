@@ -69,10 +69,6 @@ export async function action({ request }: Route.ActionArgs) {
   const instagram = formData.get("instagram") as string;
   const linkedin = formData.get("linkedin") as string;
 
-  console.log('📝 Server: Received form data');
-  console.log('  userName:', userName);
-  console.log('  avatarImage:', avatarImage ? `[File: ${avatarImage.name}, ${avatarImage.size} bytes]` : 'null');
-
   // Validation
   const errors: Record<string, string> = {};
 
@@ -97,11 +93,6 @@ export async function action({ request }: Route.ActionArgs) {
       },
     };
 
-    console.log('📝 Server: Updating profile');
-    console.log('  userId:', userId);
-    console.log('  userName:', updateData.userName);
-    console.log('  avatarImage:', updateData.avatarImage ? `[File: ${updateData.avatarImage.name}]` : 'null');
-    
     try {
       // Pass userId and token to update function for server-side requests
       // Backend returns 204 No Content, so no profile data is returned
@@ -110,17 +101,11 @@ export async function action({ request }: Route.ActionArgs) {
       // Invalidate profile cache after update
       cache.delete('profile:current');
       
-      console.log('✅ Server: Profile update completed successfully');
-      
       return { 
         success: true,
         message: "تم تحديث الملف الشخصي بنجاح" 
       };
     } catch (updateError: any) {
-      console.error('❌ Server: Profile update failed');
-      console.error('  Error:', updateError);
-      console.error('  Response status:', updateError.response?.status);
-      console.error('  Response data:', updateError.response?.data);
       throw updateError;
     }
   } catch (error: any) {

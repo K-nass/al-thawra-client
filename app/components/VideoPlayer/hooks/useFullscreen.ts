@@ -63,7 +63,7 @@ export function useFullscreen(containerRef: React.RefObject<HTMLElement | null>)
         }
       }
     } catch (err) {
-      console.error('Fullscreen error:', err);
+      // Fullscreen error
     }
   }, [isFullscreen, containerRef, isClient]);
 

@@ -22,7 +22,6 @@ export async function loader({ params }: { params: { slug: string } }) {
     
     return { page };
   } catch (error: any) {
-    console.error(`Error loading page ${slug}:`, error.response?.data || error.message);
     throw new Response("Page not found", { status: 404 });
   }
 }

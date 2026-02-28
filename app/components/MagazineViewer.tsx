@@ -71,7 +71,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
         });
         setIsMounted(true);
       } catch (error) {
-        console.error("Failed to load PDF library:", error);
+        // Failed to load PDF library
       }
     };
 
@@ -102,7 +102,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Download failed:", error);
+      // Download failed
     }
   }, [proxyUrl, issueNumber]);
 

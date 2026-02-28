@@ -98,8 +98,6 @@ export default function RegisterPage() {
   // Handle successful registration on client-side (similar to login)
   useEffect(() => {
     if (actionData?.success && actionData?.authData) {
-      console.log('✅ Registration successful! Setting cookies on client-side...');
-
       const { accessToken, refreshToken, user, expiresAt } = actionData.authData;
 
       if (typeof document !== 'undefined') {
@@ -127,8 +125,6 @@ export default function RegisterPage() {
         setCookie('accessToken', accessToken, expiresAt);
         setCookie('refreshToken', refreshToken, expiresAt);
         setCookie('user', JSON.stringify(user), expiresAt);
-
-        console.log('✅ Cookies set successfully on client-side!');
 
         // Redirect to admin or home based on role
         setTimeout(() => {

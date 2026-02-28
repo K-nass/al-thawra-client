@@ -9,7 +9,6 @@ export function useMiniViewPiP() {
 
     // Check if PiP is supported
     if (!document.pictureInPictureEnabled || !videoElement.requestPictureInPicture) {
-      console.log('Picture-in-Picture is not supported');
       return;
     }
 
@@ -30,7 +29,6 @@ export function useMiniViewPiP() {
         }
       } catch (error) {
         // Silently fail if PiP is not supported or blocked
-        console.debug('PiP toggle failed:', error);
       }
     };
 
