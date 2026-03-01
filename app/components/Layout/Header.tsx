@@ -110,19 +110,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             </div>
             {/* Left Side - Icons & Actions */}
             <div className="flex items-center gap-3">
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label={theme === "light" ? "التبديل إلى الوضع الداكن" : "التبديل إلى الوضع الفاتح"}
-                title={theme === "light" ? "الوضع الداكن" : "الوضع الفاتح"}
-              >
-                {theme === "light" ? (
-                  <Moon className="w-4 h-4" />
-                ) : (
-                  <Sun className="w-4 h-4" />
-                )}
-              </button>
               {/* remove cart for now */}
               {/* <Link
                 to="/cart"

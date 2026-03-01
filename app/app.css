@@ -148,39 +148,6 @@ html[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, p, span, div, a, li, button, input, 
   --color-accent: #60a5fa;
   /* Light blue accent */
 
-  /* Dark Mode - Backgrounds */
-  --color-background-light: #0f172a;
-  /* Dark navy background */
-  --color-background-dark: #020617;
-  /* Darker navy */
-  --color-card: #1e293b;
-  /* Card background */
-  --color-nav-bg: #052659;
-  --color-footer-bg: #052659;
-  --color-white: #1e293b;
-  /* Surface color */
-
-  /* Dark Mode - Text Colors */
-  --color-text-primary: #f1f5f9;
-  /* Light text */
-  --color-text-secondary: #94a3b8;
-  /* Muted text */
-  --color-text-light: #f1f5f9;
-  /* Light text */
-
-  /* Dark Mode - Neutral Colors */
-  --color-black: #ffffff;
-  --color-gray: #64748b;
-  /* Slate gray */
-  --color-soft-blue: #60a5fa;
-  /* Soft blue */
-  --color-divider: #334155;
-  /* Darker divider */
-
-  /* Dark Mode - Status Colors (slightly adjusted) */
-  --color-error: #ef4444;
-  --color-success: #22c55e;
-  --color-error-icon: #ef4444;
 }
 
 html,
@@ -197,98 +164,7 @@ body {
   color: #ffffff !important;
 }
 
-[data-theme="dark"] {
-  color-scheme: dark;
-}
 
-/* Dark mode text color overrides */
-[data-theme="dark"] {
-
-  /* Override all hardcoded gray text colors */
-  .text-gray-900,
-  .text-gray-800,
-  .text-gray-700,
-  .text-gray-600,
-  .text-gray-500,
-  .text-gray-400,
-  .text-gray-300 {
-    color: var(--color-text-primary) !important;
-  }
-
-  /* Secondary text colors */
-  .text-gray-500,
-  .text-gray-400 {
-    color: var(--color-text-secondary) !important;
-  }
-
-  /* Ensure text-white stays white always */
-  .text-white,
-  .text-pure-white {
-    color: #ffffff !important;
-  }
-
-  /* Make ALL primary color text WHITE in dark mode */
-  /* This includes titles, headings, links, icons, etc. */
-  .text-\[var\(--color-primary\)\],
-  [class*="text-"][class*="primary"] {
-    color: #ffffff !important;
-  }
-
-  /* Make primary color hovers WHITE in dark mode */
-  .hover\:text-\[var\(--color-primary\)\]:hover,
-  [class*="hover:text-"][class*="primary"]:hover {
-    color: #ffffff !important;
-  }
-
-  /* Make group hover primary colors WHITE */
-  .group:hover .group-hover\:text-\[var\(--color-primary\)\],
-  .group:hover [class*="group-hover:text-"][class*="primary"] {
-    color: #ffffff !important;
-  }
-
-  /* Icons with primary color should be WHITE */
-  svg.text-\[var\(--color-primary\)\],
-  svg[class*="text-"][class*="primary"] {
-    color: #ffffff !important;
-  }
-
-  /* Separators and borders with primary color */
-  .border-\[var\(--color-primary\)\],
-  [class*="border-"][class*="primary"] {
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
-
-  /* Active tab borders should be white */
-  .border-white {
-    border-color: #ffffff !important;
-  }
-
-  /* Hover tab borders should be white with opacity */
-  .hover\:border-white\/50:hover,
-  [class*="hover:border-white"]:hover {
-    border-color: rgba(255, 255, 255, 0.7) !important;
-  }
-
-  /* Loading bar should be light blue in dark mode */
-  .bg-\[var\(--color-primary\)\] {
-    background-color: #60a5fa !important;
-    /* Light blue for better visibility */
-  }
-
-  /* Ensure all text elements inherit proper color, but don't override explicit classes */
-  h1:not([class*="text-"]),
-  h2:not([class*="text-"]),
-  h3:not([class*="text-"]),
-  h4:not([class*="text-"]),
-  h5:not([class*="text-"]),
-  h6:not([class*="text-"]),
-  p:not([class*="text-"]),
-  span:not([class*="text-"]),
-  div:not([class*="text-"]),
-  a:not([class*="text-"]) {
-    color: inherit;
-  }
-}
 
 /* Amiri font utility classes */
 .amiri-regular {

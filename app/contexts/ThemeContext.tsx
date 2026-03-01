@@ -10,32 +10,17 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const theme: Theme = "light";
 
   useEffect(() => {
-    setMounted(true);
-    // Get theme from localStorage
-    const savedTheme = localStorage.getItem("theme") as Theme | null;
-
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      // Default to light mode as requested by user
-      setTheme("light");
-    }
+    // Always force light mode on the document
+    document.documentElement.setAttribute("data-theme", "light");
+    // Clear any saved theme preference
+    localStorage.removeItem("theme");
   }, []);
 
-  useEffect(() => {
-    if (!mounted) return;
-
-    // Apply theme to document
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme, mounted]);
-
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+    // No-op - theme switching is disabled
   };
 
   return (
