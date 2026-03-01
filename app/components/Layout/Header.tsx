@@ -312,7 +312,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       {/* Bottom Navigation Bar - Categories */}
-      <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
+      <div className="bg-[var(--color-white)] border-y border-dashed border-[var(--color-divider)] mt-2">
         <div className="container mx-auto px-4">
           {/* Mobile Navigation (Scrollable, All Categories) */}
           <nav className="lg:hidden flex items-center justify-start gap-1 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
@@ -334,7 +334,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           </nav>
 
           {/* Desktop Navigation (Fixed, Dropdown for More) */}
-          <nav className="hidden lg:flex items-center justify-start gap-1 py-2">
+          <nav className="hidden lg:flex items-center justify-center gap-1 py-2">
             <Link
               to="/"
               className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
