@@ -15,21 +15,20 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    // Get theme from localStorage or system preference
+    // Get theme from localStorage
     const savedTheme = localStorage.getItem("theme") as Theme | null;
-    
+
     if (savedTheme) {
       setTheme(savedTheme);
     } else {
-      // Check system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? "dark" : "light");
+      // Default to light mode as requested by user
+      setTheme("light");
     }
   }, []);
 
   useEffect(() => {
     if (!mounted) return;
-    
+
     // Apply theme to document
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);

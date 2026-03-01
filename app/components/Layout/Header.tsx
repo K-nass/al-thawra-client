@@ -96,7 +96,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     <header
       dir="rtl"
       lang="ar"
-      className="sticky top-0 z-50 bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] shadow-md"
+      className="sticky top-0 z-50 bg-[var(--color-nav-bg)] shadow-md"
     >
       {/* Top Bar - Social & Info */}
       <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
@@ -205,15 +205,14 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="border-t border-white/20">
+      <div className="border-t border-[var(--color-divider)]">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center py-3 relative">
-            {/* Navigation Links - Right Side (3 links) */}
             <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 mr-10 group/right">
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/"
               >
@@ -222,9 +221,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/magazines"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/magazines"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/magazines"
               >
@@ -233,9 +232,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/tv"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/tv"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/tv"
               >
@@ -248,12 +247,12 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             <div className="shrink-0 mx-6 order-last lg:order-none">
               <Link
                 to="/"
-                className="text-white hover:opacity-90 transition-opacity flex items-center"
+                className="text-[var(--color-text-primary)] hover:opacity-90 transition-opacity flex items-center"
               >
                 <img
-                  src="/logo.png"
+                  src="/formLogo.png"
                   alt="الثورة لوجو"
-                  style={{ width: "130px" }}
+                  style={{ width: "160px" }}
                   className="mx-auto"
                 />
               </Link>
@@ -262,9 +261,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             {/* Navigation Links - Left Side (3 links) */}
             <nav className="hidden lg:flex flex-1 items-center justify-start gap-6 ml-10 group/left">
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/reels"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/reels"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/reels"
               >
@@ -273,9 +272,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/podcast"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/podcast"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/podcast"
               >
@@ -284,9 +283,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-white ${location.pathname === "/profile"
-                  ? "border-white font-bold"
-                  : "border-transparent hover:border-white/50"
+                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/profile"
+                  ? "border-[var(--color-primary)] font-bold"
+                  : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
                 to="/profile"
               >
@@ -295,11 +294,10 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
             </nav>
 
-            {/* Mobile Actions - Stays Left */}
             <div className="lg:hidden absolute left-0 flex items-center">
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 text-white hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
+                className="p-2 text-[var(--color-text-primary)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 rounded-lg transition-colors"
                 aria-label="القائمة"
               >
                 {isMobileMenuOpen ? (
@@ -435,59 +433,52 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       {/* Mobile Menu */}
       {
         isMobileMenuOpen && (
-          <div className="lg:hidden bg-[var(--color-primary-dark)]">
-            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-white">
+          <div className="lg:hidden bg-[var(--color-nav-bg)] border-t border-[var(--color-divider)]">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-[var(--color-text-primary)]">
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 الصحيفة
               </Link>
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/magazines"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 أرشيف الثورة
               </Link>
-              {/* <Link
-              className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-              to="/writers-opinions"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              كتاب وآراء
-            </Link> */}
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/tv"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 التلفزيون
               </Link>
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/reels"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 ريلز
               </Link>
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/podcast"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 بودكاست
               </Link>
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/profile"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 صفحتي
               </Link>
               <Link
-                className="px-4 py-2 hover:bg-white hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
+                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
                 to="/contact"
                 onClick={() => setIsMobileMenuOpen(false)}
               >

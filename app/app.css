@@ -92,12 +92,14 @@ html[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, p, span, div, a, li, button, input, 
   /* Accent Highlight */
 
   /* Background Colors */
-  --color-background-light: #FFFFFF;
-  /* White background for light mode */
+  --color-background-light: #d0e9f3;
+  /* Light blue background for light mode */
   --color-background-dark: #021024;
   /* Dark background (same as primary-dark) */
   --color-card: #052659;
   /* Card background darker tone */
+  --color-nav-bg: #d0e9f3;
+  --color-footer-bg: #d0e9f3;
 
   /* Text Colors */
   --color-text-primary: #021024;
@@ -108,14 +110,17 @@ html[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, p, span, div, a, li, button, input, 
   /* White text for dark backgrounds */
 
   /* Neutral Colors */
-  --color-white: #FFFFFF;
+  --color-white: #d0e9f3;
+  /* Surface color matches background in light mode */
+  --pure-white: #FFFFFF;
+  /* Pure white for text and specific elements */
   --color-black: #000000;
   --color-gray: #B2B2B2;
   /* Light gray */
   --color-soft-blue: #7DA0CA;
   /* Soft grayish blue */
-  --color-divider: #E0E0E0;
-  /* Light gray for dividers */
+  --color-divider: #A9BCC3;
+  /* Darker gray-blue for better contrast against #d0e9f3 background */
 
   /* Status Colors */
   --color-error: #D32F2F;
@@ -150,6 +155,8 @@ html[dir="rtl"] :is(h1, h2, h3, h4, h5, h6, p, span, div, a, li, button, input, 
   /* Darker navy */
   --color-card: #1e293b;
   /* Card background */
+  --color-nav-bg: #052659;
+  --color-footer-bg: #052659;
   --color-white: #1e293b;
   /* Surface color */
 
@@ -185,6 +192,11 @@ body {
   color-scheme: light;
 }
 
+/* Ensure text-white is pure white even if --color-white is updated */
+.text-white {
+  color: #ffffff !important;
+}
+
 [data-theme="dark"] {
   color-scheme: dark;
 }
@@ -209,8 +221,9 @@ body {
     color: var(--color-text-secondary) !important;
   }
 
-  /* Ensure text-white stays white */
-  .text-white {
+  /* Ensure text-white stays white always */
+  .text-white,
+  .text-pure-white {
     color: #ffffff !important;
   }
 
@@ -504,7 +517,7 @@ body {
    ================================================ */
 .newspaper-grid>* {
   padding: 1rem;
-  border-bottom: 1px dashed var(--color-divider);
+  border-bottom: 1.5px dashed var(--color-divider);
 }
 
 /* Mobile (1-col): only horizontal separators, remove on last item */
@@ -516,7 +529,7 @@ body {
 @media (min-width: 768px) {
   .newspaper-grid>* {
     padding: 1.25rem;
-    border-left: 1px dashed var(--color-divider);
+    border-left: 1.5px dashed var(--color-divider);
   }
 
   /* Remove left border on last column (every 2nd = leftmost in RTL) */
@@ -526,7 +539,7 @@ body {
 
   /* Last row: re-enable last-child bottom, remove last 2 items' bottom */
   .newspaper-grid>*:last-child {
-    border-bottom: 1px dashed var(--color-divider);
+    border-bottom: 1.5px dashed var(--color-divider);
   }
 
   .newspaper-grid>*:nth-last-child(-n+2) {
@@ -539,7 +552,7 @@ body {
 
   /* Re-enable left border on 2nd child (removed by md 2n rule) */
   .newspaper-grid>*:nth-child(2n) {
-    border-left: 1px dashed var(--color-divider);
+    border-left: 1.5px dashed var(--color-divider);
   }
 
   /* Remove left border on every 3rd child (leftmost column in RTL) */
@@ -549,7 +562,7 @@ body {
 
   /* Re-enable bottom on items removed by md last-2 rule */
   .newspaper-grid>*:nth-last-child(-n+2) {
-    border-bottom: 1px dashed var(--color-divider);
+    border-bottom: 1.5px dashed var(--color-divider);
   }
 
   /* Remove bottom on last 3 items (last row in 3-col) */

@@ -14,16 +14,16 @@ export function Footer({ pages = [] }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] text-[var(--color-text-light)] mt-12 relative border-t border-[var(--color-divider)]" dir="rtl" lang="ar">
+    <footer className="bg-[var(--color-footer-bg)] text-[var(--color-text-primary)] mt-12 relative border-t border-[var(--color-divider)]" dir="rtl" lang="ar">
       {/* Top Gradient Bar */}
-      <div className="h-2 bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] w-full absolute top-0 left-0" />
+      <div className="h-2 bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] w-full absolute top-0 left-0 hidden dark:block" />
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           {/* Right Section - Logo and Description */}
           <div className="flex flex-col items-start text-right">
             <Link to="/" className="mb-6 hover:opacity-90 transition-opacity">
-              <div className="bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] p-4 rounded-xl shadow-md inline-block">
+              <div className="bg-[var(--color-primary)] dark:bg-gradient-to-r dark:from-[var(--color-primary-dark)] dark:to-[var(--color-primary)] p-4 rounded-xl shadow-md inline-block">
                 <img
                   src="/logo.png"
                   alt="الثورة"
@@ -38,14 +38,14 @@ export function Footer({ pages = [] }: FooterProps) {
 
           {/* Middle Section - Important Links (Dynamic) */}
           <div className="flex flex-col items-start text-right">
-            <h3 className="text-lg font-bold mb-6 text-white border-b-2 border-white pb-2 inline-block">
+            <h3 className="text-lg font-bold mb-6 text-[var(--color-text-primary)] border-b-2 border-[var(--color-primary)] pb-2 inline-block">
               روابط هامة
             </h3>
             <nav className="grid grid-cols-2 gap-x-8 gap-y-3 w-full">
               {pages.map((page) => (
                 <Link
                   key={page.id}
-                  className="text-white hover:text-[var(--color-secondary)] transition-colors text-sm font-medium flex items-center gap-2"
+                  className="text-[var(--color-text-primary)] hover:text-[var(--color-primary)] transition-colors text-sm font-medium flex items-center gap-2"
                   to={`/pages/${page.slug}`}
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-secondary)]"></span>
@@ -57,7 +57,7 @@ export function Footer({ pages = [] }: FooterProps) {
 
           {/* Left Section - Social Media */}
           <div className="flex flex-col items-start text-right">
-            <h3 className="text-lg font-bold mb-6 text-white border-b-2 border-[var(--color-primary)] pb-2 inline-block">
+            <h3 className="text-lg font-bold mb-6 text-[var(--color-text-primary)] border-b-2 border-[var(--color-primary)] pb-2 inline-block">
               تابعنا
             </h3>
             <div className="flex items-center gap-3 flex-wrap mb-6">
@@ -91,7 +91,7 @@ export function Footer({ pages = [] }: FooterProps) {
       </div>
 
       {/* Copyright Bar */}
-      <div className="bg-[var(--color-primary-dark)] text-white/80 py-4 text-sm">
+      <div className="bg-[var(--color-footer-bg)] text-[var(--color-text-primary)] py-4 text-sm border-t border-[var(--color-divider)]">
         <div className="container mx-auto px-4 text-center">
           <p>
             الثورة {currentYear} &copy; - جميع الحقوق محفوظة

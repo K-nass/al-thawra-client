@@ -267,7 +267,7 @@ export default function Home() {
       )}
 
       {/* Newsletter Subscription */}
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-8 mt-8">
+      <div className="rounded-lg p-8 mt-8">
         <NewsletterSubscription />
       </div>
     </div>
