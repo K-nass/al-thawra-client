@@ -131,7 +131,7 @@ export default function ArticlePage({
       date={formattedDate}
       commentsCount={0}
       authorName={article.authorName}
-      authorHref={`/author/${article.authorName}`}
+      authorHref={article.authorId ? `/author/${article.authorId}` : undefined}
       imageSrc={article.image}
       imageAlt={article.imageDescription}
       content={article.content}
