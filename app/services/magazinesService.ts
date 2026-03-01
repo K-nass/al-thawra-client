@@ -62,7 +62,7 @@ class MagazinesService {
    */
   async getMagazineByDate(date: string): Promise<Magazine | null> {
     try {
-      console.log(`Fetching magazine for date: ${date}`);
+
 
       // Ensure date is in RFC 3339 format (ISO 8601) if it's just YYYY-MM-DD
       let apiDate = date;

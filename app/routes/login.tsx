@@ -81,7 +81,7 @@ export default function LoginPage() {
     if (actionData?.success && actionData?.authData) {
       // Set cookies on client-side
       const { accessToken, refreshToken, user, expiresAt } = actionData.authData;
-      
+
       // Use a helper to set cookies (will work because we're on client now)
       if (typeof document !== 'undefined') {
         const setCookie = (name: string, value: string, expiresAt?: string, httpOnly: boolean = false) => {
@@ -89,7 +89,7 @@ export default function LoginPage() {
           if (expiresAt) {
             const expiryDate = new Date(expiresAt);
             const now = new Date();
-            
+
             if (expiryDate <= now) {
               const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
               expires = `; expires=${futureDate.toUTCString()}`;
@@ -100,22 +100,21 @@ export default function LoginPage() {
             const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
             expires = `; expires=${futureDate.toUTCString()}`;
           }
-          
+
           // Note: HttpOnly cannot be set from JavaScript for security reasons
           // It must be set by the server in HTTP response headers
           // We can only set Secure and SameSite from client-side
           const secure = window.location.protocol === 'https:' ? '; Secure' : '';
           document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/; SameSite=Strict${secure}`;
         };
-        
+
         // Set tokens (ideally these should be HttpOnly from backend)
         setCookie('accessToken', accessToken, expiresAt, true);
         setCookie('refreshToken', refreshToken, expiresAt, true);
         // User data can be non-HttpOnly since it's not sensitive
         setCookie('user', JSON.stringify(user), expiresAt, false);
-        
-        authService.debugCookies();
-        
+
+
         // Redirect to admin or home based on role
         setTimeout(() => {
           if (user.role === 'Admin') {
@@ -136,10 +135,10 @@ export default function LoginPage() {
         <div className="absolute top-0 left-0 w-72 h-72 bg-blue-400/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        
+
         {/* Grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]"></div>
-        
+
         {/* Floating elements */}
         <div className="absolute top-20 right-20 w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDuration: '3s' }}></div>
         <div className="absolute bottom-32 left-32 w-3 h-3 bg-purple-400 rounded-full animate-bounce" style={{ animationDuration: '4s', animationDelay: '0.5s' }}></div>
@@ -152,43 +151,43 @@ export default function LoginPage() {
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <div className="max-w-md w-full bg-[var(--color-white)]/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6 relative z-10 border border-[var(--color-divider)]/20">
-            {/* Back to Home Link */}
-            <Link 
-              to="/" 
-              className="inline-flex items-center gap-2 text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors mb-4"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              العودة للرئيسية
+          {/* Back to Home Link */}
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors mb-4"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            العودة للرئيسية
+          </Link>
+
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <Link to="/">
+              <img
+                src="/formLogo.png"
+                alt="الثورة"
+                className="h-16 w-auto"
+              />
             </Link>
+          </div>
 
-            {/* Logo */}
-            <div className="flex justify-center mb-4">
-              <Link to="/">
-                <img
-                  src="/formLogo.png"
-                  alt="الثورة"
-                  className="h-16 w-auto"
-                />
-              </Link>
+          {/* Title */}
+          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6 text-center">
+            تسجيل الدخول
+          </h2>
+
+          {/* General Error Message */}
+          {generalError && (
+            <div className="mb-4 p-3 bg-[var(--color-error)]/10 border border-[var(--color-error)] rounded-lg">
+              <p className="text-sm text-[var(--color-error)]">{generalError}</p>
             </div>
+          )}
 
-            {/* Title */}
-            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6 text-center">
-              تسجيل الدخول
-            </h2>
-
-            {/* General Error Message */}
-            {generalError && (
-              <div className="mb-4 p-3 bg-[var(--color-error)]/10 border border-[var(--color-error)] rounded-lg">
-                <p className="text-sm text-[var(--color-error)]">{generalError}</p>
-              </div>
-            )}
-
-            {/* Login Form */}
-            <Form method="post">
-              <StaggerContainer className="space-y-5" staggerDelay={0.1} once={true} immediate={true}>
+          {/* Login Form */}
+          <Form method="post">
+            <StaggerContainer className="space-y-5" staggerDelay={0.1} once={true} immediate={true}>
               {/* Email Field */}
               <StaggerItem>
                 <label htmlFor="email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
@@ -203,9 +202,8 @@ export default function LoginPage() {
                     id="email"
                     name="email"
                     defaultValue={previousValues.email}
-                    className={`w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                      errors.email ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
-                    }`}
+                    className={`w-full px-4 py-3 pl-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${errors.email ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
+                      }`}
                     placeholder="example@email.com"
                     dir="ltr"
                     disabled={isSubmitting}
@@ -229,9 +227,8 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     id="password"
                     name="password"
-                    className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                      errors.password ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
-                    }`}
+                    className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${errors.password ? "border-[var(--color-error)]" : "border-[var(--color-divider)]"
+                      }`}
                     placeholder="••••••••"
                     dir="ltr"
                     disabled={isSubmitting}
@@ -253,37 +250,37 @@ export default function LoginPage() {
               {/* Forgot Password */}
               <StaggerItem>
                 <div className="text-right">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors"
-                >
-                  نسيت كلمة المرور؟
-                </Link>
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors"
+                  >
+                    نسيت كلمة المرور؟
+                  </Link>
                 </div>
               </StaggerItem>
 
               {/* Submit Button */}
               <StaggerItem>
                 <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? "جاري تسجيل الدخول..." : "الدخول"}
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "جاري تسجيل الدخول..." : "الدخول"}
                 </button>
               </StaggerItem>
             </StaggerContainer>
-            </Form>
+          </Form>
 
           {/* Register Link */}
           <ScrollAnimation animation="fade" delay={0.5} once={true}>
             <div className="text-center mt-6">
-            <Link
-              to="/register"
-              className="text-[var(--color-text-primary)] hover:text-white transition-colors text-sm"
-            >
-              ليس لديك حساب؟ <span className="font-medium">سجل الآن</span>
-            </Link>
+              <Link
+                to="/register"
+                className="text-[var(--color-text-primary)] hover:text-white transition-colors text-sm"
+              >
+                ليس لديك حساب؟ <span className="font-medium">سجل الآن</span>
+              </Link>
             </div>
           </ScrollAnimation>
         </div>

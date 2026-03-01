@@ -61,7 +61,7 @@ class UserService {
         CacheTTL.MEDIUM
       );
     } catch (error: any) {
-      console.error("Error fetching user profile:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -81,7 +81,7 @@ class UserService {
         post.categorySlug === categorySlug
       );
     } catch (error: any) {
-      console.error("Error fetching user posts by category:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -134,7 +134,7 @@ class UserService {
 
       return Object.values(categoryStats).sort((a, b) => b.count - a.count);
     } catch (error: any) {
-      console.error("Error fetching user categories:", error.response?.data || error.message);
+
       throw error;
     }
   }

@@ -52,7 +52,7 @@ class CategoriesService {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching categories:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -67,7 +67,7 @@ class CategoriesService {
         language,
       });
     } catch (error: any) {
-      console.error("Error fetching active categories:", error.message);
+
       throw error;
     }
   }
@@ -84,7 +84,7 @@ class CategoriesService {
       // Filter categories that should show on homepage
       return categories.filter(cat => cat.showOnHomepage);
     } catch (error: any) {
-      console.error("Error fetching homepage categories:", error.message);
+
       throw error;
     }
   }
@@ -102,7 +102,7 @@ class CategoriesService {
       // Filter categories that should show on menu
       return categories.filter(cat => cat.showOnMenu);
     } catch (error: any) {
-      console.error("Error fetching menu categories:", error.message);
+
       throw error;
     }
   }
@@ -114,13 +114,13 @@ class CategoriesService {
     try {
       const params: any = {};
       if (withSub) params.WithSub = true;
-      
+
       const response = await axios.get<Category>(`${this.baseUrl}/${slug}`, {
         params,
       });
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching category ${slug}:`, error.message);
+
       throw error;
     }
   }

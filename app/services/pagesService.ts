@@ -57,7 +57,7 @@ class PagesService {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching pages:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -72,16 +72,16 @@ class PagesService {
         language,
         pageSize: 90
       });
-      
-      console.log("PagesService fetched total items:", response.items.length);
+
+
       const footerItems = response.items.filter(page => page.location === "Footer");
-      console.log("PagesService filtering for Footer:", footerItems.length);
+
 
       // Filter client-side for Footer location and sort
       return footerItems
         .sort((a, b) => a.menuOrder - b.menuOrder);
     } catch (error: any) {
-      console.error("Error fetching footer pages:", error.message);
+
       return [];
     }
   }
@@ -98,7 +98,7 @@ class PagesService {
       });
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching page ${slug}:`, error.message);
+
       throw error;
     }
   }

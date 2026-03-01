@@ -100,11 +100,10 @@ class PostsService {
       const response = await axios.get<PaginatedPostsResponse>(this.baseUrl, {
         params: apiParams,
       });
-        console.log("################")
-        console.log(response.data);
+
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching posts:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -121,7 +120,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching slider posts:", error.message);
+
       throw error;
     }
   }
@@ -138,7 +137,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching featured posts:", error.message);
+
       throw error;
     }
   }
@@ -155,7 +154,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching recommended posts:", error.message);
+
       throw error;
     }
   }
@@ -172,7 +171,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching breaking news:", error.message);
+
       throw error;
     }
   }
@@ -188,7 +187,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching urgent posts:", error.message);
+
       throw error;
     }
   }
@@ -204,7 +203,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching chief editor posts:", error.message);
+
       throw error;
     }
   }
@@ -221,7 +220,7 @@ class PostsService {
       });
       return response.items;
     } catch (error: any) {
-      console.error("Error fetching posts with authors:", error.message);
+
       throw error;
     }
   }
@@ -241,7 +240,7 @@ class PostsService {
         type,
       });
     } catch (error: any) {
-      console.error(`Error fetching posts for category ${categorySlug}:`, error.message);
+
       throw error;
     }
   }
@@ -259,7 +258,7 @@ class PostsService {
         type,
       });
     } catch (error: any) {
-      console.error(`Error fetching posts of type ${type}:`, error.message);
+
       throw error;
     }
   }
@@ -272,7 +271,7 @@ class PostsService {
       const response = await axios.get<Post>(`${this.baseUrl}/${slug}`);
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching post ${slug}:`, error.message);
+
       throw error;
     }
   }
@@ -284,7 +283,7 @@ class PostsService {
     try {
       await axios.post(`${this.baseUrl}/${postId}/view`);
     } catch (error: any) {
-      console.error(`Error incrementing view count for post ${postId}:`, error.message);
+
       throw error;
     }
   }
@@ -296,7 +295,7 @@ class PostsService {
     try {
       await axios.post(`${this.baseUrl}/${postId}/like`);
     } catch (error: any) {
-      console.error(`Error liking post ${postId}:`, error.message);
+
       throw error;
     }
   }
@@ -308,7 +307,7 @@ class PostsService {
     try {
       await axios.delete(`${this.baseUrl}/${postId}/like`);
     } catch (error: any) {
-      console.error(`Error unliking post ${postId}:`, error.message);
+
       throw error;
     }
   }
@@ -326,7 +325,7 @@ class PostsService {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching liked posts:", error.message);
+
       throw error;
     }
   }

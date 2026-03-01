@@ -97,7 +97,7 @@ class VideoService {
       });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching videos:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -112,8 +112,8 @@ class VideoService {
         pageSize: 15, // API only accepts 15, 30, 60, or 90
       });
       return response.items[0] || null;
-    } catch (error : any) {
-      console.error("Error fetching featured video:", error.message);
+    } catch (error: any) {
+
       throw error;
     }
   }
@@ -129,7 +129,7 @@ class VideoService {
       });
       return response.items;
     } catch (error) {
-      console.error("Error fetching slider videos:", error);
+
       throw error;
     }
   }
@@ -145,7 +145,7 @@ class VideoService {
       });
       return response.items;
     } catch (error) {
-      console.error("Error fetching recommended videos:", error);
+
       throw error;
     }
   }
@@ -164,7 +164,7 @@ class VideoService {
       });
       return response;
     } catch (error) {
-      console.error(`Error fetching videos for category ${categorySlug}:`, error);
+
       throw error;
     }
   }
@@ -177,7 +177,7 @@ class VideoService {
       const response = await axios.get<Video>(`${this.baseUrl}/${id}`);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching video ${id}:`, error);
+
       throw error;
     }
   }
@@ -190,7 +190,7 @@ class VideoService {
       const response = await axios.get<Video>(`${this.baseUrl}/slug/${slug}`);
       return response.data;
     } catch (error) {
-      console.error(`Error fetching video by slug ${slug}:`, error);
+
       throw error;
     }
   }
@@ -202,7 +202,7 @@ class VideoService {
     try {
       await axios.post(`${this.baseUrl}/${id}/view`);
     } catch (error) {
-      console.error(`Error incrementing view count for video ${id}:`, error);
+
       throw error;
     }
   }
@@ -214,7 +214,7 @@ class VideoService {
     try {
       await axios.post(`${this.baseUrl}/${id}/like`);
     } catch (error) {
-      console.error(`Error liking video ${id}:`, error);
+
       throw error;
     }
   }
@@ -226,7 +226,7 @@ class VideoService {
     try {
       await axios.delete(`${this.baseUrl}/${id}/like`);
     } catch (error) {
-      console.error(`Error unliking video ${id}:`, error);
+
       throw error;
     }
   }

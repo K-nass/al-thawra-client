@@ -47,7 +47,7 @@ class ReelsService {
       const response = await axios.get<ReelsResponse>(this.baseUrl, { params });
       return response.data;
     } catch (error: any) {
-      console.error("Error fetching reels:", error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -60,7 +60,7 @@ class ReelsService {
       const response = await axios.get<Reel>(`${this.baseUrl}/${id}`);
       return response.data;
     } catch (error: any) {
-      console.error(`Error fetching reel ${id}:`, error.response?.data || error.message);
+
       throw error;
     }
   }
@@ -72,7 +72,7 @@ class ReelsService {
     try {
       await axios.post(`${this.baseUrl}/${id}/like`);
     } catch (error) {
-      console.error(`Error liking reel ${id}:`, error);
+
       throw error;
     }
   }
@@ -84,7 +84,7 @@ class ReelsService {
     try {
       await axios.delete(`${this.baseUrl}/${id}/like`);
     } catch (error) {
-      console.error(`Error unliking reel ${id}:`, error);
+
       throw error;
     }
   }
