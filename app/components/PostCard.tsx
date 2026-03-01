@@ -97,7 +97,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
         {/* author name */}
         {post.authorName && (
           <Link
-            to={`/author/${post.authorSlug || post.authorId}`}
+            to={`/author/${post.authorName}`}
             className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--color-divider)] group/author hover:bg-[var(--color-background-light)] -mx-4 px-4 py-2 transition-colors"
           >
             <img

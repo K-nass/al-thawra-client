@@ -9,8 +9,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   try {
     // Fetch all magazines to find the one with matching issue number
-    const apiUrl = `${process.env.API_BASE_URL || "https://new-cms-dev.runasp.net/api/v1"}/magazines?PageSize=100&PageNumber=1`;
-    
+    const apiUrl = `${process.env.API_BASE_URL || "https://elthoura.tryasp.net/api/v1"}/magazines?PageSize=100&PageNumber=1`;
+
     const metadataResponse = await fetch(apiUrl);
     if (!metadataResponse.ok) {
       throw new Response("Failed to fetch magazines", { status: 500 });
@@ -18,11 +18,11 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
     const data = await metadataResponse.json();
     const magazine = data.items.find((m: any) => m.issueNumber === issueNumber);
-    
+
     if (!magazine) {
       throw new Response("Magazine not found", { status: 404 });
     }
-    
+
     // Fetch the actual PDF from the backend
     const pdfResponse = await fetch(magazine.pdfUrl);
     if (!pdfResponse.ok) {

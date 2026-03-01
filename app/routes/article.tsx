@@ -93,9 +93,9 @@ export function meta({ loaderData }: Route.MetaArgs) {
         description: article.summary,
         image: article.image,
         publishedAt: article.publishedAt,
-        updatedAt: article.publishedAt, // Add updatedAt field if available in API
+        updatedAt: article.publishedAt,
         authorName: article.authorName,
-        authorSlug: article.authorSlug || article.authorId,
+        authorSlug: article.authorName,
         categoryName: article.categoryName,
         content: article.content,
         url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
@@ -131,7 +131,7 @@ export default function ArticlePage({
       date={formattedDate}
       commentsCount={0}
       authorName={article.authorName}
-      authorHref={`/author/${article.authorSlug || article.authorId}`}
+      authorHref={`/author/${article.authorName}`}
       imageSrc={article.image}
       imageAlt={article.imageDescription}
       content={article.content}

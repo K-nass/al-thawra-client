@@ -9,15 +9,15 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   try {
     // Fetch the magazine metadata to get the PDF URL
-    const apiUrl = `${process.env.API_BASE_URL || "https://new-cms-dev.runasp.net/api/v1"}/magazines/by-date?Date=${date}`;
-    
+    const apiUrl = `${process.env.API_BASE_URL || "https://elthoura.tryasp.net/api/v1"}/magazines/by-date?Date=${date}`;
+
     const metadataResponse = await fetch(apiUrl);
     if (!metadataResponse.ok) {
       throw new Response("Magazine not found", { status: 404 });
     }
 
     const magazine = await metadataResponse.json();
-    
+
     // Fetch the actual PDF from the backend
     const pdfResponse = await fetch(magazine.pdfUrl);
     if (!pdfResponse.ok) {

@@ -98,7 +98,7 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
         date={formattedDate}
         commentsCount={0}
         authorName={audio.authorName || undefined}
-        authorHref={audio.authorSlug ? `/author/${audio.authorSlug}` : (audio.authorId ? `/author/${audio.authorId}` : undefined)}
+        authorHref={audio.authorName ? `/author/${audio.authorName}` : undefined}
         imageSrc=""
         imageAlt={audio.title}
         content={audio.content}

@@ -126,7 +126,7 @@ export function meta({ data }: MetaArgs) {
         publishedAt: article.publishedAt,
         updatedAt: article.publishedAt,
         authorName: article.authorName,
-        authorSlug: article.authorSlug || article.authorId,
+        authorSlug: article.authorName,
         categoryName: "كتاب وآراء",
         content: article.content,
         url: `/writers-opinions/${article.slug}`,
@@ -198,7 +198,7 @@ export default function WritersOpinionDetailPage() {
         date={formattedDate}
         commentsCount={0}
         authorName={article.authorName}
-        authorHref={`/author/${article.authorSlug || article.authorId}`}
+        authorHref={`/author/${article.authorName}`}
         imageSrc={article.image}
         imageAlt={article.imageDescription}
         content={article.content}

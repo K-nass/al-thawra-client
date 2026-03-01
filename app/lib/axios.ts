@@ -2,7 +2,7 @@ import axios from 'axios';
 import authService from '../services/authService';
 
 // Create axios instance with default config
-const baseURL = import.meta.env.VITE_API_URL || 'https://new-cms-dev.runasp.net/api/v1';
+const baseURL = import.meta.env.VITE_API_URL || 'https://elthoura.tryasp.net/api/v1';
 
 const axiosInstance = axios.create({
   baseURL,
