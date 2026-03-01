@@ -73,7 +73,7 @@ export function PostDetails({
         </ScrollAnimation>
 
         {/* Article Image */}
-        {imageSrc && (
+        {imageSrc && imageSrc !== "null" && imageSrc !== "undefined" && (
           <ScrollAnimation animation="scale" duration={0.7} delay={0.1}>
             <PostImage src={imageSrc} alt={imageAlt} />
           </ScrollAnimation>

@@ -24,7 +24,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
     <article className="group relative bg-[var(--color-white)] overflow-hidden transition-all">
       {/* Image */}
       <Link to={linkHref} className="block relative aspect-16/10 overflow-hidden">
-        {post.image ? (
+        {post.image && post.image !== "null" && post.image !== "undefined" ? (
           <div className="relative aspect-video rounded-lg overflow-hidden mb-3 bg-[var(--color-secondary-light)]">
             <img
               src={post.image}
@@ -97,7 +97,7 @@ export function PostCard({ post, buildLink }: PostCardProps) {
         {/* author name */}
         {post.authorName && (
           <Link
-            to={`/author/${post.authorName}`}
+            to={`/author/${post.authorSlug || post.authorId}`}
             className="flex items-center gap-2 mt-3 pt-3 border-t border-[var(--color-divider)] group/author hover:bg-[var(--color-background-light)] -mx-4 px-4 py-2 transition-colors"
           >
             <img

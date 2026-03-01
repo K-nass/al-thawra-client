@@ -27,6 +27,7 @@ interface AudioResponse {
   publishedAt: string | null;
   authorId: string | null;
   authorName: string | null;
+  authorSlug: string | null;
   authorImage: string | null;
   ownerIsAuthor: boolean;
   categoryId: string | null;
@@ -97,7 +98,7 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
         date={formattedDate}
         commentsCount={0}
         authorName={audio.authorName || undefined}
-        authorHref={audio.authorId ? `/author/${audio.authorId}` : undefined}
+        authorHref={audio.authorSlug ? `/author/${audio.authorSlug}` : (audio.authorId ? `/author/${audio.authorId}` : undefined)}
         imageSrc=""
         imageAlt={audio.title}
         content={audio.content}

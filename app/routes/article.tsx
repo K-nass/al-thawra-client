@@ -31,6 +31,7 @@ interface ArticleResponse {
   publishedAt: string;
   authorId: string;
   authorName: string;
+  authorSlug: string;
   authorImage: string;
   ownerIsAuthor: boolean;
   categoryId: string;
@@ -94,7 +95,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
         publishedAt: article.publishedAt,
         updatedAt: article.publishedAt, // Add updatedAt field if available in API
         authorName: article.authorName,
-        authorSlug: article.authorId, // Use authorId as slug for now
+        authorSlug: article.authorSlug || article.authorId,
         categoryName: article.categoryName,
         content: article.content,
         url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
@@ -130,7 +131,7 @@ export default function ArticlePage({
       date={formattedDate}
       commentsCount={0}
       authorName={article.authorName}
-      authorHref={`/author/${article.authorId}`}
+      authorHref={`/author/${article.authorSlug || article.authorId}`}
       imageSrc={article.image}
       imageAlt={article.imageDescription}
       content={article.content}

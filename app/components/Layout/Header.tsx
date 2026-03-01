@@ -101,10 +101,10 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       {/* Top Bar - Social & Info */}
       <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-2 text-sm">
+          <div className="flex justify-between items-center text-sm">
             {/* Right Side - Editor Info */}
             <div className="flex items-center">
-              <span className="font-bold font-thuluth text-lg">
+              <span className="font-bold font-thuluth text-md">
                 رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
               </span>
             </div>
@@ -129,7 +129,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
               <Link
                 to="/contact"
-                className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+                className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
               >
                 <Mail className="w-4 h-4" />
                 <span className="hidden sm:inline">اتصل بنا</span>
@@ -140,7 +140,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 <div className="relative" ref={profileDropdownRef}>
                   <button
                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+                    className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
                   >
                     <div className="w-6 h-6 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
                       <User className="w-3 h-3 text-white" />
@@ -152,14 +152,14 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                   {/* Dropdown Menu */}
                   {isProfileMenuOpen && (
                     <div
-                      className="absolute top-full right-0 mt-1 w-48 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
+                      className="absolute top-full right-0 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
                     >
                       <Link
                         to="/profile"
-                        className="flex items-center gap-2 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
+                        className="flex items-center gap-2 px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
                         onClick={() => setIsProfileMenuOpen(false)}
                       >
-                        <User className="w-4 h-4" />
+                        <User className="" />
                         <span>صفحتي</span>
                       </Link>
                       <button
@@ -180,7 +180,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               ) : (
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-3 py-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+                  className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">تسجيل الدخول</span>
@@ -192,12 +192,12 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="border-t border-[var(--color-divider)]">
+      <div className="">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center py-3 relative">
+          <div className="flex justify-between items-center relative">
             <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 mr-10 group/right">
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -208,7 +208,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/magazines"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/magazines"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -219,7 +219,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/tv"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/tv"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -248,7 +248,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             {/* Navigation Links - Left Side (3 links) */}
             <nav className="hidden lg:flex flex-1 items-center justify-start gap-6 ml-10 group/left">
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/reels"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/reels"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -259,7 +259,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/podcast"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/podcast"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -270,7 +270,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 py-3 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/profile"
+                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/profile"
                   ? "border-[var(--color-primary)] font-bold"
                   : "border-transparent hover:border-[var(--color-primary)]/50"
                   }`}
@@ -299,20 +299,20 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       {/* Bottom Navigation Bar - Categories */}
-      <div className="bg-[var(--color-white)] border-y border-dashed border-[var(--color-divider)] mt-2">
+      <div className="bg-[var(--color-white)] border-b border-dashed border-[var(--color-divider)]">
         <div className="container mx-auto px-4">
           {/* Mobile Navigation (Scrollable, All Categories) */}
-          <nav className="lg:hidden flex items-center justify-start gap-1 py-2 overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <nav className="lg:hidden flex items-center justify-start gap-1 overflow-x-auto scrollbar-hide whitespace-nowrap">
             <Link
               to="/"
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
+              className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
             >
               عدد اليوم
             </Link>
             {allMenuCategories.map((category) => (
               <Link
                 key={category.id}
-                className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
+                className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
                 to={`/category/${category.slug}`}
               >
                 {category.name}
@@ -321,17 +321,17 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           </nav>
 
           {/* Desktop Navigation (Fixed, Dropdown for More) */}
-          <nav className="hidden lg:flex items-center justify-center gap-1 py-2">
+          <nav className="hidden lg:flex items-center justify-center gap-1">
             <Link
               to="/"
-              className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
+              className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
             >
               عدد اليوم
             </Link>
             {visibleCategories.map((category) => (
               <Link
                 key={category.id}
-                className="px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
+                className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
                 to={`/category/${category.slug}`}
               >
                 {category.name}
@@ -343,7 +343,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               <div className="relative shrink-0" id="more-menu-container">
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="flex items-center gap-1 px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
+                  className="flex items-center gap-1 px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
                 >
                   المزيد
                   <ChevronDown className={`w-4 h-4 transition-transform ${isMoreMenuOpen ? 'rotate-180' : ''}`} />
