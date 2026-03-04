@@ -50,7 +50,7 @@ export default function PodcastPage() {
     };
 
     return (
-        <div className="space-y-6">
+        <div>
             {/* Podcast Slider */}
             {sliderPodcasts.length > 0 && (
                 <Slider
@@ -60,11 +60,11 @@ export default function PodcastPage() {
             )}
 
             {/* Podcast Header */}
-            <div className="bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg p-4">
-                <h1 className="text-2xl font-bold text-[var(--color-primary)]">
+            <div>
+                <h1>
                     البودكاست
                 </h1>
-                <p className="text-[var(--color-text-secondary)] mt-2">
+                <p>
                     استمع إلى أحدث الحوارات والنقاشات الشيقة
                 </p>
             </div>
@@ -79,17 +79,16 @@ export default function PodcastPage() {
 
                 {/* Pagination */}
                 {data && data.totalPages > 1 && (
-                    <div className="flex justify-center gap-4 mt-8">
+                    <div>
                         <button
                             onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                             disabled={currentPage === 1}
-                            className="px-6 py-2 bg-[var(--color-background-light)] text-[var(--color-text-primary)] rounded-lg hover:bg-[var(--color-card)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                         >
                             السابق
                         </button>
 
-                        <div className="flex items-center gap-2">
-                            <span className="text-[var(--color-text-secondary)]">
+                        <div>
+                            <span>
                                 الصفحة {currentPage} من {data.totalPages}
                             </span>
                         </div>
@@ -99,7 +98,6 @@ export default function PodcastPage() {
                                 handlePageChange(Math.min(data.totalPages, currentPage + 1))
                             }
                             disabled={currentPage === data.totalPages}
-                            className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-md hover:shadow-lg"
                         >
                             التالي
                         </button>

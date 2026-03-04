@@ -44,11 +44,11 @@ export function ToastContainer() {
   const getIcon = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="w-5 h-5" />;
+        return <CheckCircle />;
       case 'error':
-        return <AlertCircle className="w-5 h-5" />;
+        return <AlertCircle />;
       default:
-        return <Info className="w-5 h-5" />;
+        return <Info />;
     }
   };
 
@@ -64,22 +64,17 @@ export function ToastContainer() {
   };
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 pointer-events-none" dir="rtl">
+    <div dir="rtl">
       {toasts.map(toast => (
         <div
           key={toast.id}
-          className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg pointer-events-auto animate-slide-down ${getStyles(toast.type)}`}
-          style={{
-            animation: 'slideDown 0.3s ease-out',
-          }}
         >
           {getIcon(toast.type)}
-          <p className="flex-1 font-medium">{toast.message}</p>
+          <p>{toast.message}</p>
           <button
             onClick={() => removeToast(toast.id)}
-            className="hover:opacity-70 transition-opacity"
           >
-            <X className="w-4 h-4" />
+            <X />
           </button>
         </div>
       ))}

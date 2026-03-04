@@ -74,7 +74,6 @@ export function ScrollAnimation({
   if (immediate) {
     return (
       <motion.div
-        className={className}
         initial="hidden"
         animate="visible"
         variants={animations[animation]}
@@ -86,7 +85,6 @@ export function ScrollAnimation({
 
   return (
     <motion.div
-      className={className}
       initial="hidden"
       whileInView="visible"
       viewport={{ once, amount: 0 }}
@@ -125,7 +123,6 @@ export function StaggerContainer({
   if (immediate) {
     return (
       <motion.div
-        className={className}
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -137,7 +134,6 @@ export function StaggerContainer({
 
   return (
     <motion.div
-      className={className}
       initial="hidden"
       whileInView="visible"
       viewport={{ once, amount: 0 }}
@@ -166,7 +162,7 @@ export function StaggerItem({
   };
 
   return (
-    <motion.div className={className} variants={itemVariants}>
+    <motion.div variants={itemVariants}>
       {children}
     </motion.div>
   );

@@ -62,51 +62,50 @@ export default function VideoPage({ loaderData }: Route.ComponentProps) {
     "";
 
   return (
-    <div className="w-full px-4 md:px-6 lg:px-10 py-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div>
+      <div>
         {/* Category, Title & Meta */}
-        <div className="space-y-3">
+        <div>
           {video.categoryName && (
-            <span className="inline-block px-3 py-1 bg-[var(--color-primary)] text-white text-xs font-medium rounded-full">
+            <span>
               {video.categoryName}
             </span>
           )}
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--color-text-primary)] leading-snug">
+          <h1>
             {video.title}
           </h1>
 
           {/* Meta row: date, language, views, likes */}
-          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-[var(--color-text-secondary)]">
+          <div>
             {formattedDate && <span>{formattedDate}</span>}
             {video.language && (
-              <span className="px-2 py-1 rounded-full bg-[var(--color-background-dark)]/80 text-[var(--color-text-light)]">
+              <span>
                 اللغة: {video.language}
               </span>
             )}
-            <span className="px-2 py-1 rounded-full bg-[var(--color-background-dark)]/80 text-[var(--color-text-light)]">
+            <span>
               المشاهدات: {video.viewsCount?.toLocaleString("en-US")}
             </span>
-            <span className="px-2 py-1 rounded-full bg-[var(--color-background-dark)]/80 text-[var(--color-text-light)]">
+            <span>
               الإعجابات: {video.likesCount?.toLocaleString("en-US")}
             </span>
           </div>
 
           {/* Author */}
           {video.authorName && (
-            <div className="flex items-center gap-3 pt-1">
+            <div>
               {video.authorImage && (
                 <img
                   src={video.authorImage}
                   alt={video.authorName}
-                  className="w-8 h-8 rounded-full object-cover"
                 />
               )}
-              <div className="flex flex-col">
-                <span className="text-sm font-medium text-[var(--color-text-primary)]">
+              <div>
+                <span>
                   {video.authorName}
                 </span>
                 {video.createdBy && (
-                  <span className="text-xs text-[var(--color-text-secondary)]">
+                  <span>
                     تم النشر بواسطة {video.createdBy}
                   </span>
                 )}
@@ -116,7 +115,7 @@ export default function VideoPage({ loaderData }: Route.ComponentProps) {
         </div>
 
         {/* Video Player */}
-        <div className="w-full">
+        <div>
           {videoSource ? (
             <VideoPlayer
               src={videoSource}
@@ -128,10 +127,10 @@ export default function VideoPage({ loaderData }: Route.ComponentProps) {
               initialVolume={0.8}
             />
           ) : (
-            <div className="w-full aspect-video flex items-center justify-center text-white bg-gray-800 rounded-xl">
-              <div className="text-center">
-                <p className="text-lg mb-2">لا يوجد مصدر فيديو متاح</p>
-                <p className="text-sm text-gray-400">
+            <div>
+              <div>
+                <p>لا يوجد مصدر فيديو متاح</p>
+                <p>
                   الرجاء التحقق من رابط الفيديو
                 </p>
               </div>
@@ -141,11 +140,10 @@ export default function VideoPage({ loaderData }: Route.ComponentProps) {
 
         {/* Tags */}
         {video.tags && video.tags.length > 0 && (
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div>
             {video.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-1 text-xs rounded-full bg-[var(--color-secondary-light)]/40 text-[var(--color-text-secondary)]"
               >
                 #{tag}
               </span>
@@ -155,16 +153,16 @@ export default function VideoPage({ loaderData }: Route.ComponentProps) {
 
         {/* Description / Content */}
         {video.summary && (
-          <div className="prose prose-sm max-w-none">
-            <p className="text-[var(--color-text-secondary)] text-base leading-relaxed">
+          <div>
+            <p>
               {video.summary}
             </p>
           </div>
         )}
 
         {video.content && !video.summary && !video.content.toLowerCase().includes('video content') && (
-          <div className="prose prose-sm max-w-none">
-            <p className="text-[var(--color-text-secondary)] text-base leading-relaxed">
+          <div>
+            <p>
               {video.content}
             </p>
           </div>

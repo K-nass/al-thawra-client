@@ -36,12 +36,12 @@ export function AuthorCategoryGroup({ posts, authorName }: AuthorCategoryGroupPr
 
   if (posts.length === 0) {
     return (
-      <div className="text-center py-12 bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg">
-        <div className="text-6xl mb-4">📝</div>
-        <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2">
+      <div>
+        <div>📝</div>
+        <h3>
           لا توجد مقالات
         </h3>
-        <p className="text-[var(--color-text-secondary)]">
+        <p>
           لم يقم {authorName} بنشر أي مقالات بعد
         </p>
       </div>
@@ -49,15 +49,15 @@ export function AuthorCategoryGroup({ posts, authorName }: AuthorCategoryGroupPr
   }
 
   return (
-    <div className="space-y-8">
+    <div>
       {categoryGroups.map((group) => (
-        <div key={group.categorySlug} className="space-y-4">
+        <div key={group.categorySlug}>
           {/* Category Header */}
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
+          <div>
+            <h2>
               {group.categorySlug}
             </h2>
-            <span className="text-sm text-[var(--color-text-secondary)] bg-[var(--color-background-light)] px-3 py-1 rounded-full">
+            <span>
               {group.posts.length} مقال
             </span>
           </div>

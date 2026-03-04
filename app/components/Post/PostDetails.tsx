@@ -57,8 +57,8 @@ export function PostDetails({
   extraContentBeforeComments,
 }: PostDetailsProps) {
   return (
-    <section className="lg:col-span-2">
-      <article className="rounded-lg p-6 shadow-sm" style={{ backgroundColor: "var(--color-background-light)", color: "var(--color-text-primary)" }}>
+    <section>
+      <article>
         {/* Article Header */}
         <ScrollAnimation animation="slideUp" duration={0.6} immediate={true}>
           <PostHeader

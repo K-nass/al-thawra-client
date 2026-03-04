@@ -96,385 +96,315 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     <header
       dir="rtl"
       lang="ar"
-      className="sticky top-0 z-50 bg-[var(--color-nav-bg)] shadow-md"
+      className="w-full border-b border-dashed border-black/10 pb-4"
     >
-      {/* Top Bar - Social & Info */}
-      <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center text-sm">
-            {/* Right Side - Editor Info */}
-            <div className="flex items-center">
-              <span className="font-bold font-thuluth text-md">
-                رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
-              </span>
-            </div>
-            {/* Left Side - Icons & Actions */}
-            <div className="flex items-center gap-3">
-              {/* remove cart for now */}
-              {/* <Link
-                to="/cart"
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="السلة"
-              >
-                <ShoppingCart className="w-4 h-4" />
-              </Link> */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Bar */}
+        <div className="flex justify-between items-center py-2 text-xs font-semibold uppercase tracking-wider text-gray-600 border-b border-dashed border-black/20 mb-4">
+          <div className="flex gap-4 items-center">
+            <span className="flex items-center gap-1 px-2 py-1 border border-dashed border-black/10 rounded-sm cursor-pointer">
+              رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
+            </span>
+          </div>
 
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-1 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors"
-                aria-label="بحث"
-              >
-                <Search className="w-4 h-4" />
-              </button>
+          <div className="text-center italic font-serif text-gray-500 normal-case hidden md:block">
+            صحيفة الثورة اليمنية
+          </div>
 
-              <Link
-                to="/contact"
-                className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
-              >
-                <Mail className="w-4 h-4" />
-                <span className="hidden sm:inline">اتصل بنا</span>
-              </Link>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              aria-label="بحث"
+              className="p-1 rounded hover:bg-gray-200 transition-colors"
+            >
+              <Search className="w-4 h-4" />
+            </button>
 
-              {/* Profile Dropdown or Login Button */}
-              {currentUser ? (
-                <div className="relative" ref={profileDropdownRef}>
-                  <button
-                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                    className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-[var(--color-primary)] flex items-center justify-center">
-                      <User className="w-3 h-3 text-white" />
-                    </div>
-                    <span className="hidden sm:inline">{currentUser.userName || currentUser.username}</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
-                  </button>
+            <Link
+              to="/contact"
+              className="hover:text-blue-600 transition-colors"
+            >
+              اتصل بنا
+            </Link>
 
-                  {/* Dropdown Menu */}
-                  {isProfileMenuOpen && (
-                    <div
-                      className="absolute top-full right-0 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
-                    >
-                      <Link
-                        to="/profile"
-                        className="flex items-center gap-2 px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
-                        onClick={() => setIsProfileMenuOpen(false)}
-                      >
-                        <User className="" />
-                        <span>صفحتي</span>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          authService.logout();
-                          setCurrentUser(null);
-                          setIsProfileMenuOpen(false);
-                          window.location.href = '/';
-                        }}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 hover:bg-gray-50 transition-colors font-medium text-right"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>تسجيل الخروج</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="flex items-center gap-2 px-3 text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] transition-colors font-medium"
+            {currentUser ? (
+              <div ref={profileDropdownRef} className="relative">
+                <button
+                  onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                  className="flex items-center gap-2 hover:text-blue-600 transition-colors"
                 >
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">تسجيل الدخول</span>
-                </Link>
-              )}
-            </div>
+                  <span>{currentUser.userName || currentUser.username}</span>
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+
+                {isProfileMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-48 border border-dashed border-black/10 rounded-sm shadow-lg z-50">
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsProfileMenuOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors"
+                    >
+                      <User className="w-4 h-4" />
+                      <span>صفحتي</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        authService.logout();
+                        setCurrentUser(null);
+                        setIsProfileMenuOpen(false);
+                        window.location.href = '/';
+                      }}
+                      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors text-right"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>تسجيل الخروج</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button className="hover:text-blue-600 transition-colors">
+                <Link to="/login">تسجيل الدخول</Link>
+              </button>
+            )}
           </div>
         </div>
-      </div>
 
-      {/* Main Navigation Bar */}
-      <div className="">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center relative">
-            <nav className="hidden lg:flex flex-1 items-center justify-end gap-6 mr-10 group/right">
+        {/* Main Header Section */}
+        <div className="flex flex-col md:flex-row justify-center items-center py-2 gap-4">
+          {/* Left Navigation */}
+          <div className="hidden lg:flex items-center text-[10px] text-gray-500 font-mono">
+            <nav className="flex gap-4 items-center text-sm">
               <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
                 to="/"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <Newspaper className="w-4 h-4" />
                 <span>الصحيفة</span>
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/magazines"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
                 to="/magazines"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <FileText className="w-4 h-4" />
                 <span>أرشيف الثورة</span>
               </Link>
 
               <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/tv"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
                 to="/tv"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
               >
                 <Tv className="w-4 h-4" />
                 <span>التلفزيون</span>
               </Link>
             </nav>
-
-            {/* Logo - Always Centered */}
-            <div className="shrink-0 mx-6 order-last lg:order-none">
-              <Link
-                to="/"
-                className="text-[var(--color-text-primary)] hover:opacity-90 transition-opacity flex items-center"
-              >
-                <img
-                  src="/formLogo.png"
-                  alt="الثورة لوجو"
-                  style={{ width: "160px" }}
-                  className="mx-auto"
-                />
-              </Link>
-            </div>
-
-            {/* Navigation Links - Left Side (3 links) */}
-            <nav className="hidden lg:flex flex-1 items-center justify-start gap-6 ml-10 group/left">
-              <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/reels"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
-                to="/reels"
-              >
-                <Film className="w-4 h-4" />
-                <span>ريلز</span>
-              </Link>
-
-              <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/podcast"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
-                to="/podcast"
-              >
-                <Podcast className="w-4 h-4" />
-                <span>بودكاست</span>
-              </Link>
-
-              <Link
-                className={`flex items-center gap-2 px-2 border-b-2 transition-all group text-[var(--color-text-primary)] ${location.pathname === "/profile"
-                  ? "border-[var(--color-primary)] font-bold"
-                  : "border-transparent hover:border-[var(--color-primary)]/50"
-                  }`}
-                to="/profile"
-              >
-                <User className="w-4 h-4" />
-                <span>صفحتي</span>
-              </Link>
-            </nav>
-
-            <div className="lg:hidden absolute left-0 flex items-center">
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="p-2 text-[var(--color-text-primary)] hover:bg-[var(--color-primary)] hover:bg-opacity-10 rounded-lg transition-colors"
-                aria-label="القائمة"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </button>
-            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Bottom Navigation Bar - Categories */}
-      <div className="bg-[var(--color-white)] border-b border-dashed border-[var(--color-divider)]">
-        <div className="container mx-auto px-4">
-          {/* Mobile Navigation (Scrollable, All Categories) */}
-          <nav className="lg:hidden flex items-center justify-start gap-1 overflow-x-auto scrollbar-hide whitespace-nowrap">
-            <Link
-              to="/"
-              className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
-            >
-              عدد اليوم
+          {/* Center Logo */}
+          <div className="text-center">
+            <Link to="/">
+              <img
+                src="/formLogo.png"
+                alt="الثورة لوجو"
+                className="h-16 md:h-20 mx-auto"
+              />
             </Link>
-            {allMenuCategories.map((category) => (
-              <Link
-                key={category.id}
-                className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium shrink-0"
-                to={`/category/${category.slug}`}
-              >
-                {category.name}
-              </Link>
-            ))}
+          </div>
+
+          {/* Right Navigation */}
+          <nav className="hidden md:flex gap-4 items-center">
+            <Link
+              to="/reels"
+              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+            >
+              <Film className="w-4 h-4" />
+              <span>ريلز</span>
+            </Link>
+
+            <Link
+              to="/podcast"
+              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+            >
+              <Podcast className="w-4 h-4" />
+              <span>بودكاست</span>
+            </Link>
+
+            <Link
+              to="/profile"
+              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+            >
+              <User className="w-4 h-4" />
+              <span>صفحتي</span>
+            </Link>
           </nav>
 
-          {/* Desktop Navigation (Fixed, Dropdown for More) */}
-          <nav className="hidden lg:flex items-center justify-center gap-1">
-            <Link
-              to="/"
-              className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
+          {/* Mobile Menu Button */}
+          <div className="md:hidden self-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="القائمة"
+              className="p-2 hover:bg-gray-200 rounded transition-colors"
             >
-              عدد اليوم
-            </Link>
-            {visibleCategories.map((category) => (
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Bottom Navigation - Categories */}
+        <nav className="border-t border-b border-dashed border-black/80 py-3 mt-4 overflow-x-auto">
+          <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
+            <li>
               <Link
-                key={category.id}
-                className="px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
-                to={`/category/${category.slug}`}
+                to="/"
+                className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
               >
-                {category.name}
+                عدد اليوم
               </Link>
+            </li>
+            {visibleCategories.map((category) => (
+              <li key={category.id}>
+                <Link
+                  to={`/category/${category.slug}`}
+                  className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
+                >
+                  {category.name}
+                </Link>
+              </li>
             ))}
 
-            {/* More dropdown menu */}
             {moreCategories.length > 0 && (
-              <div className="relative shrink-0" id="more-menu-container">
+              <li className="relative" id="more-menu-container">
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="flex items-center gap-1 px-4 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] rounded transition-colors font-medium"
+                  className="flex items-center gap-1 hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
                 >
                   المزيد
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isMoreMenuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className="w-4 h-4" />
                 </button>
 
-                {/* Dropdown */}
                 {isMoreMenuOpen && (
-                  <div
-                    style={{ top: '100%', right: 0 }}
-                    className="absolute top-full right-0 mt-1 w-56 bg-[var(--color-white)] rounded-lg shadow-lg border border-[var(--color-divider)] py-2 z-50"
-                  >
+                  <div className="absolute left-0 mt-2 w-48 bg-white border border-dashed border-black/10 rounded-sm shadow-lg z-50">
                     {moreCategories.map((category) => (
                       <Link
                         key={category.id}
-                        className="block px-4 py-2 text-[var(--color-text-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] transition-colors font-medium"
                         to={`/category/${category.slug}`}
                         onClick={() => setIsMoreMenuOpen(false)}
+                        className="block px-4 py-2 hover:bg-gray-100 transition-colors"
                       >
                         {category.name}
                       </Link>
                     ))}
                   </div>
                 )}
-              </div>
+              </li>
             )}
-          </nav>
-        </div>
+          </ul>
+        </nav>
       </div>
 
       {/* Search Bar */}
-      {
-        isSearchOpen && (
-          <div className="bg-[var(--color-white)] border-b border-[var(--color-divider)]">
-            <div className="container mx-auto px-4 py-4">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget);
-                  const query = formData.get("q") as string;
-                  if (query.trim()) {
-                    window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
-                  }
-                }}
-                className="flex items-center gap-2"
+      {isSearchOpen && (
+        <div className="bg-white border-t border-dashed border-black/10 py-4">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const query = formData.get("q") as string;
+                if (query.trim()) {
+                  window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+                }
+              }}
+              className="flex gap-2 items-center"
+            >
+              <input
+                type="search"
+                name="q"
+                placeholder="ابحث في الثورة..."
+                autoFocus
+                dir="rtl"
+                className="flex-1 px-4 py-2 border border-dashed border-black/10 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors font-medium"
               >
-                <input
-                  type="search"
-                  name="q"
-                  placeholder="ابحث في الثورة..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
-                  autoFocus
-                  dir="rtl"
-                />
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium"
-                >
-                  بحث
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsSearchOpen(false)}
-                  className="p-2 text-gray-600 hover:text-[var(--color-primary)] transition-colors"
-                  aria-label="إغلاق"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </form>
-            </div>
+                بحث
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsSearchOpen(false)}
+                aria-label="إغلاق"
+                className="p-2 hover:bg-gray-200 rounded transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </form>
           </div>
-        )
-      }
+        </div>
+      )}
 
       {/* Mobile Menu */}
-      {
-        isMobileMenuOpen && (
-          <div className="lg:hidden bg-[var(--color-nav-bg)] border-t border-[var(--color-divider)]">
-            <nav className="container mx-auto px-4 py-4 flex flex-col gap-2 text-[var(--color-text-primary)]">
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                الصحيفة
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/magazines"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                أرشيف الثورة
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/tv"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                التلفزيون
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/reels"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                ريلز
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/podcast"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                بودكاست
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/profile"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                صفحتي
-              </Link>
-              <Link
-                className="px-4 py-2 hover:bg-[var(--color-primary)] hover:bg-opacity-10 hover:text-[var(--color-primary)] rounded transition-colors"
-                to="/contact"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                اتصل بنا
-              </Link>
-            </nav>
-          </div>
-        )
-      }
-    </header >
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-dashed border-black/10">
+          <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-2">
+            <Link
+              to="/"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              الصحيفة
+            </Link>
+            <Link
+              to="/magazines"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              أرشيف الثورة
+            </Link>
+            <Link
+              to="/tv"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              التلفزيون
+            </Link>
+            <Link
+              to="/reels"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              ريلز
+            </Link>
+            <Link
+              to="/podcast"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              بودكاست
+            </Link>
+            <Link
+              to="/profile"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              صفحتي
+            </Link>
+            <Link
+              to="/contact"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+            >
+              اتصل بنا
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }

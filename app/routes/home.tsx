@@ -185,12 +185,12 @@ export default function Home() {
   }
 
   return (
-    <div className="space-y-8">
+    <div>
       {/* Header Grid: Sidebar + Slider */}
-      <div className="container mx-auto px-4">
-        <div className="newspaper-grid grid grid-cols-1 lg:grid-cols-12 items-stretch border-t border-dashed border-[var(--color-divider)]">
+      <div>
+        <div>
           {/* Right Side: Chief Editor Sidebar (on RTL starting edge) */}
-          <div className="lg:col-span-4 lg:py-8 lg:px-6">
+          <div>
             {chiefEditor && (
               <ChiefEditorSidebar
                 editor={chiefEditor as any}
@@ -200,7 +200,7 @@ export default function Home() {
           </div>
 
           {/* Main Side: Slider */}
-          <div className="lg:col-span-8 lg:py-8 lg:px-6">
+          <div>
             {sliderPosts.length > 0 && (
               <Slider posts={sliderPosts} />
             )}
@@ -267,7 +267,7 @@ export default function Home() {
       )}
 
       {/* Newsletter Subscription */}
-      <div className="rounded-lg p-8 mt-8">
+      <div>
         <NewsletterSubscription />
       </div>
     </div>

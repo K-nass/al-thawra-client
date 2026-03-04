@@ -125,23 +125,22 @@ export default function AuthorPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Author Header */}
       <ScrollAnimation animation="slideUp" duration={0.6}>
-        <div className="bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg p-6">
-        <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+        <div>
+        <div>
           {/* Author Avatar */}
-          <div className="relative">
-            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[var(--color-primary)] shadow-lg bg-[var(--color-divider)]">
+          <div>
+            <div>
               {author.profileImageUrl ? (
                 <img
                   src={author.profileImageUrl}
                   alt={author.userName}
-                  className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center" style={{background: 'linear-gradient(to bottom right, var(--color-primary-light), var(--color-primary))'}}>
-                  <span className="text-4xl font-bold text-[var(--color-text-light)]">
+                <div>
+                  <span>
                     {author.userName.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -150,33 +149,32 @@ export default function AuthorPage() {
           </div>
 
           {/* Author Info */}
-          <div className="flex-1 text-center md:text-right">
-            <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">
+          <div>
+            <h1>
               {author.userName}
             </h1>
             <a
               href={`mailto:${author.email}`}
-              className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors mb-3 inline-block"
             >
               {author.email}
             </a>
             {author.aboutMe && (
-              <p className="text-[var(--color-text-secondary)] text-lg mb-4 max-w-2xl">
+              <p>
                 {author.aboutMe}
               </p>
             )}
 
             {/* Stats */}
-            <div className="flex items-center justify-center md:justify-start gap-6 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl font-bold text-[var(--color-primary)]">
+            <div>
+              <div>
+                <span>
                   {posts.length}
                 </span>
-                <span className="text-[var(--color-text-secondary)]">مقال</span>
+                <span>مقال</span>
               </div>
-              <div className="w-px h-6 bg-[var(--color-divider)]"></div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[var(--color-text-secondary)]">
+              <div></div>
+              <div>
+                <span>
                   منذ {new Date(author.memberSince).toLocaleDateString("ar-EG")}
                 </span>
               </div>
@@ -188,8 +186,8 @@ export default function AuthorPage() {
 
       {/* Author Posts Grouped by Category */}
       <ScrollAnimation animation="slideUp" delay={0.2}>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-[var(--color-text-primary)]">
+        <div>
+          <h2>
             مقالات {author.userName} - {posts.length} مقال
           </h2>
         </div>

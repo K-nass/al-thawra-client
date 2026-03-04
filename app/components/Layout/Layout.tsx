@@ -12,9 +12,9 @@ interface LayoutProps {
 
 export function Layout({ children, categories = [], footerPages = [], logoSettings }: LayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div>
       <Header categories={categories} ceoName={logoSettings?.ceoName} />
-      <main className="flex-grow">
+      <main>
         {children}
       </main>
       <Footer pages={footerPages} />

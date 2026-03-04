@@ -31,28 +31,28 @@ export function TodaysIssue({
 
   return (
     <ScrollAnimation animation="slideUp" duration={0.6} once={true}>
-      <section className="mb-12">
+      <section>
         {/* Header */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[var(--color-primary-dark)] to-[var(--color-primary)] shadow-2xl mb-6">
+        <div>
           {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-400/20 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
+          <div></div>
+          <div></div>
 
           {/* Content Section */}
-          <div className="relative z-10 p-6 flex items-center justify-between gap-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-white/30">
-                <Newspaper className="w-6 h-6 text-white" />
+          <div>
+            <div>
+              <div>
+                <Newspaper />
               </div>
               <div>
-                <h2 className="text-3xl font-black text-white mb-1">عدد اليوم</h2>
-                <div className="flex items-center gap-3 text-white/90 font-sans-en">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    <span className="text-sm font-medium">{date}</span>
+                <h2>عدد اليوم</h2>
+                <div>
+                  <div>
+                    <Calendar />
+                    <span>{date}</span>
                   </div>
-                  <span className="w-1 h-1 bg-white/60 rounded-full"></span>
-                  <span className="text-sm font-medium">{issueNumber}</span>
+                  <span></span>
+                  <span>{issueNumber}</span>
                 </div>
               </div>
             </div>
@@ -60,22 +60,20 @@ export function TodaysIssue({
             {/* Magazine Cover - Square */}
             <Link
               to={magazineDate ? `/magazines/date/${magazineDate}` : "/magazines"}
-              className="group relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border-2 border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300"
             >
               {magazineCover ? (
                 <img
                   src={magazineCover}
                   alt="غلاف العدد"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-150"
                 />
               ) : (
-                <div className="w-full h-full bg-white/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
-                  <Newspaper className="w-8 h-8 text-white/50" />
+                <div>
+                  <Newspaper />
                 </div>
               )}
               {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span className="text-white text-xs font-bold text-center px-2">اقرأ<br />العدد</span>
+              <div>
+                <span>اقرأ<br />العدد</span>
               </div>
             </Link>
           </div>
@@ -83,27 +81,26 @@ export function TodaysIssue({
 
         {/* Urgent News Ticker */}
         {urgentNews && urgentNews.length > 0 && (
-          <div className="relative overflow-hidden bg-red-800 rounded-xl mb-6 shadow-lg">
-            <div className="flex items-center">
+          <div>
+            <div>
               {/* Fixed Label */}
-              <div className="flex-shrink-0 bg-red-900 px-6 py-3 flex items-center gap-2 border-r-2 border-red-950 z-20">
-                <AlertCircle className="w-5 h-5 text-white animate-pulse" />
-                <span className="text-white font-bold text-sm whitespace-nowrap">عاجل</span>
+              <div>
+                <AlertCircle />
+                <span>عاجل</span>
               </div>
 
               {/* Scrolling News */}
-              <div className="flex-1 overflow-hidden py-3">
-                <div className="flex animate-scroll-rtl">
+              <div>
+                <div>
                   {/* Duplicate the news items for seamless loop */}
                   {[...urgentNews, ...urgentNews].map((news, index) => (
-                    <div key={index} className="flex items-center flex-shrink-0 px-8">
+                    <div key={index}>
                       <Link
                         to={`/posts/categories/${news.categorySlug}/articles/${news.slug}`}
-                        className="text-white font-medium text-sm whitespace-nowrap hover:text-red-200 transition-colors cursor-pointer"
                       >
                         {news.title}
                       </Link>
-                      <span className="mx-4 text-red-300">•</span>
+                      <span>•</span>
                     </div>
                   ))}
                 </div>

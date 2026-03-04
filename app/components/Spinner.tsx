@@ -27,12 +27,11 @@ export function Spinner({
   text 
 }: SpinnerProps) {
   return (
-    <div className={`flex items-center justify-center gap-2 ${className}`}>
-      <Loader2 
-        className={`animate-spin ${sizeClasses[size]} ${variantClasses[variant]}`}
+    <div>
+      <Loader2
       />
       {text && (
-        <span className={`font-medium ${variantClasses[variant]}`}>
+        <span>
           {text}
         </span>
       )}
@@ -43,17 +42,17 @@ export function Spinner({
 // Inline spinner for buttons
 export function ButtonSpinner({ className = "" }: { className?: string }) {
   return (
-    <span className={`inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin ${className}`} />
+    <span />
   );
 }
 
 // Full page spinner overlay
 export function PageSpinner({ text = "جاري التحميل..." }: { text?: string }) {
   return (
-    <div className="fixed inset-0 bg-[var(--color-white)]/80 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div className="text-center">
+    <div>
+      <div>
         <Spinner size="xl" variant="primary" />
-        <p className="mt-4 text-lg font-medium text-[var(--color-primary)]">
+        <p>
           {text}
         </p>
       </div>
@@ -64,8 +63,8 @@ export function PageSpinner({ text = "جاري التحميل..." }: { text?: st
 // Navigation progress bar
 export function NavigationProgress() {
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-[var(--color-primary)] animate-pulse">
-      <div className="h-full bg-[var(--color-primary-dark)] animate-[progress_1s_ease-in-out_infinite]" />
+    <div>
+      <div />
     </div>
   );
 }

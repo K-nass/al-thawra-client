@@ -90,7 +90,7 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
   });
 
   return (
-    <div className="lg:col-span-2">
+    <div>
       <PostDetails
         category={audio.categoryName || ""}
         categoryHref={audio.categorySlug ? `/category/${audio.categorySlug}` : undefined}
@@ -107,11 +107,9 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
         relatedPostsTitle="بودكاست ذات صلة"
         relatedPosts={null}
         extraContentBeforeComments={
-          <div className="mt-6 modern-audio-player">
+          <div>
             {audio.imageUrl && (
               <div
-                className="modern-audio-player__thumbnail"
-                style={{ backgroundImage: `url(${audio.imageUrl})` }}
               />
             )}
             <audio

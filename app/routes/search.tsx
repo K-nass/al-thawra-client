@@ -113,29 +113,27 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Search Header */}
-      <div className="bg-[var(--color-white)] rounded-lg shadow-sm p-6">
-        <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-4">
+      <div>
+        <h1>
           البحث في الثورة
         </h1>
 
         {/* Search Form */}
-        <Form method="get" className="flex gap-3">
-          <div className="flex-1 relative">
+        <Form method="get">
+          <div>
             <input
               type="search"
               name="q"
               defaultValue={initialQuery}
               placeholder="ابحث عن مقالات، أخبار، كتاب..."
-              className="w-full px-4 py-3 pr-12 border border-[var(--color-divider)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent"
               dir="rtl"
             />
-            <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search />
           </div>
           <button
             type="submit"
-            className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg"
           >
             بحث
           </button>
@@ -143,10 +141,10 @@ export default function SearchPage() {
 
         {/* Search Results Info */}
         {initialQuery && (
-          <div className="mt-4 flex items-center gap-2 text-gray-600">
+          <div>
             <span>نتائج البحث عن:</span>
-            <span className="font-bold text-[var(--color-primary)]">"{initialQuery}"</span>
-            <span className="text-sm">({totalPosts} نتيجة)</span>
+            <span>"{initialQuery}"</span>
+            <span>({totalPosts} نتيجة)</span>
           </div>
         )}
       </div>
@@ -163,15 +161,14 @@ export default function SearchPage() {
 
           {/* Load More Button - Always show if there are more results */}
           {displayCount < totalPosts && (
-            <div className="flex justify-center mt-8">
+            <div>
               <button
                 onClick={handleLoadMore}
                 disabled={isLoadingMore}
-                className="px-8 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoadingMore ? (
-                  <span className="flex items-center gap-2">
-                    <span className="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  <span>
+                    <span></span>
                     جاري التحميل...
                   </span>
                 ) : (
