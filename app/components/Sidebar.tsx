@@ -13,7 +13,6 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
   return (
     <aside>
       {/* Editor's Article Section - Only show if we have chief editor data */}
-      {/* Editor's Article Section - Only show if we have chief editor data */}
       {chiefEditor && chiefEditorPosts.length > 0 && (
         <ScrollAnimation animation="slideLeft" once={false}>
           <div>
@@ -92,44 +91,6 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
           </div>
         </ScrollAnimation>
       )}
-
-      {/* Trending Posts Section */}
-      <ScrollAnimation animation="slideLeft" once={false}>
-        <div>
-          <h3>
-            الأكثر قراءة
-          </h3>
-          {trendingPosts && trendingPosts.length > 0 ? (
-            <>
-              <StaggerContainer staggerDelay={0.1} once={false}>
-                {trendingPosts.slice(0, 5).map((post: Post, index: number) => (
-                  <StaggerItem key={post.id}>
-                    <Link
-                      to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                    >
-                      <span>
-                        {index + 1}
-                      </span>
-                      <div>
-                        <h4>
-                          {post.title}
-                        </h4>
-                      </div>
-                    </Link>
-                  </StaggerItem>
-                ))}
-              </StaggerContainer>
-              <Link
-                to="/search"
-              >
-                عرض الكل ←
-              </Link>
-            </>
-          ) : (
-            <p>لا توجد مقالات متاحة حاليًا.</p>
-          )}
-        </div>
-      </ScrollAnimation>
     </aside>
   );
 }

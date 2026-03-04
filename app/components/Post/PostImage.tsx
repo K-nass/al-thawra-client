@@ -20,16 +20,17 @@ export function PostImage({ src, alt, description }: PostImageProps) {
   }
 
   return (
-    <figure>
+    <figure className="mb-6">
       <img
         src={src!}
         alt={alt}
         loading="lazy"
         decoding="async"
         onError={() => setHasError(true)}
+        className="w-full h-auto"
       />
       {description && (
-        <figcaption>
+        <figcaption className="text-xs text-gray-500 mt-2 italic">
           {description}
         </figcaption>
       )}

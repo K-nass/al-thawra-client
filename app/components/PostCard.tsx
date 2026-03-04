@@ -6,9 +6,10 @@ export type { Post };
 interface PostCardProps {
   post: Post;
   buildLink?: (post: Post) => string;
+  variant?: 'standard' | 'featured';
 }
 
-export function PostCard({ post, buildLink }: PostCardProps) {
+export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProps) {
   const displayDate = post.publishedAt || post.createdAt;
   const formattedDate = new Date(displayDate).toLocaleDateString("ar-u-nu-latn", {
     year: "numeric",
@@ -20,79 +21,74 @@ export function PostCard({ post, buildLink }: PostCardProps) {
     ? buildLink(post)
     : `/posts/categories/${post.categorySlug}/articles/${post.slug}`;
 
+  const isFeatured = variant === 'featured';
+
   return (
-    <article>
-      <Link to={linkHref}>
+    <article className={`relative group ${isFeatured ? 'h-full' : 'h-full flex flex-col'}`}>
+      <Link to={linkHref} className="block">
         {post.image && post.image !== "null" && post.image !== "undefined" ? (
-          <div>
+          <div className={`relative overflow-hidden ${isFeatured ? 'aspect-[4/3] mb-4' : 'aspect-[4/3] mb-3'}`}>
             <img
               src={post.image}
               alt={post.imageDescription || post.title}
               loading="lazy"
               decoding="async"
+              className="w-full h-full object-cover"
             />
           </div>
         ) : (
-          <div>
-            <span>لا توجد صورة</span>
+          <div className={`flex items-center justify-center bg-gray-200/50 ${isFeatured ? 'aspect-[4/3] mb-4' : 'aspect-[4/3] mb-3'}`}>
+            <span className="text-gray-500 text-sm">لا توجد صورة</span>
           </div>
         )}
-
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            if (navigator.share) {
-              navigator.share({
-                title: post.title,
-                url: window.location.origin + linkHref,
-              });
-            }
-          }}
-        >
-          <svg
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-            />
-          </svg>
-        </button>
       </Link>
 
-      <div>
+      <div className={`flex-1 flex flex-col ${isFeatured ? '' : ''}`}>
         {post.categoryName && (
-          <Link to={`/category/${post.categorySlug}`}>
+          <Link 
+            to={`/category/${post.categorySlug}`}
+            className={`inline-block font-bold text-gray-900 hover:text-blue-600 transition-colors mb-2 ${isFeatured ? 'text-sm' : 'text-xs'}`}
+          >
             {post.categoryName}
           </Link>
         )}
 
-        <Link to={linkHref}>
-          <h3>
+        <Link to={linkHref} className="block group mb-2">
+          <h3 className={`font-bold leading-tight text-gray-900 group-hover:text-blue-600 transition-colors ${isFeatured ? 'text-xl md:text-2xl' : 'text-base md:text-lg line-clamp-3'}`}>
             {post.title}
           </h3>
         </Link>
 
-        <time dateTime={displayDate}>
-          {formattedDate}
-        </time>
+        <p className={`text-gray-700 leading-relaxed mb-3 ${isFeatured ? 'text-sm line-clamp-3' : 'text-sm line-clamp-2'}`}>
+          {post.imageDescription || post.title}
+        </p>
 
-        {post.authorName && (
-          <Link to={`/author/${post.authorName}`}>
-            <img
-              src={post.authorImage}
-              alt={post.authorName}
-            />
-            <span>
-              {post.authorName}
-            </span>
-          </Link>
-        )}
+        <div className="mt-auto">
+          <time 
+            dateTime={displayDate}
+            className="text-gray-500 text-xs block mb-2"
+          >
+            {formattedDate}
+          </time>
 
+          {post.authorName && (
+            <Link 
+              to={`/author/${post.authorName}`}
+              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              {post.authorImage && (
+                <img
+                  src={post.authorImage}
+                  alt={post.authorName}
+                  className="w-6 h-6 rounded-full object-cover"
+                />
+              )}
+              <span className="text-xs font-medium">
+                {post.authorName}
+              </span>
+            </Link>
+          )}
+        </div>
       </div>
     </article>
   );
