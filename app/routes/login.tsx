@@ -128,123 +128,118 @@ export default function LoginPage() {
   }, [actionData, navigate]);
 
   return (
-    <div>
-      {/* Animated Background Pattern */}
-      <div>
-        {/* Geometric shapes */}
-        <div></div>
-        <div></div>
-        <div></div>
-
-        {/* Grid pattern */}
-        <div></div>
-
-        {/* Floating elements */}
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-
+    <div className="min-h-screen bg-[#d0e8f2] flex items-center justify-center p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-md"
       >
-        <div>
+        <div className="border-2 border-dashed border-[#a8c5d4] rounded-lg p-8 shadow-sm">
           {/* Back to Home Link */}
           <Link
             to="/"
+            className="inline-flex items-center gap-2 text-sm text-[#5a8ca8] hover:text-[#4a7c98] mb-6 transition-colors"
           >
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             العودة للرئيسية
           </Link>
 
           {/* Logo */}
-          <div>
+          <div className="text-center mb-6">
             <Link to="/">
               <img
                 src="/formLogo.png"
                 alt="الثورة"
+                className="h-16 mx-auto"
               />
             </Link>
           </div>
 
           {/* Title */}
-          <h2>
+          <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
             تسجيل الدخول
           </h2>
 
           {/* General Error Message */}
           {generalError && (
-            <div>
+            <div className="mb-4 p-3 bg-red-50 border border-dashed border-red-300 rounded text-red-700 text-sm text-center">
               <p>{generalError}</p>
             </div>
           )}
 
           {/* Login Form */}
-          <Form method="post">
+          <Form method="post" className="space-y-4">
             <StaggerContainer staggerDelay={0.1} once={true} immediate={true}>
               {/* Email Field */}
               <StaggerItem>
-                <label htmlFor="email">
-                  البريد الإلكتروني
-                </label>
                 <div>
-                  <div>
-                    <Mail />
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    البريد الإلكتروني
+                  </label>
+                  <div className="relative">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8c5d4]">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      defaultValue={previousValues.email}
+                      placeholder="example@email.com"
+                      dir="ltr"
+                      disabled={isSubmitting}
+                      className="w-full pr-10 pl-4 py-2 border-2 border-dashed border-[#a8c5d4] rounded focus:outline-none focus:border-[#5a8ca8] disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
                   </div>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    defaultValue={previousValues.email}
-                    placeholder="example@email.com"
-                    dir="ltr"
-                    disabled={isSubmitting}
-                  />
+                  {errors.email && (
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                  )}
                 </div>
-                {errors.email && (
-                  <p>{errors.email}</p>
-                )}
               </StaggerItem>
 
               {/* Password Field */}
               <StaggerItem>
-                <label htmlFor="password">
-                  كلمة المرور
-                </label>
                 <div>
-                  <div>
-                    <Lock />
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    كلمة المرور
+                  </label>
+                  <div className="relative">
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8c5d4]">
+                      <Lock className="w-5 h-5" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      placeholder="••••••••"
+                      dir="ltr"
+                      disabled={isSubmitting}
+                      className="w-full pr-10 pl-10 py-2 border-2 border-dashed border-[#a8c5d4] rounded focus:outline-none focus:border-[#5a8ca8] disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isSubmitting}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a8c5d4] hover:text-[#5a8ca8] disabled:opacity-50"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
                   </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    placeholder="••••••••"
-                    dir="ltr"
-                    disabled={isSubmitting}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    disabled={isSubmitting}
-                  >
-                    {showPassword ? <EyeOff /> : <Eye />}
-                  </button>
+                  {errors.password && (
+                    <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+                  )}
                 </div>
-                {errors.password && (
-                  <p>{errors.password}</p>
-                )}
               </StaggerItem>
 
               {/* Forgot Password */}
               <StaggerItem>
-                <div>
+                <div className="text-left">
                   <Link
                     to="/forgot-password"
+                    className="text-sm text-[#5a8ca8] hover:text-[#4a7c98] transition-colors"
                   >
                     نسيت كلمة المرور؟
                   </Link>
@@ -256,6 +251,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
+                  className="w-full py-2.5 bg-[#5a8ca8] text-white rounded border-2 border-dashed border-[#5a8ca8] hover:bg-[#4a7c98] hover:border-[#4a7c98] disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                 >
                   {isSubmitting ? "جاري تسجيل الدخول..." : "الدخول"}
                 </button>
@@ -265,11 +261,12 @@ export default function LoginPage() {
 
           {/* Register Link */}
           <ScrollAnimation animation="fade" delay={0.5} once={true}>
-            <div>
+            <div className="mt-6 text-center text-sm text-gray-600">
               <Link
                 to="/register"
+                className="hover:text-[#5a8ca8] transition-colors"
               >
-                ليس لديك حساب؟ <span>سجل الآن</span>
+                ليس لديك حساب؟ <span className="text-[#5a8ca8] font-medium">سجل الآن</span>
               </Link>
             </div>
           </ScrollAnimation>

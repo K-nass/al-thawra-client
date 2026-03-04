@@ -123,6 +123,7 @@ export function StaggerContainer({
   if (immediate) {
     return (
       <motion.div
+        className={className}
         initial="hidden"
         animate="visible"
         variants={containerVariants}
@@ -134,6 +135,7 @@ export function StaggerContainer({
 
   return (
     <motion.div
+      className={className}
       initial="hidden"
       whileInView="visible"
       viewport={{ once, amount: 0 }}

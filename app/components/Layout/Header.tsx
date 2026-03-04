@@ -139,11 +139,11 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 </button>
 
                 {isProfileMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 border border-dashed border-black/10 rounded-sm shadow-lg z-50">
+                  <div className="absolute left-0 mt-2 w-48 bg-[#d0e8f2] border border-dashed border-black/10 rounded-sm shadow-lg z-50">
                     <Link
                       to="/profile"
                       onClick={() => setIsProfileMenuOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 hover:bg-[#a8c5d4] transition-colors"
                     >
                       <User className="w-4 h-4" />
                       <span>صفحتي</span>
@@ -155,7 +155,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                         setIsProfileMenuOpen(false);
                         window.location.href = '/';
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-gray-100 transition-colors text-right"
+                      className="w-full flex items-center gap-2 px-4 py-2 hover:bg-[#a8c5d4] transition-colors text-right"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>تسجيل الخروج</span>
@@ -172,8 +172,23 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
 
         {/* Main Header Section */}
-        <div className="flex flex-col md:flex-row justify-center items-center py-2 gap-4">
-          {/* Left Navigation */}
+        <div className="flex justify-between items-center py-2 gap-4 md:justify-center flex-row-reverse md:flex-row">
+          {/* Mobile Menu Button - Left Side */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="القائمة"
+              className="p-2 hover:bg-gray-200 rounded transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
+
+          {/* Left Navigation - Desktop */}
           <div className="hidden lg:flex items-center">
             <nav className="flex gap-4 items-center text-sm text-gray-900">
               <Link
@@ -213,8 +228,8 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             </Link>
           </div>
 
-          {/* Right Navigation */}
-          <nav className="hidden md:flex gap-4 items-center text-sm text-gray-900">
+          {/* Right Navigation - Desktop */}
+          <nav className="relative hidden md:flex gap-4 items-center text-sm text-gray-900">
             <Link
               to="/reels"
               className="flex items-center gap-1 hover:text-blue-600 transition-colors"
@@ -239,25 +254,10 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               <span>صفحتي</span>
             </Link>
           </nav>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden self-center">
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="القائمة"
-              className="p-2 hover:bg-gray-200 rounded transition-colors"
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-6 h-6" />
-              ) : (
-                <Menu className="w-6 h-6" />
-              )}
-            </button>
-          </div>
         </div>
 
         {/* Bottom Navigation - Categories */}
-        <nav className="border-t border-b border-dashed border-black/10 py-3 mt-4 overflow-x-auto">
+        <nav className="border-t border-b border-dashed border-black/10 py-3 mt-4 overflow-x-auto overflow-y-visible">
           <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
             <li>
               <Link
@@ -279,23 +279,23 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             ))}
 
             {moreCategories.length > 0 && (
-              <li className="relative" id="more-menu-container">
+              <li id="more-menu-container">
                 <button
                   onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  className="flex items-center gap-1 hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
+                  className="flex items-center gap-1 ms-10 lg:ms-0 hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
                 >
                   المزيد
                   <ChevronDown className="w-4 h-4" />
                 </button>
 
                 {isMoreMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 bg-white border border-dashed border-black/10 rounded-sm shadow-lg z-50">
+                  <div className="absolute left-0 right-0 md:left-auto md:right-auto md:w-48 mt-2 bg-[#d0e8f2] border border-dashed border-black/10 rounded-sm shadow-lg z-100 h-40 overflow-y-auto scrollbar-hide">
                     {moreCategories.map((category) => (
                       <Link
                         key={category.id}
                         to={`/category/${category.slug}`}
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="block px-4 py-2 hover:bg-gray-100 transition-colors"
+                        className="block px-4 py-2 hover:bg-[#a8c5d4] transition-colors"
                       >
                         {category.name}
                       </Link>
@@ -364,54 +364,54 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-dashed border-black/10">
+        <div className="md:hidden border-t border-dashed border-black/10">
           <nav className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-2">
             <Link
               to="/"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2 rounded transition-colors"
             >
               الصحيفة
             </Link>
             <Link
               to="/magazines"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2 rounded transition-colors"
             >
               أرشيف الثورة
             </Link>
             <Link
               to="/tv"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2  rounded transition-colors"
             >
               التلفزيون
             </Link>
             <Link
               to="/reels"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2  rounded transition-colors"
             >
               ريلز
             </Link>
             <Link
               to="/podcast"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2  rounded transition-colors"
             >
               بودكاست
             </Link>
             <Link
               to="/profile"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2  rounded transition-colors"
             >
               صفحتي
             </Link>
             <Link
               to="/contact"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="px-4 py-2 hover:bg-gray-100 rounded transition-colors"
+              className="px-4 py-2  rounded transition-colors"
             >
               اتصل بنا
             </Link>
