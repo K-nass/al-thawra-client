@@ -120,9 +120,12 @@ export default function TVPage() {
 
   if (!featuredVideo) {
     return (
-      <div>
-        <div>
-          <p>لا توجد فيديوهات متاحة</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center p-8">
+          <div className="inline-flex items-center justify-center w-20 h-20 border border-dashed border-black/10 rounded-lg mb-4">
+            <Play className="w-10 h-10 text-gray-400" />
+          </div>
+          <p className="text-gray-600 text-lg">لا توجد فيديوهات متاحة</p>
         </div>
       </div>
     );

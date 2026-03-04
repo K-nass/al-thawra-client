@@ -109,27 +109,27 @@ export default function MagazinesPage() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen">
       {/* Header */}
       <ScrollAnimation animation="slideUp">
-        <div>
-        <h1>
-          أرشيف الثورة
-        </h1>
-        <p>
-          تصفح جميع أعداد صحيفة الثورة
-        </p>
+        <div className="max-w-7xl mx-auto px-4 py-8 text-center border-b border-dashed border-black/10">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            أرشيف الثورة
+          </h1>
+          <p className="text-gray-700 text-lg">
+            تصفح جميع أعداد صحيفة الثورة
+          </p>
         </div>
       </ScrollAnimation>
 
       {/* Date Filter */}
-      <div>
-        <h2>
+      <div className="max-w-7xl mx-auto px-4 py-6 border-b border-dashed border-black/10">
+        <h2 className="text-xl font-bold text-gray-900 mb-4">
           تصفية حسب التاريخ
         </h2>
-        <div>
-          <div>
-            <label htmlFor="from-date">
+        <div className="flex flex-wrap gap-4 items-end">
+          <div className="flex-1 min-w-[200px]">
+            <label htmlFor="from-date" className="block text-sm font-medium text-gray-700 mb-2">
               من تاريخ
             </label>
             <input
@@ -143,14 +143,15 @@ export default function MagazinesPage() {
                   } else {
                     prev.delete("from");
                   }
-                  prev.set("page", "1"); // Reset to page 1
+                  prev.set("page", "1");
                   return prev;
                 });
               }}
+              className="w-full px-4 py-2 border border-dashed border-black/10 rounded-lg bg-transparent text-gray-900 focus:outline-none"
             />
           </div>
-          <div>
-            <label htmlFor="to-date">
+          <div className="flex-1 min-w-[200px]">
+            <label htmlFor="to-date" className="block text-sm font-medium text-gray-700 mb-2">
               إلى تاريخ
             </label>
             <input
@@ -164,10 +165,11 @@ export default function MagazinesPage() {
                   } else {
                     prev.delete("to");
                   }
-                  prev.set("page", "1"); // Reset to page 1
+                  prev.set("page", "1");
                   return prev;
                 });
               }}
+              className="w-full px-4 py-2 border border-dashed border-black/10 rounded-lg bg-transparent text-gray-900 focus:outline-none"
             />
           </div>
           {(searchParams.get("from") || searchParams.get("to")) && (
@@ -180,6 +182,7 @@ export default function MagazinesPage() {
                   return prev;
                 });
               }}
+              className="px-6 py-2 text-gray-900 font-medium border border-dashed border-black/20 rounded-lg hover:bg-black/5 transition-all"
             >
               مسح الفلتر
             </button>
@@ -189,100 +192,117 @@ export default function MagazinesPage() {
 
       {/* Magazines Grid */}
       {magazines.length > 0 ? (
-        <StaggerContainer staggerDelay={0.1}>
-          {magazines.map((magazine) => (
-            <StaggerItem key={magazine.issueNumber}>
-            <div
-              key={magazine.issueNumber}
-            >
-              {/* Thumbnail */}
-              <div>
-                {magazine.thumbnailUrl ? (
-                  <img
-                    src={magazine.thumbnailUrl}
-                    alt={`العدد ${magazine.issueNumber}`}
-                  />
-                ) : (
-                  <div>
-                    <FileText />
-                  </div>
-                )}
-                {/* Overlay on hover */}
-                <div>
-                  <Link
-                    to={`/magazines/date/${magazine.createdAt.split('T')[0]}`}
-                  >
-                    <FileText />
-                    <span>تصفح العدد</span>
-                  </Link>
-                </div>
-              </div>
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <StaggerContainer staggerDelay={0.1}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              {magazines.map((magazine) => (
+                <StaggerItem key={magazine.issueNumber}>
+                  <div className="group border border-dashed border-black/10 rounded-lg overflow-hidden hover:shadow-lg transition-all">
+                    {/* Thumbnail */}
+                    <div className="relative aspect-[3/4] bg-gray-100">
+                      {magazine.thumbnailUrl ? (
+                        <img
+                          src={magazine.thumbnailUrl}
+                          alt={`العدد ${magazine.issueNumber}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <FileText className="w-16 h-16 text-gray-400" />
+                        </div>
+                      )}
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Link
+                          to={`/magazines/date/${magazine.createdAt.split('T')[0]}`}
+                          className="flex flex-col items-center gap-2 text-white"
+                        >
+                          <FileText className="w-8 h-8" />
+                          <span className="text-sm font-medium">تصفح العدد</span>
+                        </Link>
+                      </div>
+                    </div>
 
-              {/* Info */}
-              <div>
-                <h3>
-                  العدد {magazine.issueNumber}
-                </h3>
-                <div>
-                  <Calendar />
-                  <span>{formatDate(magazine.createdAt)}</span>
-                </div>
-              </div>
+                    {/* Info */}
+                    <div className="p-4 border-t border-dashed border-black/10">
+                      <h3 className="text-lg font-bold text-gray-900 mb-2">
+                        العدد {magazine.issueNumber}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Calendar className="w-4 h-4" />
+                        <span>{formatDate(magazine.createdAt)}</span>
+                      </div>
+                    </div>
+                  </div>
+                </StaggerItem>
+              ))}
             </div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+          </StaggerContainer>
+        </div>
       ) : (
-        <div>
-          <FileText />
-          <p>
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+          <div className="inline-flex items-center justify-center w-20 h-20 border border-dashed border-black/10 rounded-lg mb-4">
+            <FileText className="w-10 h-10 text-gray-400" />
+          </div>
+          <p className="text-gray-600 text-lg">
             لا توجد أعداد متاحة حالياً
           </p>
         </div>
       )}
 
       {/* Pagination */}
-      <div>
-        <button
-          onClick={() => handlePageChange(pageNumber - 1)}
-          disabled={pageNumber === 1}
-          aria-label="الصفحة السابقة"
-        >
-          <ChevronRight />
-        </button>
+      {totalPages > 1 && (
+        <div className="max-w-7xl mx-auto px-4 py-8 border-t border-dashed border-black/10">
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => handlePageChange(pageNumber - 1)}
+              disabled={pageNumber === 1}
+              aria-label="الصفحة السابقة"
+              className="p-2 border border-dashed border-black/20 rounded-lg hover:bg-black/5 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
 
-        <div>
-          {Array.from({ length: Math.min(5, Math.max(1, totalPages)) }, (_, i) => {
-            let pageNum;
-            if (totalPages <= 5) {
-              pageNum = i + 1;
-            } else if (pageNumber <= 3) {
-              pageNum = i + 1;
-            } else if (pageNumber >= totalPages - 2) {
-              pageNum = totalPages - 4 + i;
-            } else {
-              pageNum = pageNumber - 2 + i;
-            }
+            <div className="flex gap-2">
+              {Array.from({ length: Math.min(5, Math.max(1, totalPages)) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (pageNumber <= 3) {
+                  pageNum = i + 1;
+                } else if (pageNumber >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = pageNumber - 2 + i;
+                }
 
-            return (
-              <button
-                key={pageNum}
-                onClick={() => handlePageChange(pageNum)}
-              >
-                {pageNum}
-              </button>
-            );
-          })}
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => handlePageChange(pageNum)}
+                    className={`px-4 py-2 border border-dashed rounded-lg font-medium transition-all ${
+                      pageNum === pageNumber
+                        ? 'border-black/30 bg-black/5 text-gray-900'
+                        : 'border-black/20 text-gray-700 hover:bg-black/5'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => handlePageChange(pageNumber + 1)}
+              disabled={pageNumber === totalPages || totalPages === 0}
+              aria-label="الصفحة التالية"
+              className="p-2 border border-dashed border-black/20 rounded-lg hover:bg-black/5 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-
-        <button
-          onClick={() => handlePageChange(pageNumber + 1)}
-          disabled={pageNumber === totalPages || totalPages === 0}
-          aria-label="الصفحة التالية"
-        >
-          <ChevronLeft />
-        </button>
-      </div>
+      )}
     </div>
   );
 }
