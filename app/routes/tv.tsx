@@ -120,62 +120,60 @@ export default function TVPage() {
 
   if (!featuredVideo) {
     return (
-      <div className="container mx-auto px-0.5 py-8 max-w-7xl">
-        <div className="text-center py-12">
-          <p className="text-[var(--color-text-secondary)]">لا توجد فيديوهات متاحة</p>
+      <div>
+        <div>
+          <p>لا توجد فيديوهات متاحة</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-0.5 py-8 max-w-7xl">
-      <div className="space-y-8">
+    <div>
+      <div>
       {/* Featured Episode - Video on Right, Details on Left */}
       <ScrollAnimation animation="scale" duration={0.6} once={false}>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div>
         {/* Details - Left Side (1/3 width) */}
         <motion.div
           key={`details-${featuredVideo.id}`}
           initial={{ opacity: 0.3, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.0, ease: "easeOut" }}
-          className="lg:col-span-1 bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary)] rounded-2xl p-6 text-[var(--color-text-light)] flex flex-col justify-between"
         >
           <div>
             {/* Category Badge */}
-            <span className="inline-block px-3 py-1 bg-[var(--color-primary)] text-white text-xs font-medium rounded-full mb-4">
+            <span>
               {featuredVideo.categoryName || 'برامج'}
             </span>
 
             {/* Title */}
-            <h1 className="text-2xl font-bold mb-3 leading-tight">
+            <h1>
               {featuredVideo.title}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-lg text-[var(--color-secondary-light)] mb-4 leading-relaxed">
+            <p>
               {featuredVideo.summary || featuredVideo.content?.substring(0, 100)}
             </p>
 
             {/* Meta Info */}
-            <div className="flex items-center gap-3 text-[var(--color-secondary)] text-sm mb-6 pb-6 border-b border-[var(--color-secondary)]/40">
+            <div>
               <span>{new Date(featuredVideo.publishedAt || featuredVideo.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
-              <span className="w-1 h-1 bg-[var(--color-secondary-light)] rounded-full"></span>
+              <span></span>
               <span>{featuredVideo.duration || '00:00'}</span>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3 mb-6">
+            <div>
               <Link 
                 to={
                   featuredVideo.categorySlug && featuredVideo.slug
                     ? `/posts/categories/${featuredVideo.categorySlug}/videos/${featuredVideo.slug}`
                     : "#"
                 }
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:scale-105"
               >
-                <Play className="w-5 h-5 fill-current" />
+                <Play />
                 <span>مشاهدة الآن</span>
               </Link>
               <button 
@@ -185,44 +183,40 @@ export default function TVPage() {
                     showToast('تم نسخ الرابط بنجاح ✓', 'success');
                   });
                 }}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-teal-500 hover:bg-teal-600 text-white rounded-xl transition-all duration-300 backdrop-blur-sm hover:scale-105 shadow-lg"
               >
-                <Share2 className="w-5 h-5" />
+                <Share2 />
                 <span>مشاركة</span>
               </button>
             </div>
           </div>
 
           {/* Navigation Arrows */}
-          <div className="flex items-center justify-center gap-4 pt-6 border-t border-[var(--color-secondary)]/40">
+          <div>
             <button 
               onClick={prevVideo}
               disabled={currentVideoIndex === 0}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-[var(--color-text-light)] transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight />
             </button>
-            <span className="text-sm text-[var(--color-secondary-light)]">
+            <span>
               {currentVideoIndex + 1} / {sliderVideos.length}
             </span>
             <button 
               onClick={nextVideo}
               disabled={currentVideoIndex === sliderVideos.length - 1}
-              className="p-3 rounded-full bg-white/10 hover:bg-white/20 text-[var(--color-text-light)] transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft />
             </button>
           </div>
         </motion.div>
 
         {/* Video Player - Right Side (2/3 width) */}
-        <div className="lg:col-span-2">
-          <div className="relative bg-[var(--color-background-dark)] rounded-2xl overflow-hidden aspect-video">
+        <div>
+          <div>
             <motion.img
               key={featuredVideo.id}
               src={featuredVideo.image || ''}
               alt={featuredVideo.imageDescription || featuredVideo.title}
-              className="w-full h-full object-cover"
               initial={{ opacity: 0.3, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.0, ease: "easeOut" }}
@@ -234,16 +228,15 @@ export default function TVPage() {
                   ? `/posts/categories/${featuredVideo.categorySlug}/videos/${featuredVideo.slug}`
                   : "#"
               }
-              className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--color-background-dark)]/40 hover:bg-[var(--color-background-dark)]/60 transition-colors cursor-pointer group"
             >
-              <div className="relative flex items-center justify-center mb-3">
-                <div className="w-12 h-12 rounded-full bg-[var(--color-primary)] flex items-center justify-center shadow-xl shadow-[var(--color-primary)]/50 border border-[var(--color-secondary-light)]/80 group-hover:scale-110 transition-transform">
-                  <Play className="w-5 h-5 text-white fill-current ml-1" />
+              <div>
+                <div>
+                  <Play />
                 </div>
-                <div className="absolute inset-0 rounded-full border border-white/40 group-hover:animate-pulse" />
+                <div />
               </div>
               {featuredVideo.imageDescription && (
-                <span className="px-3 py-1 text-xs rounded-full bg-[var(--color-primary-dark)]/85 text-[var(--color-text-light)] max-w-[80%] text-center line-clamp-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span>
                   {featuredVideo.imageDescription}
                 </span>
               )}
@@ -313,56 +306,52 @@ function CategorySection({
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center">
+      <div>
+        <div>
           {categorySlug && (
             <Link 
               to={`/tv/category/${categorySlug}`}
-              className="p-2 rounded-full hover:bg-[var(--color-secondary-light)] transition-colors group"
             >
-              <ArrowLeft className="w-5 h-5 text-[var(--color-text-primary)] group-hover:text-[var(--color-primary)] transition-colors" />
+              <ArrowLeft />
             </Link>
           )}
-          <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mr-3">
+          <h2>
             {title}
           </h2>
           {subtitle && (
-            <p className="text-[var(--color-text-secondary)] mr-2">
+            <p>
               {subtitle}
             </p>
           )}
         </div>
 
         {videos.length > visibleCount && (
-          <div className="flex items-center gap-2">
+          <div>
             <button
               type="button"
               onClick={showPrev}
-              className="p-2 rounded-full bg-[var(--color-secondary-light)] hover:bg-[var(--color-secondary)] text-[var(--color-text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="السابق"
               disabled={currentIndex === 0}
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight />
             </button>
-            <span className="text-sm text-[var(--color-text-secondary)] min-w-[72px] text-center">
+            <span>
               {currentIndex + 1} / {videos.length}
             </span>
             <button
               type="button"
               onClick={showNext}
-              className="p-2 rounded-full bg-[var(--color-secondary-light)] hover:bg-[var(--color-secondary)] text-[var(--color-text-primary)] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               aria-label="التالي"
               disabled={currentIndex >= maxIndex}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft />
             </button>
           </div>
         )}
       </div>
 
       <StaggerContainer 
-        key={`tv-category-${categorySlug || title}-${currentIndex}`}
-        className="grid grid-cols-1 md:grid-cols-3 gap-4" 
+        key={`tv-category-${categorySlug || title}-${currentIndex}`} 
         staggerDelay={0.15} 
         once={false}
       >
@@ -383,9 +372,9 @@ function VideoCard({ video }: { video: Video }) {
       : "#";
 
   return (
-    <div className="group cursor-pointer rounded-2xl bg-[var(--color-white)] shadow-md hover:shadow-xl border border-[var(--color-divider)]/80 overflow-hidden transition-all duration-300 hover:-translate-y-1">
+    <div>
       {/* Thumbnail */}
-      <div className="relative aspect-video rounded-lg overflow-hidden mb-3 bg-[var(--color-secondary-light)]">
+      <div>
         <img
           src={
             video.videoThumbnailUrl ||
@@ -393,40 +382,38 @@ function VideoCard({ video }: { video: Video }) {
             'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=400&h=250&fit=crop'
           }
           alt={video.imageDescription || video.title}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
         {/* Overlay */}
         <Link
           to={detailsHref}
-          className="absolute inset-0 bg-[var(--color-background-dark)]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center"
         >
-          <div className="relative flex items-center justify-center mb-2">
-            <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center shadow-lg shadow-[var(--color-primary)]/40 border border-[var(--color-secondary-light)]/70">
-              <Play className="w-4 h-4 text-white fill-current ml-0.5" />
+          <div>
+            <div>
+              <Play />
             </div>
-            <div className="absolute inset-0 rounded-full border border-white/30 animate-pulse" />
+            <div />
           </div>
           {video.imageDescription && (
-            <span className="px-2.5 py-1 text-[0.7rem] rounded-full bg-[var(--color-primary-dark)]/85 text-[var(--color-text-light)] max-w-[90%] text-center line-clamp-2">
+            <span>
               {video.imageDescription}
             </span>
           )}
         </Link>
         {/* Duration Badge */}
-        <div className="absolute bottom-2 left-2 px-2 py-1 bg-[var(--color-background-dark)]/90 text-[var(--color-text-light)] text-xs rounded-full">
+        <div>
           {video.duration || '00:00'}
         </div>
       </div>
 
       {/* Info */}
-      <div className="px-3 pb-3 pt-2">
-        <h3 className="font-bold text-[var(--color-text-primary)] mb-1 group-hover:text-[var(--color-primary)] transition-colors line-clamp-2">
+      <div>
+        <h3>
           {video.title}
         </h3>
-        <p className="text-sm text-[var(--color-text-secondary)] mb-2 line-clamp-2">
+        <p>
           {video.summary || video.content?.substring(0, 100)}
         </p>
-        <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
+        <div>
           <span>{new Date(video.publishedAt || video.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
         </div>
       </div>

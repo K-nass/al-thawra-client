@@ -146,42 +146,41 @@ export default function WritersOpinionDetailPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-600">
-        <a href="/" className="hover:text-[var(--color-primary)] transition-colors">
+      <div>
+        <a href="/">
           الرئيسية
         </a>
         <span>/</span>
-        <a href="/writers-opinions" className="hover:text-[var(--color-primary)] transition-colors">
+        <a href="/writers-opinions">
           كتاب وآراء
         </a>
         <span>/</span>
-        <span className="text-[var(--color-text-primary)] font-medium">
+        <span>
           {article.title}
         </span>
       </div>
 
       {/* Author Header Card */}
-      <div className="bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-primary-light)] to-[var(--color-secondary)] rounded-2xl p-6 text-white shadow-xl">
-        <div className="flex items-center gap-4">
+      <div>
+        <div>
           {article.authorImage ? (
             <img
               src={article.authorImage}
               alt={article.authorName}
-              className="w-20 h-20 rounded-xl object-cover border-4 border-white/30"
             />
           ) : (
-            <div className="w-20 h-20 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30">
-              <span className="text-3xl font-bold">
+            <div>
+              <span>
                 {article.authorName?.charAt(0) || "ك"}
               </span>
             </div>
           )}
-          <div className="flex-1">
-            <div className="text-sm text-white/80 mb-1">بقلم</div>
-            <h2 className="text-2xl font-bold mb-2">{article.authorName}</h2>
-            <div className="flex items-center gap-4 text-sm text-white/90">
+          <div>
+            <div>بقلم</div>
+            <h2>{article.authorName}</h2>
+            <div>
               <span>{formattedDate}</span>
               <span>•</span>
               <span>{article.categoryName}</span>

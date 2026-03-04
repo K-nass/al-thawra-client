@@ -22,12 +22,8 @@ export function NavigationLoader() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] h-0.5">
-      <div className="h-full bg-[var(--color-primary)] animate-[loading-bar_1s_ease-in-out_infinite]" 
-           style={{
-             width: navigation.state === "loading" ? "70%" : "100%",
-             transition: "width 0.3s ease-in-out"
-           }}
+    <div>
+      <div
       />
     </div>
   );
@@ -39,10 +35,10 @@ export function NavigationLoader() {
  */
 export function InlineLoader({ text = "جاري التحميل..." }: { text?: string }) {
   return (
-    <div className="flex items-center justify-center py-12">
-      <div className="text-center">
-        <div className="inline-block w-8 h-8 border-4 border-[var(--color-primary)] border-t-transparent rounded-full animate-spin" />
-        <p className="mt-4 text-gray-600 font-medium">{text}</p>
+    <div>
+      <div>
+        <div />
+        <p>{text}</p>
       </div>
     </div>
   );
@@ -54,11 +50,11 @@ export function InlineLoader({ text = "جاري التحميل..." }: { text?: s
  */
 export function ContentSkeleton() {
   return (
-    <div className="space-y-4 animate-pulse">
-      <div className="h-8 bg-gray-200 rounded w-3/4" />
-      <div className="h-4 bg-gray-200 rounded w-full" />
-      <div className="h-4 bg-gray-200 rounded w-5/6" />
-      <div className="h-4 bg-gray-200 rounded w-4/6" />
+    <div>
+      <div />
+      <div />
+      <div />
+      <div />
     </div>
   );
 }

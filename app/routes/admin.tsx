@@ -13,12 +13,12 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 
 export default function AdminPage() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-[var(--color-text-primary)] mb-4">
+    <div>
+      <div>
+        <h1>
           Admin Dashboard
         </h1>
-        <p className="text-[var(--color-text-secondary)]">
+        <p>
           Welcome to the admin panel
         </p>
       </div>

@@ -3,7 +3,7 @@ import { PostsGridSkeleton } from "./PostsGridSkeleton";
 
 export function HomePageSkeleton() {
   return (
-    <div className="space-y-8">
+    <div>
       {/* Slider skeleton */}
       <SliderSkeleton />
       

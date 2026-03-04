@@ -12,44 +12,41 @@ export function NewsletterSubscription() {
 
   return (
     <ScrollAnimation animation="slideUp" once={false}>
-      <div className="bg-transparent rounded-2xl p-8 md:p-12">
+      <div>
         {/* Title */}
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 text-right mb-8">
+        <h2>
           هل تريد الاشتراك في نشرتنا الاخبارية؟
         </h2>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex flex-col md:flex-row items-center gap-4">
+        <form onSubmit={handleSubmit}>
+          <div>
             {/* Logo/Brand */}
-            <div className="flex-shrink-0 order-1 md:order-3">
-              <div className="text-4xl md:text-5xl font-bold text-[var(--color-primary)]">
+            <div>
+              <div>
                 الثورة
               </div>
             </div>
 
             {/* Email Input */}
-            <div className="flex-1 order-2 md:order-2 w-full">
+            <div>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="البريد الإلكتروني"
                 required
-                className="w-full px-6 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent text-right"
                 dir="rtl"
               />
             </div>
 
             {/* Submit Button */}
-            <div className="flex-shrink-0 order-3 md:order-1">
+            <div>
               <button
                 type="submit"
-                className="bg-[var(--color-primary)] hover:bg-[var(--color-primary-dark)] text-white p-4 rounded-lg transition-colors shadow-md hover:shadow-lg"
                 aria-label="إرسال"
               >
                 <svg
-                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -66,40 +63,39 @@ export function NewsletterSubscription() {
           </div>
 
           {/* Checkbox Options */}
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-end gap-6 text-gray-600">
+          <div>
             {/* Breaking News Checkbox */}
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <span className="text-sm md:text-base group-hover:text-gray-900 transition-colors">
+            <label>
+              <span>
                 تلقي آخر الأخبار
               </span>
             </label>
 
             {/* Separator */}
-            <span className="hidden md:inline text-gray-400">|</span>
+            <span>|</span>
 
             {/* Latest News Checkbox */}
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <span className="text-sm md:text-base group-hover:text-gray-900 transition-colors">
+            <label>
+              <span>
                 استلام تحديث عدد اليوم PDF
               </span>
               <input
                 type="checkbox"
                 checked={receiveLatestNews}
                 onChange={(e) => setReceiveLatestNews(e.target.checked)}
-                className="w-5 h-5 text-[var(--color-primary)] border-gray-300 rounded focus:ring-2 focus:ring-[var(--color-primary)]"
               />
             </label>
           </div>
         </form>
 
         {/* Privacy Note */}
-        <p className="text-xs text-gray-500 text-right mt-6">
+        <p>
           بالاشتراك في النشرة الإخبارية، فإنك توافق على{" "}
-          <a href="#" className="text-[var(--color-primary)] hover:underline">
+          <a href="#">
             سياسة الخصوصية
           </a>{" "}
           و
-          <a href="#" className="text-[var(--color-primary)] hover:underline">
+          <a href="#">
             {" "}
             شروط الاستخدام
           </a>

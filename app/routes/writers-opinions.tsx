@@ -78,28 +78,28 @@ export default function WritersOpinionsPage() {
   const hasPrevPage = currentPage > 1;
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Page Header */}
       <ScrollAnimation animation="slideUp" duration={0.6} once={false}>
-        <div className="bg-gradient-to-br from-[var(--color-primary)] via-[var(--color-primary-light)] to-[var(--color-secondary)] rounded-2xl p-8 text-white shadow-xl">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-              <PenTool className="w-8 h-8" />
+        <div>
+          <div>
+            <div>
+              <PenTool />
             </div>
             <div>
-              <h1 className="text-4xl font-bold mb-2">كتاب وآراء</h1>
-              <p className="text-white/90 text-lg">
+              <h1>كتاب وآراء</h1>
+              <p>
                 آراء وتحليلات من كتابنا المميزين
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-6 text-sm text-white/80 mt-6 pt-6 border-t border-white/20">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-white rounded-full"></span>
+          <div>
+            <span>
+              <span></span>
               {totalPosts} مقال
             </span>
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 bg-white rounded-full"></span>
+            <span>
+              <span></span>
               صفحة {currentPage} من {totalPages}
             </span>
           </div>
@@ -114,16 +114,15 @@ export default function WritersOpinionsPage() {
           {/* Pagination */}
           {totalPages > 1 && (
             <ScrollAnimation animation="fade" delay={0.2} once={false}>
-              <div className="flex justify-center items-center gap-4 mt-12">
+              <div>
                 <button
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={!hasPrevPage}
-                  className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)] font-medium"
                 >
                   السابق
                 </button>
                 
-                <div className="flex items-center gap-2">
+                <div>
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum;
                     if (totalPages <= 5) {
@@ -140,11 +139,6 @@ export default function WritersOpinionsPage() {
                       <button
                         key={pageNum}
                         onClick={() => handlePageChange(pageNum)}
-                        className={`w-10 h-10 rounded-lg font-medium transition-colors ${
-                          currentPage === pageNum
-                            ? "bg-[var(--color-primary)] text-white"
-                            : "bg-[var(--color-background-light)] text-[var(--color-text-primary)] hover:bg-[var(--color-card)]"
-                        }`}
                       >
                         {pageNum}
                       </button>
@@ -155,7 +149,6 @@ export default function WritersOpinionsPage() {
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={!hasNextPage}
-                  className="px-6 py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)] font-medium"
                 >
                   التالي
                 </button>
@@ -165,12 +158,12 @@ export default function WritersOpinionsPage() {
         </div>
       ) : (
         <ScrollAnimation animation="fade" once={false}>
-          <div className="text-center py-16 bg-[var(--color-white)] rounded-2xl shadow-sm">
-            <PenTool className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-700 mb-2">
+          <div>
+            <PenTool />
+            <h3>
               لا توجد مقالات حالياً
             </h3>
-            <p className="text-gray-500">
+            <p>
               لم يتم نشر أي مقالات من الكتاب بعد
             </p>
           </div>

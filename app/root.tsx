@@ -160,14 +160,14 @@ export default function App() {
       ) : (
         <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings}>
           {shouldShowSidebar ? (
-            <div className="container mx-auto px-4 py-8 max-w-7xl">
-              <div className="flex flex-col lg:flex-row gap-6">
+            <div>
+              <div>
                 {/* Main Content Area */}
-                <div className="flex-1 min-w-0">
+                <div>
                   <Outlet context={{ categories }} />
                 </div>
                 {/* Sidebar */}
-                <div className="lg:w-72 flex-shrink-0">
+                <div>
                   <Sidebar
                     trendingPosts={trendingPosts}
                     chiefEditor={chiefEditor}
@@ -203,11 +203,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
+    <main>
       <h1>{message}</h1>
       <p>{details}</p>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre>
           <code>{stack}</code>
         </pre>
       )}

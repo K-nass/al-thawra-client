@@ -1,0 +1,6 @@
+Final cleanup: Removing ALL Tailwind classes and inline styles...
+Keeping styles in: reels.tsx, MagazineViewer.tsx, VideoPlayer, magazines PDF viewer routes
+
+✓ ./app/routes/magazines.tsx
+
+✓ Cleaned 1 files

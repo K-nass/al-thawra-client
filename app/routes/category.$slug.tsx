@@ -142,7 +142,7 @@ export default function CategoryPage() {
   const hasPrevPage = currentPage > 1;
   
   return (
-    <div className="space-y-6">
+    <div>
       {/* Category Header */}
       <motion.div 
         key={selectedSubcategory || 'all'} 
@@ -150,25 +150,20 @@ export default function CategoryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <div className="bg-[var(--color-white)] border border-[var(--color-divider)] rounded-lg p-4">
-        <div className="flex items-center gap-6 flex-wrap">
+        <div>
+        <div>
           {/* Category Title */}
-          <h1 className="text-2xl font-bold text-[var(--color-primary)]">
+          <h1>
             {category.name}
           </h1>
 
           {/* Subcategories */}
           {category.subCategories && category.subCategories.length > 0 && (
             <>
-              <span className="text-gray-300">|</span>
-              <nav className="flex items-center gap-2 flex-wrap">
+              <span>|</span>
+              <nav>
                 <button
                   onClick={() => handleSubcategoryFilter(null)}
-                  className={`px-3 py-1 text-sm transition-all font-medium border rounded-md ${
-                    selectedSubcategory === null
-                      ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                      : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] border-[var(--color-divider)]'
-                  }`}
                 >
                   الكل
                 </button>
@@ -178,11 +173,6 @@ export default function CategoryPage() {
                   <button
                     key={subcategory.slug}
                     onClick={() => handleSubcategoryFilter(subcategory.slug)}
-                    className={`px-3 py-1 text-sm transition-all font-medium border rounded-md ${
-                      selectedSubcategory === subcategory.slug
-                        ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)]'
-                        : 'text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] border-[var(--color-divider)]'
-                    }`}
                   >
                     {subcategory.name}
                   </button>
@@ -190,14 +180,12 @@ export default function CategoryPage() {
                 
                 {/* Dropdown for more subcategories */}
                 {category.subCategories.length > 5 && (
-                  <div className="relative" ref={dropdownRef}>
+                  <div ref={dropdownRef}>
                     <button
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                      className="px-3 py-1 text-sm transition-all font-medium border rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-background-light)] border-[var(--color-divider)] flex items-center gap-1"
                     >
                       المزيد
                       <svg 
-                        className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} 
                         fill="none" 
                         stroke="currentColor" 
                         viewBox="0 0 24 24"
@@ -213,17 +201,11 @@ export default function CategoryPage() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 bg-white border border-[var(--color-divider)] rounded-lg shadow-lg overflow-hidden z-10 min-w-[200px]"
                       >
                         {category.subCategories.slice(5).map((subcategory) => (
                           <button
                             key={subcategory.slug}
                             onClick={() => handleSubcategoryFilter(subcategory.slug)}
-                            className={`w-full text-right px-4 py-2 text-sm transition-colors ${
-                              selectedSubcategory === subcategory.slug
-                                ? 'bg-[var(--color-primary)] text-white'
-                                : 'text-[var(--color-text-secondary)] hover:bg-[var(--color-background-light)] hover:text-[var(--color-primary)]'
-                            }`}
                           >
                             {subcategory.name}
                           </button>
@@ -238,7 +220,7 @@ export default function CategoryPage() {
         </div>
         {/* Category Description */}
         {category.description && (
-          <p className="text-gray-600 mt-2">{category.description}</p>
+          <p>{category.description}</p>
         )}
         </div>
       </motion.div>
@@ -254,18 +236,17 @@ export default function CategoryPage() {
           
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-8">
+            <div>
               {/* Previous Button */}
               <button 
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={!hasPrevPage}
-                className="px-6 py-2 bg-[var(--color-white)] border border-[var(--color-divider)] text-[var(--color-text-primary)] rounded-lg hover:bg-[var(--color-background-light)] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 السابق
               </button>
               
               {/* Page Info */}
-              <span className="text-[var(--color-text-secondary)]">
+              <span>
                 صفحة {currentPage} من {totalPages}
               </span>
               
@@ -273,7 +254,6 @@ export default function CategoryPage() {
               <button 
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={!hasNextPage}
-                className="px-6 py-2 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 التالي
               </button>

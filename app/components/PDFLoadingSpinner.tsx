@@ -22,13 +22,12 @@ export function PDFLoadingSpinner({
   };
 
   return (
-    <div className="w-[calc(100vw-8rem)] h-[calc(100vh-8rem)] flex flex-col items-center justify-center gap-6">
+    <div>
       {/* Animated container with gradient background */}
       <motion.div
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className={`${containerSizeClasses[size]} relative flex items-center justify-center`}
       >
         {/* Outer rotating gradient ring */}
         <motion.div
@@ -38,7 +37,6 @@ export function PDFLoadingSpinner({
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute inset-0 rounded-full bg-gradient-to-tr from-[var(--color-primary)] via-[var(--color-primary-light)] to-[var(--color-secondary)] opacity-20 blur-md"
         />
         
         {/* Inner rotating gradient ring */}
@@ -49,7 +47,6 @@ export function PDFLoadingSpinner({
             repeat: Infinity,
             ease: "linear"
           }}
-          className="absolute inset-2 rounded-full bg-gradient-to-br from-[var(--color-primary-dark)] to-[var(--color-primary)] opacity-10"
         />
 
         {/* Logo with spin animation */}
@@ -60,12 +57,10 @@ export function PDFLoadingSpinner({
             repeat: Infinity,
             ease: "linear"
           }}
-          className="relative z-10"
         >
           <img 
             src="/formLogo.png" 
-            alt="Loading" 
-            className={`${sizeClasses[size]} drop-shadow-2xl`}
+            alt="Loading"
             loading="lazy"
           />
         </motion.div>
@@ -81,7 +76,6 @@ export function PDFLoadingSpinner({
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute inset-0 rounded-full bg-[var(--color-primary)] blur-xl opacity-30"
         />
       </motion.div>
 
@@ -90,14 +84,13 @@ export function PDFLoadingSpinner({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.3 }}
-        className="text-center"
       >
-        <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <p>
           {message}
         </p>
         
         {/* Animated dots */}
-        <div className="flex items-center justify-center gap-1">
+        <div>
           {[0, 1, 2].map((i) => (
             <motion.div
               key={i}
@@ -111,7 +104,6 @@ export function PDFLoadingSpinner({
                 delay: i * 0.2,
                 ease: "easeInOut"
               }}
-              className="w-2 h-2 rounded-full bg-[var(--color-primary)]"
             />
           ))}
         </div>

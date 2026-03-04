@@ -25,8 +25,8 @@ export function PostsGrid({
 
   if (!posts || posts.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">لا توجد مقالات</p>
+      <div>
+        <p>لا توجد مقالات</p>
       </div>
     );
   }
@@ -53,49 +53,45 @@ export function PostsGrid({
   };
 
   return (
-    <section className="w-full" dir="rtl" lang="ar">
+    <section dir="rtl" lang="ar">
       {/* Category Header */}
       {showCategoryHeader && categoryName && (
         <ScrollAnimation
           key={`header-${categorySlug}-${currentIndex}`}
           animation="slideUp"
           once={false}
-          className="flex items-center justify-between mb-6"
         >
-          <div className="flex items-center">
+          <div>
             {categorySlug && (
               <Link
                 to={`/category/${categorySlug}`}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors group"
                 title={`عرض جميع مقالات ${categoryName}`}
               >
-                <ArrowLeft className="w-5 h-5 text-gray-600 group-hover:text-[var(--color-primary)] transition-colors" />
+                <ArrowLeft />
               </Link>
             )}
-            <h2 className="text-2xl font-bold text-gray-900 mr-3">{categoryName}</h2>
+            <h2>{categoryName}</h2>
           </div>
 
           {/* Navigation Arrows */}
           {posts.length > postsPerPage && (
-            <div className="flex items-center gap-2">
+            <div>
               <button
                 onClick={handlePrev}
                 disabled={!canGoPrev}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 aria-label="السابق"
               >
-                <ChevronRight className="w-5 h-5 text-gray-600" />
+                <ChevronRight />
               </button>
-              <span className="text-sm text-gray-500 min-w-[60px] text-center">
+              <span>
                 {currentIndex + 1} / {totalPages}
               </span>
               <button
                 onClick={handleNext}
                 disabled={!canGoNext}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                 aria-label="التالي"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <ChevronLeft />
               </button>
             </div>
           )}
@@ -105,7 +101,6 @@ export function PostsGrid({
       {/* Posts Grid */}
       <StaggerContainer
         key={`posts-grid-${currentIndex}`}
-        className="newspaper-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         staggerDelay={0.15}
         once={false}
         immediate={true}

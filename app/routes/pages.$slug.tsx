@@ -49,16 +49,16 @@ export default function PageDetailPage() {
   const { page } = useLoaderData<typeof loader>();
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Breadcrumb */}
       {page.showBreadcrumb && (
         <ScrollAnimation animation="fade" once={true}>
-          <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-            <a href="/" className="hover:text-blue-400 transition-colors">
+          <div>
+            <a href="/">
               الرئيسية
             </a>
             <span>/</span>
-            <span className="text-[var(--color-text-primary)] font-medium">
+            <span>
               {page.title}
             </span>
           </div>
@@ -67,36 +67,28 @@ export default function PageDetailPage() {
 
       {/* Page Content */}
       <ScrollAnimation animation="slideUp" duration={0.6} once={true}>
-        <div className="bg-[var(--color-white)] rounded-2xl p-8 shadow-sm border border-[var(--color-divider)]">
+        <div>
           {/* Page Title */}
           {page.showTitle && (
-            <h1 className="text-4xl font-bold text-[var(--color-text-primary)] mb-6">
+            <h1>
               {page.title}
             </h1>
           )}
 
           {/* Page Description */}
           {page.description && (
-            <p className="text-lg text-[var(--color-text-secondary)] mb-8 leading-relaxed">
+            <p>
               {page.description}
             </p>
           )}
 
           {/* Page Content (HTML) */}
-          <div 
-            className="prose prose-lg max-w-none
-              prose-headings:text-[var(--color-text-primary)]
-              prose-p:text-[var(--color-text-primary)]
-              prose-a:text-blue-500 prose-a:hover:text-blue-400
-              prose-strong:text-[var(--color-text-primary)]
-              prose-ul:text-[var(--color-text-primary)]
-              prose-ol:text-[var(--color-text-primary)]
-              prose-li:text-[var(--color-text-primary)]"
+          <div
             dangerouslySetInnerHTML={{ __html: page.content }}
           />
 
           {/* Page Metadata */}
-          <div className="mt-8 pt-6 border-t border-[var(--color-divider)] flex items-center gap-4 text-sm text-[var(--color-text-secondary)]">
+          <div>
             <span>
               آخر تحديث: {new Date(page.updatedAt).toLocaleDateString("ar-EG", {
                 year: "numeric",

@@ -109,27 +109,27 @@ export default function MagazinesPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div>
       {/* Header */}
       <ScrollAnimation animation="slideUp">
-        <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[var(--color-text-primary)] mb-2">
+        <div>
+        <h1>
           أرشيف الثورة
         </h1>
-        <p className="text-[var(--color-text-secondary)]">
+        <p>
           تصفح جميع أعداد صحيفة الثورة
         </p>
         </div>
       </ScrollAnimation>
 
       {/* Date Filter */}
-      <div className="mb-8 bg-[var(--color-white)] rounded-lg shadow-md p-6">
-        <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
+      <div>
+        <h2>
           تصفية حسب التاريخ
         </h2>
-        <div className="flex flex-col sm:flex-row gap-4 items-end">
-          <div className="flex-1">
-            <label htmlFor="from-date" className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+        <div>
+          <div>
+            <label htmlFor="from-date">
               من تاريخ
             </label>
             <input
@@ -147,11 +147,10 @@ export default function MagazinesPage() {
                   return prev;
                 });
               }}
-              className="w-full px-4 py-2 border border-[var(--color-divider)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-white)] text-[var(--color-text-primary)]"
             />
           </div>
-          <div className="flex-1">
-            <label htmlFor="to-date" className="block text-sm font-medium text-[var(--color-text-secondary)] mb-2">
+          <div>
+            <label htmlFor="to-date">
               إلى تاريخ
             </label>
             <input
@@ -169,7 +168,6 @@ export default function MagazinesPage() {
                   return prev;
                 });
               }}
-              className="w-full px-4 py-2 border border-[var(--color-divider)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] bg-[var(--color-white)] text-[var(--color-text-primary)]"
             />
           </div>
           {(searchParams.get("from") || searchParams.get("to")) && (
@@ -182,7 +180,6 @@ export default function MagazinesPage() {
                   return prev;
                 });
               }}
-              className="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors font-medium whitespace-nowrap"
             >
               مسح الفلتر
             </button>
@@ -192,45 +189,42 @@ export default function MagazinesPage() {
 
       {/* Magazines Grid */}
       {magazines.length > 0 ? (
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8" staggerDelay={0.1}>
+        <StaggerContainer staggerDelay={0.1}>
           {magazines.map((magazine) => (
             <StaggerItem key={magazine.issueNumber}>
             <div
               key={magazine.issueNumber}
-              className="bg-[var(--color-white)] rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group"
             >
               {/* Thumbnail */}
-              <div className="relative aspect-[3/4] bg-[var(--color-divider)] overflow-hidden">
+              <div>
                 {magazine.thumbnailUrl ? (
                   <img
                     src={magazine.thumbnailUrl}
                     alt={`العدد ${magazine.issueNumber}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <FileText className="w-16 h-16 text-[var(--color-text-secondary)]" />
+                  <div>
+                    <FileText />
                   </div>
                 )}
                 {/* Overlay on hover */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <div>
                   <Link
                     to={`/magazines/date/${magazine.createdAt.split('T')[0]}`}
-                    className="flex flex-col items-center gap-2 px-6 py-3 bg-white/95 text-[var(--color-primary)] rounded-lg hover:bg-white transition-colors"
                   >
-                    <FileText className="w-8 h-8" />
-                    <span className="font-bold text-sm">تصفح العدد</span>
+                    <FileText />
+                    <span>تصفح العدد</span>
                   </Link>
                 </div>
               </div>
 
               {/* Info */}
-              <div className="p-4">
-                <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
+              <div>
+                <h3>
                   العدد {magazine.issueNumber}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                  <Calendar className="w-4 h-4" />
+                <div>
+                  <Calendar />
                   <span>{formatDate(magazine.createdAt)}</span>
                 </div>
               </div>
@@ -239,26 +233,25 @@ export default function MagazinesPage() {
           ))}
         </StaggerContainer>
       ) : (
-        <div className="text-center py-12">
-          <FileText className="w-16 h-16 text-[var(--color-text-secondary)] mx-auto mb-4" />
-          <p className="text-[var(--color-text-secondary)] text-lg">
+        <div>
+          <FileText />
+          <p>
             لا توجد أعداد متاحة حالياً
           </p>
         </div>
       )}
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-2 mt-8">
+      <div>
         <button
           onClick={() => handlePageChange(pageNumber - 1)}
           disabled={pageNumber === 1}
-          className="p-2 rounded-lg border border-[var(--color-divider)] hover:bg-[var(--color-background-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-label="الصفحة السابقة"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight />
         </button>
 
-        <div className="flex items-center gap-1">
+        <div>
           {Array.from({ length: Math.min(5, Math.max(1, totalPages)) }, (_, i) => {
             let pageNum;
             if (totalPages <= 5) {
@@ -275,11 +268,6 @@ export default function MagazinesPage() {
               <button
                 key={pageNum}
                 onClick={() => handlePageChange(pageNum)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  pageNumber === pageNum
-                    ? "bg-[var(--color-primary)] text-white"
-                    : "border border-[var(--color-divider)] hover:bg-[var(--color-background-light)]"
-                }`}
               >
                 {pageNum}
               </button>
@@ -290,10 +278,9 @@ export default function MagazinesPage() {
         <button
           onClick={() => handlePageChange(pageNumber + 1)}
           disabled={pageNumber === totalPages || totalPages === 0}
-          className="p-2 rounded-lg border border-[var(--color-divider)] hover:bg-[var(--color-background-light)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           aria-label="الصفحة التالية"
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft />
         </button>
       </div>
     </div>

@@ -72,24 +72,23 @@ export default function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="flex items-center justify-center p-4 bg-[var(--color-background-light)]">
+      <div>
         <ScrollAnimation animation="scale" duration={0.5}>
-          <div className="max-w-md w-full bg-[var(--color-white)] rounded-2xl shadow-xl p-8">
-          <div className="text-center">
-            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-              <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div>
+          <div>
+            <div>
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-4">
+            <h2>
               تم تغيير كلمة المرور بنجاح
             </h2>
-            <p className="text-[var(--color-text-secondary)] mb-6">
+            <p>
               تم إعادة تعيين كلمة المرور الخاصة بك بنجاح. سيتم توجيهك إلى صفحة تسجيل الدخول...
             </p>
             <Link
               to="/login"
-              className="inline-block w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium"
             >
               تسجيل الدخول الآن
             </Link>
@@ -101,43 +100,40 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex items-center justify-center p-4 bg-[var(--color-background-light)]">
+    <div>
       <ScrollAnimation animation="scale" duration={0.5}>
-        <div className="max-w-md w-full bg-[var(--color-white)] rounded-2xl shadow-xl p-8">
+        <div>
         {/* Title */}
-        <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2 text-center">
+        <h2>
           إعادة تعيين كلمة المرور
         </h2>
-        <p className="text-[var(--color-text-secondary)] text-center mb-8">
+        <p>
           أدخل كلمة المرور الجديدة الخاصة بك
         </p>
 
         {/* General Error */}
         {errors.general && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-600">{errors.general}</p>
+          <div>
+            <p>{errors.general}</p>
           </div>
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit}>
           {/* New Password Field */}
           <div>
-            <label htmlFor="newPassword" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+            <label htmlFor="newPassword">
               كلمة المرور الجديدة
             </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Lock className="w-5 h-5" />
+            <div>
+              <div>
+                <Lock />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
                 id="newPassword"
                 value={formData.newPassword}
                 onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                  errors.newPassword ? "border-red-500" : "border-[var(--color-divider)]"
-                }`}
                 placeholder="••••••••"
                 dir="ltr"
                 disabled={loading}
@@ -145,33 +141,29 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
             {errors.newPassword && (
-              <p className="mt-1 text-sm text-red-500">{errors.newPassword}</p>
+              <p>{errors.newPassword}</p>
             )}
           </div>
 
           {/* Confirm Password Field */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+            <label htmlFor="confirmPassword">
               تأكيد كلمة المرور
             </label>
-            <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <Lock className="w-5 h-5" />
+            <div>
+              <div>
+                <Lock />
               </div>
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className={`w-full px-4 py-3 pl-12 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all ${
-                  errors.confirmPassword ? "border-red-500" : "border-[var(--color-divider)]"
-                }`}
                 placeholder="••••••••"
                 dir="ltr"
                 disabled={loading}
@@ -179,13 +171,12 @@ export default function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[var(--color-primary)] transition-colors"
               >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showConfirmPassword ? <EyeOff /> : <Eye />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="mt-1 text-sm text-red-500">{errors.confirmPassword}</p>
+              <p>{errors.confirmPassword}</p>
             )}
           </div>
 
@@ -193,17 +184,15 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[var(--color-primary)] text-white rounded-lg hover:bg-[var(--color-primary-dark)] transition-colors font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "جاري التحديث..." : "تحديث كلمة المرور"}
           </button>
         </form>
 
         {/* Back to Login */}
-        <div className="text-center mt-6">
+        <div>
           <Link
             to="/login"
-            className="text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] transition-colors text-sm"
           >
             العودة إلى تسجيل الدخول
           </Link>
