@@ -57,8 +57,8 @@ export function PostDetails({
   extraContentBeforeComments,
 }: PostDetailsProps) {
   return (
-    <section>
-      <article>
+    <section className="min-h-screen">
+      <article className="max-w-3xl mx-auto px-4 py-8">
         {/* Article Header */}
         <ScrollAnimation animation="slideUp" duration={0.6} immediate={true}>
           <PostHeader
@@ -84,15 +84,6 @@ export function PostDetails({
           <PostContent content={content} />
         </ScrollAnimation>
 
-        {/* Comments Display */}
-
-        {/* Related Posts */}
-        {relatedPosts && (
-          <RelatedPosts title={relatedPostsTitle}>
-            {relatedPosts}
-          </RelatedPosts>
-        )}
-
         {/* Extra content before comments (e.g. audio player) */}
         {extraContentBeforeComments}
 
@@ -104,6 +95,13 @@ export function PostDetails({
           loginHref={loginHref}
         />
       </article>
+
+      {/* Related Posts - Full Width */}
+      {relatedPosts && (
+        <RelatedPosts title={relatedPostsTitle}>
+          {relatedPosts}
+        </RelatedPosts>
+      )}
     </section>
   );
 }

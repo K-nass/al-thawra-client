@@ -32,29 +32,33 @@ export function CommentsSection({
   };
 
   return (
-    <div>
-      <div>
-        <div>
-          <p>
+    <div className="mt-12 pt-8 border-t border-dashed border-black/10">
+      <div className="border border-dashed border-black/10 rounded-lg p-6 text-center">
+        <div className="mb-4">
+          <p className="text-gray-700 text-sm leading-relaxed">
             قسم التعليقات متوفّر لجميع قرّاء{" "}
-            <span>
+            <span className="font-bold text-gray-900">
               الثورة
             </span>{" "}
             عبر حساب مجّاني. شاركنا رأيك في الأخبار والتحليلات.
           </p>
         </div>
-        <div>
+        
+        <div className="flex flex-col items-center gap-3">
           <button
             onClick={handleRegister}
+            className="px-6 py-2 text-sm text-gray-900 font-medium border border-dashed border-black/20 rounded-lg hover:bg-black/5 transition-all"
           >
             تسجيل حساب مجاني
           </button>
-          <div>
+          
+          <div className="flex items-center gap-2 text-xs text-gray-600">
             <span>
               لديك حساب؟
             </span>
             <button
               onClick={handleLogin}
+              className="text-gray-900 underline underline-offset-4 hover:text-gray-700 transition-colors"
             >
               تسجيل الدخول
             </button>

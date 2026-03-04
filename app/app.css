@@ -3,3 +3,13 @@
 body {
   background-color: #d0e8f2;
 }
+
+/* Horizontal dashed border separator */
+.border-dashed-horizontal {
+  @apply border-t border-dashed border-black/10 my-8;
+}
+
+/* Vertical dashed border separator (for future use) */
+.border-dashed-vertical {
+  @apply border-r border-dashed border-black/10 mx-4;
+}

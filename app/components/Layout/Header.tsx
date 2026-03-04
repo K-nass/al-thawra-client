@@ -36,10 +36,11 @@ interface HeaderProps {
 
 export function Header({ categories = [], ceoName }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(true);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
@@ -173,8 +174,8 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         {/* Main Header Section */}
         <div className="flex flex-col md:flex-row justify-center items-center py-2 gap-4">
           {/* Left Navigation */}
-          <div className="hidden lg:flex items-center text-[10px] text-gray-500 font-mono">
-            <nav className="flex gap-4 items-center text-sm">
+          <div className="hidden lg:flex items-center">
+            <nav className="flex gap-4 items-center text-sm text-gray-900">
               <Link
                 to="/"
                 className="flex items-center gap-1 hover:text-blue-600 transition-colors"
@@ -213,7 +214,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           </div>
 
           {/* Right Navigation */}
-          <nav className="hidden md:flex gap-4 items-center">
+          <nav className="hidden md:flex gap-4 items-center text-sm text-gray-900">
             <Link
               to="/reels"
               className="flex items-center gap-1 hover:text-blue-600 transition-colors"
@@ -256,7 +257,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
 
         {/* Bottom Navigation - Categories */}
-        <nav className="border-t border-b border-dashed border-black/80 py-3 mt-4 overflow-x-auto">
+        <nav className="border-t border-b border-dashed border-black/10 py-3 mt-4 overflow-x-auto">
           <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
             <li>
               <Link
@@ -309,30 +310,42 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
       {/* Search Bar */}
       {isSearchOpen && (
-        <div className="bg-white border-t border-dashed border-black/10 py-4">
+        <div className="py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                const formData = new FormData(e.currentTarget);
-                const query = formData.get("q") as string;
-                if (query.trim()) {
-                  window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+                if (searchQuery.trim()) {
+                  window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
                 }
               }}
               className="flex gap-2 items-center"
             >
-              <input
-                type="search"
-                name="q"
-                placeholder="ابحث في الثورة..."
-                autoFocus
-                dir="rtl"
-                className="flex-1 px-4 py-2 border border-dashed border-black/10 rounded-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  name="q"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="ابحث في الثورة..."
+                  autoFocus
+                  dir="rtl"
+                  className="w-full px-4 py-2 pr-10 border border-dashed border-black/10 rounded-lg bg-transparent text-gray-900 placeholder:text-gray-500 focus:outline-none [&::-webkit-search-cancel-button]:appearance-none"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute left-2 top-1/2 -translate-y-1/2 p-1 hover:bg-black/5 rounded-full transition-colors"
+                    aria-label="مسح"
+                  >
+                    <X className="w-4 h-4 text-gray-600" />
+                  </button>
+                )}
+              </div>
               <button
                 type="submit"
-                className="px-6 py-2 bg-blue-600 text-white rounded-sm hover:bg-blue-700 transition-colors font-medium"
+                className="px-6 py-2 text-gray-900 font-medium border border-dashed border-black/20 rounded-lg hover:bg-black/5 transition-all"
               >
                 بحث
               </button>
@@ -340,7 +353,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 type="button"
                 onClick={() => setIsSearchOpen(false)}
                 aria-label="إغلاق"
-                className="p-2 hover:bg-gray-200 rounded transition-colors"
+                className="p-2 hover:bg-black/5 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
