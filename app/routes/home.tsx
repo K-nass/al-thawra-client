@@ -3,6 +3,7 @@ import { Link, useLoaderData, useNavigation, useOutletContext } from "react-rout
 import { useState, useEffect } from "react";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
 import { HomePageSkeleton } from "../components/skeletons";
+import { Spinner } from "../components/Spinner";
 import { postsService, type Post } from "../services/postsService";
 import { type Category } from "../services/categoriesService";
 import { magazinesService } from "../services/magazinesService";
@@ -22,7 +23,11 @@ export function meta({ }: Route.MetaArgs) {
 
 // Loading fallback for hydration
 export function HydrateFallback() {
-  return <HomePageSkeleton />;
+  return (
+    <div className="min-h-screen flex items-center justify-center py-20">
+      <Spinner size="xl" text="جاري تحميل الصفحة الرئيسية..." />
+    </div>
+  );
 }
 
 export async function loader({}: Route.LoaderArgs) {
@@ -162,9 +167,22 @@ export default function Home() {
     }
   }, [categories]);
 
-  // Show loading skeleton during navigation or category loading
-  if (navigation.state === "loading" || isLoadingCategories) {
-    return <HomePageSkeleton />;
+  // Show loading spinner during navigation (content area only)
+  if (navigation.state === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-20">
+        <Spinner size="xl" text="جاري تحميل الصفحة..." />
+      </div>
+    );
+  }
+
+  // Show loading spinner while fetching category posts
+  if (isLoadingCategories) {
+    return (
+      <div className="min-h-screen flex items-center justify-center py-20">
+        <Spinner size="xl" text="جاري تحميل المحتوى..." />
+      </div>
+    );
   }
 
   // Show empty state if no data at all

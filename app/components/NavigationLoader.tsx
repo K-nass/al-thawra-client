@@ -22,8 +22,10 @@ export function NavigationLoader() {
   if (!isVisible) return null;
 
   return (
-    <div>
+    <div className="fixed top-0 left-0 right-0 h-1 bg-[#d0e8f2] z-50">
       <div
+        className="h-full bg-[#5a8ca8] transition-all duration-300 ease-out animate-pulse"
+        style={{ width: '70%' }}
       />
     </div>
   );
@@ -35,10 +37,10 @@ export function NavigationLoader() {
  */
 export function InlineLoader({ text = "جاري التحميل..." }: { text?: string }) {
   return (
-    <div>
-      <div>
-        <div />
-        <p>{text}</p>
+    <div className="flex items-center justify-center py-8">
+      <div className="text-center">
+        <div className="inline-block w-8 h-8 border-4 border-[#a8c5d4] border-t-[#5a8ca8] rounded-full animate-spin" />
+        <p className="mt-3 text-sm text-gray-600">{text}</p>
       </div>
     </div>
   );
@@ -50,11 +52,11 @@ export function InlineLoader({ text = "جاري التحميل..." }: { text?: s
  */
 export function ContentSkeleton() {
   return (
-    <div>
-      <div />
-      <div />
-      <div />
-      <div />
+    <div className="animate-pulse space-y-4">
+      <div className="h-4 bg-[#a8c5d4] rounded w-3/4" />
+      <div className="h-4 bg-[#a8c5d4] rounded w-full" />
+      <div className="h-4 bg-[#a8c5d4] rounded w-5/6" />
+      <div className="h-4 bg-[#a8c5d4] rounded w-4/5" />
     </div>
   );
 }
