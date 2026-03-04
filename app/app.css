@@ -1,7 +1,60 @@
 @import "tailwindcss";
 
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 body {
   background-color: #d0e8f2;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* Semafor-inspired styles */
+.semafor-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.semafor-header {
+  border-bottom: 1px solid #a8c5d4;
+  background-color: #d0e8f2;
+}
+
+.semafor-nav {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.semafor-sidebar {
+  padding: 20px;
+}
+
+.semafor-main-headline {
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: bold;
+  font-family: Georgia, serif;
+}
+
+.semafor-card {
+}
+
+.semafor-section-title {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  padding-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 /* Horizontal dashed border separator */
