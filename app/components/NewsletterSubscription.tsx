@@ -3,7 +3,6 @@ import { ScrollAnimation } from "./ScrollAnimation";
 
 export function NewsletterSubscription() {
   const [email, setEmail] = useState("");
-  const [receiveLatestNews, setReceiveLatestNews] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,92 +13,38 @@ export function NewsletterSubscription() {
     <ScrollAnimation animation="slideUp" once={false}>
       <div>
         {/* Title */}
-        <h2>
+        <h2 className="text-2xl font-bold mb-6 text-black">
           هل تريد الاشتراك في نشرتنا الاخبارية؟
         </h2>
 
         {/* Form */}
-        <form onSubmit={handleSubmit}>
-          <div>
-            {/* Logo/Brand */}
-            <div>
-              <div>
-                الثورة
-              </div>
-            </div>
-
+        <form onSubmit={handleSubmit} className="max-w-2xl">
+          <div className="flex border-2 border-black">
             {/* Email Input */}
-            <div>
+            <div className="flex-1">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="البريد الإلكتروني"
                 required
+                className="w-full px-4 py-2 text-black placeholder-gray-500 focus:outline-none bg-gray-100 border-0"
                 dir="rtl"
               />
             </div>
 
             {/* Submit Button */}
-            <div>
+            <div className="border-r-2 border-black">
               <button
                 type="submit"
+                className="px-4 py-4text-black font-bold focus:outline-none transition-colors h-full cursor-pointer"
                 aria-label="إرسال"
               >
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg>
+                إرسال
               </button>
             </div>
           </div>
-
-          {/* Checkbox Options */}
-          <div>
-            {/* Breaking News Checkbox */}
-            <label>
-              <span>
-                تلقي آخر الأخبار
-              </span>
-            </label>
-
-            {/* Separator */}
-            <span>|</span>
-
-            {/* Latest News Checkbox */}
-            <label>
-              <span>
-                استلام تحديث عدد اليوم PDF
-              </span>
-              <input
-                type="checkbox"
-                checked={receiveLatestNews}
-                onChange={(e) => setReceiveLatestNews(e.target.checked)}
-              />
-            </label>
-          </div>
         </form>
-
-        {/* Privacy Note */}
-        <p>
-          بالاشتراك في النشرة الإخبارية، فإنك توافق على{" "}
-          <a href="#">
-            سياسة الخصوصية
-          </a>{" "}
-          و
-          <a href="#">
-            {" "}
-            شروط الاستخدام
-          </a>
-        </p>
       </div>
     </ScrollAnimation>
   );
