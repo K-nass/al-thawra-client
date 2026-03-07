@@ -1,5 +1,7 @@
 import axios from "../lib/axios";
 
+// ---------- Types ----------
+
 export interface Reel {
   id: string;
   videoUrl: string;
@@ -21,72 +23,102 @@ export interface Reel {
 
 export interface ReelsResponse {
   reels: Reel[];
-  nextCursor?: string;
+  nextCursor: string | null;
   hasMore: boolean;
 }
+
+export interface ReelsApiError {
+  type: string | null;
+  title: string | null;
+  status: number | null;
+  detail: string | null;
+  instance: string | null;
+  errors: Record<string, string[]>;
+}
+
+// ---------- Service ----------
 
 class ReelsService {
   private readonly baseUrl = "/reels";
 
   /**
-   * Fetch reels with optional cursor for pagination
+   * Fetch reels with cursor-based pagination.
+   * GET /reels?Cursor=<cursor>&Limit=<limit>
    */
-  async getReels(cursor?: string): Promise<ReelsResponse> {
+  async getReels(cursor?: string, limit: number = 5): Promise<ReelsResponse> {
     try {
-      // Assuming GET /api/v1/reels?cursor=...
-      // The axios instance likely handles the /api/v1 prefix based on other services
-      const params: any = {};
+      const params: Record<string, string | number> = { Limit: limit };
       if (cursor) {
-        params.cursor = cursor;
+        params.Cursor = cursor;
       }
 
-      // Note: Adjusting endpoint path if necessary based on system convention.
-      // Assuming 'axios' is configured with base URL.
-      // If other services use relative paths like "/posts", this should be "/reels"
-      // Check videoService: uses "/posts"
+      console.log('[ReelsService] getReels request:', { url: this.baseUrl, params });
       const response = await axios.get<ReelsResponse>(this.baseUrl, { params });
-      return response.data;
+      console.log('[ReelsService] getReels response:', JSON.stringify(response.data, null, 2));
+      return {
+        reels: response.data.reels || [],
+        nextCursor: response.data.nextCursor ?? null,
+        hasMore: response.data.hasMore ?? false,
+      };
     } catch (error: any) {
-
-      throw error;
+      console.error('[ReelsService] getReels error:', error?.response?.status, error?.response?.data || error.message);
+      throw this.parseError(error);
     }
   }
 
   /**
-   * Fetch a single reel by ID
+   * Fetch a single reel by ID.
    */
   async getReelById(id: string): Promise<Reel> {
     try {
       const response = await axios.get<Reel>(`${this.baseUrl}/${id}`);
       return response.data;
     } catch (error: any) {
-
-      throw error;
-    }
-  }
-
-  /* 
-   * Like a reel
-   */
-  async likeReel(id: string): Promise<void> {
-    try {
-      await axios.post(`${this.baseUrl}/${id}/like`);
-    } catch (error) {
-
-      throw error;
+      throw this.parseError(error);
     }
   }
 
   /**
-   * Unlike a reel
+   * Like a reel.
+   */
+  async likeReel(id: string): Promise<void> {
+    try {
+      await axios.post(`${this.baseUrl}/${id}/like`);
+    } catch (error: any) {
+      throw this.parseError(error);
+    }
+  }
+
+  /**
+   * Unlike a reel.
    */
   async unlikeReel(id: string): Promise<void> {
     try {
       await axios.delete(`${this.baseUrl}/${id}/like`);
-    } catch (error) {
-
-      throw error;
+    } catch (error: any) {
+      throw this.parseError(error);
     }
+  }
+
+  /**
+   * Parse API errors into a structured shape.
+   */
+  private parseError(error: any): Error {
+    if (error?.response?.status === 422) {
+      const data = error.response.data as ReelsApiError;
+      const messages = Object.values(data.errors || {}).flat();
+      return new Error(messages.join(", ") || "خطأ في البيانات المدخلة");
+    }
+
+    if (error?.response?.data?.detail) {
+      return new Error(error.response.data.detail);
+    }
+
+    if (!error?.response && error?.request) {
+      return new Error("فشل الاتصال بالخادم. يرجى التحقق من اتصالك بالإنترنت.");
+    }
+
+    return error instanceof Error ? error : new Error("حدث خطأ غير متوقع");
   }
 }
 
