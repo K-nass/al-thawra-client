@@ -118,7 +118,6 @@ export default function Home() {
   // Get data from loader
   const { sliderPosts, writersPosts, latestMagazine, urgentPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
 
-  console.log("*****writerposts*******", writersPosts);
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 
@@ -205,10 +204,10 @@ export default function Home() {
   }
 
   return (
-    <main className="semafor-container py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:border-b-2  pb-7">
+    <main className="semafor-container py-4 md:py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 lg:border-b-2 mt-8 md:mt-20 semafor-section-title pb-4 lg:pb-7">
         {/* right Sidebar - "The World at a Glance" */}
-        <aside className="lg:col-span-3 order-2 lg:order-1 pb-6 lg:pb-0 lg:pl-6">
+        <aside className="lg:col-span-3 order-2 lg:order-1 pb-4 lg:pb-6 lg:pl-6">
           <div className="semafor-sidebar space-y-6">
             <div>
               <h2 className="text-xl font-bold mb-4 pb-3">
@@ -236,7 +235,7 @@ export default function Home() {
         </aside>
 
         {/* left side bar */}
-        <div className="semafor-sidebar lg:col-span-3 order-3 pb-6 lg:pb-0 lg:pl-6">
+        <div className="semafor-sidebar lg:col-span-3 order-3 pb-4 lg:pb-6 lg:pl-6">
           {sliderPosts.length > 1 && (
             <section className="mb-12 pb-12 border-dashed border-black/10">
               <div className="grid grid-cols-1 gap-6">
@@ -265,10 +264,10 @@ export default function Home() {
 
 
         {/* Main Content Area */}
-        <div className="lg:col-span-6 order-1 lg:order-2 lg:px-6">
+        <div className="lg:col-span-6 order-1 lg:order-2 px-4 lg:px-6">
           {/* Hero Section */}
           {sliderPosts.length > 0 && sliderPosts[0] && (
-            <section className="mb-8 pb-8">
+            <section className="mb-6 md:mb-8 pb-6 md:pb-8">
               <Link
                 to={`/posts/categories/${sliderPosts[0].categorySlug}/articles/${sliderPosts[0].slug}`}
                 className="block group"
@@ -313,7 +312,7 @@ export default function Home() {
             </section>
           )}
           {/* Right Sidebar - Featured Content */}
-          <aside className="lg:col-span-3 order-3 lg:order-3 pt-6 lg:pt-0 lg:pr-6">
+          <aside className="lg:col-span-3 order-3 lg:order-3 pt-4 md:pt-6 lg:pt-0 pr-4 lg:pr-6">
             <div className="space-y-6">
               {/* Featured Box */}
               <div className="semafor-sidebar pb-6">
@@ -342,11 +341,11 @@ export default function Home() {
       </div>
 
       {categoryPosts.length > 0 && categoryPosts[0] && (
-        <section className="mb-12 pb-12 border-b-2 border-black mt-10">
+        <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
           <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4">
             {/* Left column - smaller articles */}
-            <div className="md:col-span-3 space-y-10 mt-15 md:pr-4">
+            <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15 pr-2 md:pr-4">
               {categoryPosts[0].posts.slice(0, 3).map((post, index) => (
                 <Link
                   key={post.id}
@@ -371,8 +370,8 @@ export default function Home() {
 
             {/* Center - main featured article */}
             {categoryPosts[0].posts[3] && (
-              <div className="md:col-span-6 flex flex-col items-center space-y-4 md:border-r md:border-dashed md:border-black/10 md:pr-4 md:pl-4 md:border-l">
-                <div className="p-5">
+              <div className="md:col-span-6 flex flex-col items-center space-y-3 md:space-y-4 md:border-r md:border-dashed md:border-black/10 pr-2 md:pr-4 pl-2 md:pl-4 md:border-l">
+                <div className="p-3 md:p-5">
                   <h3 className="text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors">
                     {categoryPosts[0].posts[3].title}
                   </h3>
@@ -425,7 +424,7 @@ export default function Home() {
             )}
 
             {/* Right column - smaller articles */}
-            <div className="md:col-span-3 space-y-10 mt-15">
+            <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15">
               {categoryPosts[0].posts.slice(4, 7).map((post, index) => (
                 <Link
                   key={post.id}
@@ -497,7 +496,7 @@ export default function Home() {
       )}
 
       {categoryPosts.slice(1).map(({ category, posts }, sectionIndex) => (
-        <section key={category.id} className={`mb-12 ${sectionIndex < categoryPosts.slice(1).length - 1 ? 'pb-12 border-b-2 border-black' : ''}`}>
+        <section key={category.id} className={`mb-8 md:mb-12 ${sectionIndex < categoryPosts.slice(1).length - 1 ? 'pb-8 md:pb-12 border-b-2 border-black' : ''}`}>
           <h2 className="semafor-section-title">{category.name}</h2>
 
           {/* First category - special layout like the image */}
