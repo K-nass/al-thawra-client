@@ -66,3 +66,17 @@ body {
 .border-dashed-vertical {
   @apply border-r border-dashed border-black/10 mx-4;
 }
+
+/* Spinning globe animation */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
