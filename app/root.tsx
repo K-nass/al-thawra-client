@@ -25,6 +25,8 @@ import { settingsService, type LogoSettings } from "./services/settingsService";
 import { cache, CacheTTL } from "./lib/cache";
 import { generateOrganizationSchema, generateWebSiteSchema } from "./utils/seo";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { SidebarProvider } from "./contexts/SidebarContext";
+import { CategorySidebar } from "./components/CategorySidebar";
 import { MiniViewContainer } from "./components/VideoPlayer/MiniView/MiniViewContainer";
 
 // Loader function for root layout with caching
@@ -127,11 +129,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <ToastContainer />
-          <MiniViewContainer />
-          {children}
-          <ScrollRestoration />
-          <Scripts />
+          <SidebarProvider>
+            <ToastContainer />
+            <MiniViewContainer />
+            {children}
+            <ScrollRestoration />
+            <Scripts />
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
@@ -154,6 +158,7 @@ export default function App() {
   return (
     <>
       <NavigationLoader />
+      <CategorySidebar categories={categories} />
       {disableLayout ? (
         // Full-width layout for PDF viewer (no header, sidebar, footer)
         <Outlet context={{ categories }} />

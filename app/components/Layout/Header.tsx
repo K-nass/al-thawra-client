@@ -28,6 +28,8 @@ import {
 import type { Category } from "../../services/categoriesService";
 import authService from "../../services/authService";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useSidebar } from "../../contexts/SidebarContext";
+import { DateTimeDisplay } from "../DateTimeDisplay";
 
 interface HeaderProps {
   categories?: Category[];
@@ -44,6 +46,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
   const { theme, toggleTheme } = useTheme();
+  const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
     // Get current user from cookies
@@ -101,8 +104,17 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar */}
-        <div className="flex justify-between items-center py-2 text-xs font-semibold uppercase tracking-wider text-gray-600 border-b border-dashed border-black/20 mb-4">
+        <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600 border-b border-dashed border-black/20 ">
           <div className="flex gap-4 items-center">
+            {/* Burger Menu Button */}
+            <button
+              onClick={toggleSidebar}
+              aria-label="فتح القائمة"
+              className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            
             <span className="flex items-center gap-1 px-2 py-1 border border-dashed border-black/10 rounded-sm cursor-pointer">
               رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
             </span>
@@ -172,7 +184,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
 
         {/* Main Header Section */}
-        <div className="flex justify-between items-center py-2 gap-4 md:justify-center flex-row-reverse md:flex-row">
+        <div className="flex justify-between items-center py-1 gap-4 md:justify-center flex-row-reverse md:flex-row">
           {/* Mobile Menu Button - Left Side */}
           <div className="md:hidden">
             <button
@@ -217,13 +229,14 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             </nav>
           </div>
 
-          {/* Center Logo */}
-          <div className="text-center">
+          {/* Center Logo and DateTime */}
+          <div className="text-center flex flex-col items-center gap-2">
+            {/* <DateTimeDisplay /> */}
             <Link to="/">
               <img
                 src="/formLogo.png"
                 alt="الثورة لوجو"
-                className="h-16 md:h-20 mx-auto"
+                className="h-14 md:h-16 mx-auto"
               />
             </Link>
           </div>
@@ -257,7 +270,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
 
         {/* Bottom Navigation - Categories */}
-        <nav className="border-t border-b border-dashed border-black/10 py-3 mt-4 overflow-x-auto overflow-y-visible">
+        <nav className="border-t border-b border-dashed border-black/10 py-2 overflow-x-auto overflow-y-visible">
           <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
             <li>
               <Link
