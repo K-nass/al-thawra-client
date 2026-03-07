@@ -53,6 +53,43 @@ export function Footer({ pages = [] }: FooterProps) {
                   {page.title}
                 </Link>
               ))}
+              
+              {/* Static footer links */}
+              <Link
+                to="/about"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm group"
+              >
+                <span className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-gray-900 transition-colors"></span>
+                من نحن
+              </Link>
+              <Link
+                to="/ads"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm group"
+              >
+                <span className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-gray-900 transition-colors"></span>
+                الإعلانات
+              </Link>
+              <Link
+                to="/subscribe"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm group"
+              >
+                <span className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-gray-900 transition-colors"></span>
+                للإشتراك
+              </Link>
+              <Link
+                to="/services"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm group"
+              >
+                <span className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-gray-900 transition-colors"></span>
+                خدماتنا
+              </Link>
+              <Link
+                to="/contact"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors text-sm group"
+              >
+                <span className="w-1 h-1 bg-gray-400 rounded-full group-hover:bg-gray-900 transition-colors"></span>
+                اتصل بنا
+              </Link>
             </nav>
           </div>
 
