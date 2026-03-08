@@ -1,5 +1,5 @@
 /**
- * Utility functions for handling Arabic text with proper number rendering
+ * Utility functions for handling Arabic text with proper number rendering and content cleaning
  */
 
 /**
@@ -45,4 +45,57 @@ export function quickFixNumbers(text: string): string {
   fixed = fixed.replace(/⚬/g, '0'); // fallback for single symbols
   
   return fixed;
+}
+
+/**
+ * Comprehensive Arabic content cleaner for articles with encoding issues
+ * @param content - Raw content from API that may have rn/rnrn issues
+ * @returns Cleaned content ready for display
+ */
+export function cleanArabicArticleContent(content: string): string {
+  if (!content) return "";
+
+  let cleaned = content;
+
+  // Step 1: Handle literal "rn" and "rnrn" patterns aggressively
+  cleaned = cleaned
+    // Handle various forms of rn patterns
+    .replace(/rnrn/gi, "\n\n")
+    .replace(/rn/gi, "\n")
+    // Handle cases with spaces
+    .replace(/\s*rn\s*rn\s*/gi, "\n\n")
+    .replace(/\s*rn\s*/gi, "\n")
+    // Handle mixed patterns
+    .replace(/([^\s])rn([^\s])/gi, '$1\n$2')
+    .replace(/([^\s])rnrn([^\s])/gi, '$1\n\n$2');
+
+  // Step 2: Normalize all line breaks
+  cleaned = cleaned
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  // Step 3: Convert to HTML breaks
+  cleaned = cleaned
+    .replace(/\n\n+/g, "<br><br>")
+    .replace(/\n/g, "<br>");
+
+  // Step 4: Clean up Arabic text issues
+  cleaned = cleaned
+    // Fix spacing around Arabic punctuation
+    .replace(/\s+([،؛؟!])/g, '$1')
+    .replace(/([،؛؟!])\s+/g, '$1 ')
+    // Convert Arabic-Indic digits to Latin if needed
+    .replace(/[٠-٩]/g, (match) => {
+      const arabicToLatin = {'٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4', '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9'};
+      return arabicToLatin[match as keyof typeof arabicToLatin] || match;
+    })
+    // Clean up excessive whitespace
+    .replace(/\s{3,}/g, ' ')
+    .replace(/\s+<br>/g, '<br>')
+    .replace(/<br>\s+/g, '<br>')
+    // Clean up multiple consecutive breaks
+    .replace(/(<br>\s*){3,}/g, "<br><br>")
+    .replace(/(<br>){3,}/g, "<br><br>");
+
+  return cleaned.trim();
 }

@@ -3,6 +3,8 @@ import { pagesService } from "~/services/pagesService";
 import { cache, CacheTTL } from "~/lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { ScrollAnimation } from "~/components/ScrollAnimation";
+import { cleanHtml } from "~/utils/htmlCleaner";
+import { cleanArabicArticleContent } from "~/utils/arabicTextUtils";
 
 // Loader function for server-side data fetching
 export async function loader({ params }: { params: { slug: string } }) {
@@ -48,6 +50,9 @@ export function meta({ data }: { data?: { page?: any } }) {
 export default function PageDetailPage() {
   const { page } = useLoaderData<typeof loader>();
 
+  // Clean the page content for Arabic text issues
+  const cleanedContent = cleanHtml(cleanArabicArticleContent(page.content));
+
   return (
     <div>
       {/* Breadcrumb */}
@@ -84,7 +89,7 @@ export default function PageDetailPage() {
 
           {/* Page Content (HTML) */}
           <div
-            dangerouslySetInnerHTML={{ __html: page.content }}
+            dangerouslySetInnerHTML={{ __html: cleanedContent }}
           />
 
           {/* Page Metadata */}

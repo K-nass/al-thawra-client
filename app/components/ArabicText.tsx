@@ -1,4 +1,5 @@
 import React from 'react';
+import { cleanArabicArticleContent } from '../utils/arabicTextUtils';
 
 interface ArabicTextProps {
   children: string;
@@ -7,18 +8,21 @@ interface ArabicTextProps {
 }
 
 /**
- * Component for displaying Arabic text with properly formatted numbers
- * Uses a more robust approach to ensure numbers display correctly
+ * Component for displaying Arabic text with properly formatted numbers and cleaned content
+ * Uses a more robust approach to ensure numbers display correctly and handles rn/rnrn issues
  */
 export function ArabicText({ 
   children, 
   className = "", 
   as = 'span' 
 }: ArabicTextProps) {
-  // More robust number replacement that handles various number formats
+  // Clean the text for Arabic content issues and format numbers
   const formatText = (text: string) => {
-    // Replace any sequence of digits (including decimals, commas, etc.)
-    return text.replace(/(\d+(?:[.,]\d+)*)/g, '<span class="latin-numerals fix-numbers">$1</span>');
+    // First clean Arabic content issues (rn/rnrn patterns)
+    const cleaned = cleanArabicArticleContent(text);
+    
+    // Then replace any sequence of digits (including decimals, commas, etc.)
+    return cleaned.replace(/(\d+(?:[.,]\d+)*)/g, '<span class="latin-numerals fix-numbers">$1</span>');
   };
 
   const Component = as;

@@ -1,11 +1,13 @@
 import { cleanHtml } from "../../utils/htmlCleaner";
+import { cleanArabicArticleContent } from "../../utils/arabicTextUtils";
 
 interface PostContentProps {
   content: string;
 }
 
 export function PostContent({ content }: PostContentProps) {
-  const cleanedContent = cleanHtml(content);
+  // Apply both general HTML cleaning and Arabic-specific cleaning
+  const cleanedContent = cleanHtml(cleanArabicArticleContent(content));
 
   return (
     <div
