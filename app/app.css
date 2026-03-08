@@ -1,5 +1,79 @@
 @import "tailwindcss";
 
+/* Font Declarations */
+@font-face {
+  font-family: "DecoType Thuluth";
+  src: url("/fonts/decotype-thuluth-iii.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "ArbFONTS Amiri";
+  src: url("/fonts/ArbFONTS-Amiri.ttf") format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "ArbFONTS Amiri";
+  src: url("/fonts/ArbFONTS-Amiri Bold.ttf") format("truetype");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Dialogue";
+  src: url("/fonts/Dialogue-Variable-ME-Roman-TRIAL.ttf") format("truetype");
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: "Yakout";
+  src: url("/fonts/YakoutLinotypeLight-Regular.ttf") format("truetype");
+}
+
+/* Tailwind Theme Configuration */
+@theme {
+  --font-sans: "Inter", "Dialogue", "Yakout", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Inter", "ArbFONTS Amiri", "Amiri", ui-serif, Georgia, serif;
+}
+
+/* RTL (Arabic) Font Handling */
+html[dir="rtl"] {
+  --font-family-base: "WesternDigits", "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif;
+}
+
+html[dir="rtl"] body,
+html[dir="rtl"] * {
+  /* font-family: var(--font-family-base) !important; */
+}
+
+/* Custom Font Utility Classes */
+.amiri-regular {
+  font-family: "ArbFONTS Amiri", serif;
+  font-weight: 400;
+}
+
+.amiri-bold {
+  font-family: "ArbFONTS Amiri", serif;
+  font-weight: 700;
+}
+
+.amiri-regular-italic {
+  font-family: "ArbFONTS Amiri", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.amiri-bold-italic {
+  font-family: "ArbFONTS Amiri", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.font-thuluth {
+  font-family: "DecoType Thuluth", serif;
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* Hide scrollbar but keep scroll functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE and Edge */
@@ -12,7 +86,7 @@
 
 body {
   background-color: #d0e8f2;
-  font-family: Georgia, 'Times New Roman', serif;
+  /* font-family: "Inter", "Dialogue", "Yakout", "ArbFONTS Amiri", ui-serif, Georgia, serif; */
 }
 
 /* Semafor-inspired styles */

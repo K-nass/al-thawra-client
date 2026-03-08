@@ -1,5 +1,6 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { NavigationSidebar } from "./NavigationSidebar";
 import type { Category } from "../../services/categoriesService";
 import type { Page } from "../../services/pagesService";
 
@@ -14,6 +15,7 @@ export function Layout({ children, categories = [], footerPages = [], logoSettin
   return (
     <div>
       <Header categories={categories} ceoName={logoSettings?.ceoName} />
+      <NavigationSidebar categories={categories} />
       <main>
         {children}
       </main>
