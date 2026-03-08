@@ -1,10 +1,8 @@
 import { useState } from "react";
-import type { Route } from "./+types/contact";
 import { Mail, Phone, MapPin, Send, CheckCircle } from "lucide-react";
-import { motion } from "framer-motion";
 import { generateMetaTags } from "~/utils/seo";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return generateMetaTags({
     title: "اتصل بنا",
     description: "تواصل مع فريق الثورة. نحن هنا للإجابة على استفساراتكم واستقبال ملاحظاتكم",
@@ -22,53 +20,6 @@ export default function ContactPage() {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const slideInLeft = {
-    hidden: { opacity: 0, x: -50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
-
-  const slideInRight = {
-    hidden: { opacity: 0, x: 50 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.6,
-        ease: "easeOut",
-      },
-    },
-  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -95,262 +46,229 @@ export default function ContactPage() {
   };
 
   return (
-    <div>
-      <div>
+    <div dir="rtl" className="min-h-screen bg-[#d0e8f2] py-12">
+      <div className="semafor-container">
         {/* Header Section with Logo */}
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: false, amount: 0.3 }}
-          variants={containerVariants}
-        >
-          <motion.div variants={itemVariants}>
+        <div className="text-center mb-12">
+          <div className="flex justify-center mb-6">
             <img
               src="/formLogo.png"
               alt="شعار صحيفة الثورة"
+              className="h-24 w-auto"
             />
-          </motion.div>
-          <motion.h1
-            variants={itemVariants}
-          >
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             اتصل بنا
-          </motion.h1>
-          <motion.p
-            variants={itemVariants}
-          >
+          </h1>
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
             نحن هنا للاستماع إليك. تواصل معنا لأي استفسارات أو اقتراحات
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
-        <div>
-          <div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="space-y-8">
             {/* Contact Information */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.3 }}
-              variants={slideInLeft}
-            >
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <h2>
-                  معلومات التواصل
-                </h2>
-
-                <div>
-                  {/* Email */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false }}
-                    transition={{ delay: 0.1, duration: 0.5 }}
-                  >
-                    <div>
-                      <Mail />
-                    </div>
-                    <div>
-                      <h3>
-                        البريد الإلكتروني
-                      </h3>
-                      <a
-                        href="mailto:info@althawra.com"
-                      >
-                        info@althawra.com
-                      </a>
-                    </div>
-                  </motion.div>
-
-                  {/* Phone */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                  >
-                    <div>
-                      <Phone />
-                    </div>
-                    <div>
-                      <h3>
-                        الهاتف
-                      </h3>
-                      <a
-                        href="tel:+96512345678"
-                      >
-                        +965 1234 5678
-                      </a>
-                    </div>
-                  </motion.div>
-
-                  {/* Address */}
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: false }}
-                    transition={{ delay: 0.3, duration: 0.5 }}
-                  >
-                    <div>
-                      <MapPin />
-                    </div>
-                    <div>
-                      <h3>
-                        العنوان
-                      </h3>
-                      <p>
-                        الكويت، شارع الصحافة
-                        <br />
-                        مبنى صحيفة الثورة
-                      </p>
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-
-              {/* Working Hours */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                whileHover={{ scale: 1.02 }}
-              >
-                <h2>ساعات العمل</h2>
-                <div>
-                  <div>
-                    <span>الأحد - الخميس</span>
-                    <span>8:00 ص - 5:00 م</span>
-                  </div>
-                  <div>
-                    <span>الجمعة</span>
-                    <span>مغلق</span>
-                  </div>
-                  <div>
-                    <span>السبت</span>
-                    <span>مغلق</span>
-                  </div>
-                </div>
-              </motion.div>
-            </motion.div>
-
-            {/* Contact Form */}
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: false, amount: 0.3 }}
-              variants={slideInRight}
-            >
-              <h2>
-                أرسل لنا رسالة
+            <div className="bg-[#d0e8f2] rounded-lg border border-black/10 p-8">
+              <h2 className="semafor-section-title text-gray-900 border-b border-black/10 mb-6">
+                معلومات التواصل
               </h2>
 
-              {isSubmitted ? (
-                <div>
-                  <div>
-                    <CheckCircle />
+              <div className="space-y-6">
+                {/* Email */}
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Mail className="w-6 h-6 text-white" />
                   </div>
-                  <h3>
-                    تم إرسال رسالتك بنجاح!
-                  </h3>
-                  <p>
-                    شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit}>
-                  {/* Name */}
                   <div>
-                    <label
-                      htmlFor="name"
-                    >
-                      الاسم الكامل
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      placeholder="أدخل اسمك الكامل"
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label
-                      htmlFor="email"
-                    >
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">
                       البريد الإلكتروني
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="example@email.com"
-                    />
-                  </div>
-
-                  {/* Subject */}
-                  <div>
-                    <label
-                      htmlFor="subject"
+                    </h3>
+                    <a
+                      href="mailto:info@althawra.com"
+                      className="text-gray-700 hover:text-gray-900 transition-colors"
                     >
-                      الموضوع
-                    </label>
-                    <input
-                      type="text"
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      placeholder="موضوع الرسالة"
-                    />
+                      info@althawra.com
+                    </a>
                   </div>
+                </div>
 
-                  {/* Message */}
+                {/* Phone */}
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Phone className="w-6 h-6 text-white" />
+                  </div>
                   <div>
-                    <label
-                      htmlFor="message"
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">
+                      الهاتف
+                    </h3>
+                    <a
+                      href="tel:+96512345678"
+                      className="text-gray-700 hover:text-gray-900 transition-colors"
                     >
-                      الرسالة
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows={6}
-                      placeholder="اكتب رسالتك هنا..."
-                    />
+                      +965 1234 5678
+                    </a>
                   </div>
+                </div>
 
-                  {/* Submit Button */}
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
+                {/* Address */}
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <MapPin className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">
+                      العنوان
+                    </h3>
+                    <p className="text-gray-700">
+                      الكويت، شارع الصحافة
+                      <br />
+                      مبنى صحيفة الثورة
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Working Hours */}
+            <div className="bg-[#d0e8f2] rounded-lg border border-black/10 p-8">
+              <h2 className="semafor-section-title text-gray-900 border-b border-black/10 mb-6">ساعات العمل</h2>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 border border-dashed border-black/10 rounded-lg">
+                  <span className="font-medium text-gray-900">الأحد - الخميس</span>
+                  <span className="text-gray-700">8:00 ص - 5:00 م</span>
+                </div>
+                <div className="flex justify-between items-center p-3 border border-dashed border-black/10 rounded-lg">
+                  <span className="font-medium text-gray-900">الجمعة</span>
+                  <span className="text-gray-700">مغلق</span>
+                </div>
+                <div className="flex justify-between items-center p-3 border border-dashed border-black/10 rounded-lg">
+                  <span className="font-medium text-gray-900">السبت</span>
+                  <span className="text-gray-700">مغلق</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="bg-[#d0e8f2] rounded-lg border border-black/10 p-8">
+            <h2 className="semafor-section-title text-gray-900 border-b border-black/10 mb-6">
+              أرسل لنا رسالة
+            </h2>
+
+            {isSubmitted ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-10 h-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  تم إرسال رسالتك بنجاح!
+                </h3>
+                <p className="text-gray-700">
+                  شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.
+                </p>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Name */}
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-gray-900 mb-2"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <div />
-                        <span>جاري الإرسال...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send />
-                        <span>إرسال الرسالة</span>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-            </motion.div>
+                    الاسم الكامل
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="أدخل اسمك الكامل"
+                    className="w-full px-4 py-3 border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a8c5d4] focus:border-transparent bg-[#d0e8f2]"
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    البريد الإلكتروني
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    placeholder="example@email.com"
+                    className="w-full px-4 py-3 border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a8c5d4] focus:border-transparent bg-[#d0e8f2]"
+                  />
+                </div>
+
+                {/* Subject */}
+                <div>
+                  <label
+                    htmlFor="subject"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    الموضوع
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
+                    required
+                    placeholder="موضوع الرسالة"
+                    className="w-full px-4 py-3 border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a8c5d4] focus:border-transparent bg-[#d0e8f2]"
+                  />
+                </div>
+
+                {/* Message */}
+                <div>
+                  <label
+                    htmlFor="message"
+                    className="block text-sm font-medium text-gray-900 mb-2"
+                  >
+                    الرسالة
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    required
+                    rows={6}
+                    placeholder="اكتب رسالتك هنا..."
+                    className="w-full px-4 py-3 border border-black/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#a8c5d4] focus:border-transparent bg-[#d0e8f2] resize-none"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <span>جاري الإرسال...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      <span>إرسال الرسالة</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>

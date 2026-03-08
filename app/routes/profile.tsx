@@ -32,10 +32,22 @@ export async function loader({ request }: Route.LoaderArgs) {
       '/profile', // URL for ETag validation
       true // validateAlways - check ETag even if cache is fresh
     );
-    return { profile, error: null };
+
+    // Fetch saved posts
+    let savedPosts = [];
+    try {
+      const savedPostsResponse = await profileService.getSavedPosts(1, 30);
+      savedPosts = savedPostsResponse.items || [];
+    } catch (error) {
+      // If fetching saved posts fails, just return empty array
+      console.error('Failed to fetch saved posts:', error);
+    }
+
+    return { profile, savedPosts, error: null };
   } catch (error: any) {
     return { 
-      profile: null, 
+      profile: null,
+      savedPosts: [],
       error: error.response?.data?.message || 'فشل تحميل الملف الشخصي' 
     };
   }

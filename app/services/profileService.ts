@@ -151,6 +151,21 @@ class ProfileService {
       throw error;
     }
   }
+
+  // Get user's saved/liked posts
+  async getSavedPosts(pageNumber: number = 1, pageSize: number = 15) {
+    try {
+      const response = await axiosInstance.get('/posts/liked', {
+        params: {
+          PageNumber: pageNumber,
+          PageSize: pageSize,
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default new ProfileService();
