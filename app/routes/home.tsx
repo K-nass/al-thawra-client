@@ -343,7 +343,7 @@ export default function Home() {
       {categoryPosts.length > 0 && categoryPosts[0] && (
         <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
           <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
-          
+
           {/* Top section: 3 columns layout */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 mb-6">
             {/* Left column - smaller articles */}
@@ -452,8 +452,8 @@ export default function Home() {
         </section>
       )}
 
-
-      {writersPosts.length > 0 && (
+      {/* will trigger later */}
+      {/* {writersPosts.length > 0 && (
         <section className="mb-12 pb-12 border-b border-dashed border-black/10">
           <h2 className="semafor-section-title">آراء الكتاب</h2>
           <div className="space-y-6">
@@ -495,7 +495,7 @@ export default function Home() {
             ))}
           </div>
         </section>
-      )}
+      )} */}
 
       {categoryPosts.slice(1).map(({ category, posts }, sectionIndex) => (
         <section key={category.id} className={`mb-8 md:mb-12 ${sectionIndex < categoryPosts.slice(1).length - 1 ? 'pb-8 md:pb-12 border-b-2 border-black' : ''}`}>
