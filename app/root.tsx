@@ -28,6 +28,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { SidebarProvider } from "./contexts/SidebarContext";
 import { CategorySidebar } from "./components/CategorySidebar";
 import { MiniViewContainer } from "./components/VideoPlayer/MiniView/MiniViewContainer";
+import { useArabicNumbersFix } from "./utils/fixArabicNumbers";
 
 // Loader function for root layout with caching
 export async function loader() {
@@ -145,6 +146,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const location = useLocation();
   const { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings } = useLoaderData<typeof loader>();
+
+  // Fix Arabic numbers display issues
+  useArabicNumbersFix();
 
   // Check if current route has disableLayout handle
   const matches = useMatches();

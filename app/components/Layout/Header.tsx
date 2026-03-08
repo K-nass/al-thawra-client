@@ -76,7 +76,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               <Menu className="w-5 h-5" />
             </button>
 
-            <span className="flex items-center gap-1 px-2 py-1 border border-dashed border-black/10 rounded-sm cursor-pointer">
+            <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
               رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
             </span>
           </div>
@@ -242,7 +242,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 عدد اليوم
               </Link>
             </li>
-            
+
             {/* Desktop: Show first 10 categories */}
             {allMenuCategories.slice(0, 10).map((category) => (
               <li key={category.id}>

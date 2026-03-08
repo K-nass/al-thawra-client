@@ -716,7 +716,7 @@ export default function Home() {
                   className="block group"
                 >
                   <article className={`semafor-card overflow-hidden flex flex-col pl-4 pr-4 ${index < 3 ? 'border-r border-dashed border-black/10' : ''}`}>
-                    <div className="p-4 flex-grow">
+                    <div className="p-4 grow">
                       <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2 ${index === 2 ? 'text-blue-800 text-base' : 'text-base'}`}>
                         {post.title}
                       </h3>
