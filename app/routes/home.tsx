@@ -205,7 +205,7 @@ export default function Home() {
 
   return (
     <main className="semafor-container py-4 md:py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 lg:border-b-2 mt-8 md:mt-20 semafor-section-title pb-4 lg:pb-7">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 lg:border-b-2 mt-4 md:mt-4 semafor-section-title pb-4 lg:pb-7">
         {/* right Sidebar - "The World at a Glance" */}
         <aside className="lg:col-span-3 order-2 lg:order-1 pb-4 lg:pb-6 lg:pl-6">
           <div className="semafor-sidebar space-y-6">
