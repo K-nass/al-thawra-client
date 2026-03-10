@@ -693,7 +693,7 @@ export default function Home() {
                     to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                     className="block group"
                   >
-                    <article className={`semafor-card p-4 ${index < 3 ? 'border-r border-dashed border-black/10' : ''}`}>
+                    <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
                       <h3 className="text-sm font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
                         {post.title}
                       </h3>

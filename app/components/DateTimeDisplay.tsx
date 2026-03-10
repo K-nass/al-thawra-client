@@ -40,7 +40,7 @@ export function DateTimeDisplay() {
       <img 
         src="spinning-earth2.gif" 
         alt="Spinning Earth"
-        className="w-4 h-4 flex-shrink-0"
+        className="w-4 h-4 shrink"
       />
     </div>
   );
