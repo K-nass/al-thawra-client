@@ -601,7 +601,7 @@ export default function Home() {
                     to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                     className="block group"
                   >
-                    <article className={`semafor-card p-4 ${index < 4 ? 'border-r border-dashed border-black/10' : ''}`}>
+                    <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
                       <h3 className="text-sm font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
                         {post.title}
                       </h3>
@@ -624,7 +624,7 @@ export default function Home() {
                   to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                   className="block group"
                 >
-                  <article className={`semafor-card overflow-hidden ${index < 3 ? 'border-l border-dashed border-black/10 pl-3 pr-3' : ''}`}>
+                  <article className={`p-4 semafor-card overflow-hidden ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
                     <div className="p-4 mb-4">
                       <h3 className="text-base font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2">
                         {post.title}
@@ -716,7 +716,7 @@ export default function Home() {
                   to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                   className="block group"
                 >
-                  <article className={`semafor-card overflow-hidden flex flex-col pl-4 pr-4 ${index < 3 ? 'border-r border-dashed border-black/10' : ''}`}>
+                  <article className={`semafor-card overflow-hidden flex flex-col pl-4 pr-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
                     <div className="p-4 grow">
                       <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2 ${index === 2 ? 'text-blue-800 text-base' : 'text-base'}`}>
                         {post.title}
