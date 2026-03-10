@@ -69,15 +69,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         {/* Top Bar */}
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
           <div className="flex gap-4 items-center">
-            {/* Burger Menu Button - Desktop Only */}
-            <button
-              onClick={toggleSidebar}
-              aria-label="فتح القائمة"
-              className="hidden md:block p-2 hover:bg-[#a8c5d4] rounded transition-colors"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-
             <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
               رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
             </span>
@@ -161,11 +152,19 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
 
         {/* Main Header Section */}
-        <div className="hidden md:flex justify-center items-center py-1 gap-4 w-full">
-          {/* Left Section: DateTimeDisplay + Navigation - Desktop */}
-          <div className="flex items-center gap-4">
+        <div className="hidden md:grid md:grid-cols-3 md:items-center py-1 w-full">
+          {/* Left Section: Burger Menu + Navigation - Desktop */}
+          <div className="flex items-center gap-4 justify-start">
+            {/* Burger Menu Button - Desktop Only */}
+            <button
+              onClick={toggleSidebar}
+              aria-label="فتح القائمة"
+              className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
 
-            <nav className="flex gap-4 items-center text-sm text-gray-900">
+            <nav className="hidden lg:flex gap-4 items-center text-sm text-gray-900">
               <Link
                 to="/"
                 className="flex items-center gap-1 hover:text-blue-600 transition-colors"
@@ -194,44 +193,45 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           </div>
 
           {/* Center Logo - Desktop */}
-          <div className="text-center flex justify-center items-center">
+          <div className="flex justify-center items-center">
             <Link to="/">
               <img
                 src="/formLogo.png"
                 alt="الثورة لوجو"
-                className="h-16"
+                className="h-12 md:h-14 lg:h-16"
               />
             </Link>
           </div>
 
           {/* Right Navigation - Desktop */}
-          <nav className="relative flex gap-4 items-center text-sm text-gray-900">
-            <Link
-              to="/reels"
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-            >
-              <Film className="w-4 h-4" />
-              <span>ريلز</span>
-            </Link>
+          <div className="hidden md:flex gap-4 items-center text-sm text-gray-900 justify-end">
+            <nav className="hidden lg:flex gap-4 items-center text-sm text-gray-900">
+              <Link
+                to="/reels"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+              >
+                <Film className="w-4 h-4" />
+                <span>ريلز</span>
+              </Link>
 
-            <Link
-              to="/podcast"
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-            >
-              <Podcast className="w-4 h-4" />
-              <span>بودكاست</span>
-            </Link>
+              <Link
+                to="/podcast"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+              >
+                <Podcast className="w-4 h-4" />
+                <span>بودكاست</span>
+              </Link>
 
-            <Link
-              to="/profile"
-              className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-            >
-              <User className="w-4 h-4" />
-              <span>صفحتي</span>
-            </Link>
-          </nav>
-          {/* Desktop Only: DateTimeDisplay on the left */}
-          <div className="absolute left-85 hidden md:block">
+              <Link
+                to="/profile"
+                className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+              >
+                <User className="w-4 h-4" />
+                <span>صفحتي</span>
+              </Link>
+            </nav>
+
+            {/* Desktop Only: DateTimeDisplay at the end - visible from md up */}
             <DateTimeDisplay />
           </div>
         </div>

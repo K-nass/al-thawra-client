@@ -32,15 +32,15 @@ export function DateTimeDisplay() {
   };
 
   return (
-    <div className="flex items-center gap-2 text-gray-700 font-medium">
-      <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 text-gray-700 font-medium whitespace-nowrap">
+      <div className="flex items-center gap-1">
         <span className="text-xs">{formatTime(currentTime)}</span>
-        <span className="text-xs tracking-wide">{formatDate(currentTime)}</span>
+        <span className="text-xs tracking-tight">{formatDate(currentTime)}</span>
       </div>
       <img 
         src="spinning-earth2.gif" 
         alt="Spinning Earth"
-        className="w-4 h-4"
+        className="w-4 h-4 flex-shrink-0"
       />
     </div>
   );
