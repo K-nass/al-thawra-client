@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 export function DateTimeDisplay() {
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -12,7 +12,7 @@ export function DateTimeDisplay() {
   }, []);
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
+    return date.toLocaleTimeString("ar-SA", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
@@ -20,28 +20,28 @@ export function DateTimeDisplay() {
   };
 
   const formatDate = (date: Date) => {
-    const days = ["SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY"];
-    const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const months = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
     
     const dayName = days[date.getDay()];
     const monthName = months[date.getMonth()];
     const day = date.getDate();
     const year = date.getFullYear();
 
-    return `${dayName} ${monthName} ${day}, ${year}`;
+    return `${dayName} ${day} ${monthName} ${year}`;
   };
 
   return (
     <div className="flex items-center gap-2 text-gray-700 font-medium">
+      <div className="flex items-center gap-2">
+        <span className="text-xs">{formatTime(currentTime)}</span>
+        <span className="text-xs tracking-wide">{formatDate(currentTime)}</span>
+      </div>
       <img 
         src="spinning-earth2.gif" 
         alt="Spinning Earth"
         className="w-4 h-4"
       />
-      <div className="flex items-center gap-2">
-        <span className="text-xs">{formatTime(currentTime)}</span>
-        <span className="text-xs tracking-wide">{formatDate(currentTime)}</span>
-      </div>
     </div>
   );
 }

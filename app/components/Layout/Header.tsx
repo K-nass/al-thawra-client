@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import {
   Search,
@@ -16,6 +16,7 @@ import {
 import type { Category } from "../../services/categoriesService";
 import authService from "../../services/authService";
 import { useSidebar } from "../../contexts/SidebarContext";
+import { DateTimeDisplay } from "../DateTimeDisplay";
 
 interface HeaderProps {
   categories?: Category[];
@@ -52,6 +53,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       };
     }
   }, [isProfileMenuOpen]);
+
   // Filter and sort menu categories
   const allMenuCategories = categories
     .filter(cat => cat.showOnMenu && cat.isActive)
@@ -67,11 +69,11 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         {/* Top Bar */}
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600 border-b border-dashed border-black/20 ">
           <div className="flex gap-4 items-center">
-            {/* Burger Menu Button */}
+            {/* Burger Menu Button - Desktop Only */}
             <button
               onClick={toggleSidebar}
               aria-label="فتح القائمة"
-              className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+              className="hidden md:block p-2 hover:bg-[#a8c5d4] rounded transition-colors"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -89,7 +91,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               aria-label="بحث"
-              className="p-1 rounded hover:bg-gray-200 transition-colors"
+              className="p-1 rounded transition-colors"
             >
               <Search className="w-4 h-4" />
             </button>
@@ -144,10 +146,25 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           </div>
         </div>
 
+        {/* Mobile Only: DateTimeDisplay and Menu Row - Second Row */}
+        <div className="md:hidden flex justify-between items-center py-2 border-b border-dashed border-black/20">
+          <button
+            onClick={toggleSidebar}
+            aria-label="فتح القائمة"
+            className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="">
+            <DateTimeDisplay />
+          </div>
+        </div>
+
         {/* Main Header Section */}
-        <div className="hidden md:flex justify-center items-center py-1 gap-4">
-          {/* Left Navigation - Desktop */}
-          <div className="lg:flex items-center">
+        <div className="hidden md:flex justify-center items-center py-1 gap-4 w-full">
+          {/* Left Section: DateTimeDisplay + Navigation - Desktop */}
+          <div className="flex items-center gap-4">
+
             <nav className="flex gap-4 items-center text-sm text-gray-900">
               <Link
                 to="/"
@@ -173,6 +190,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 <span>التلفزيون</span>
               </Link>
             </nav>
+
           </div>
 
           {/* Center Logo - Desktop */}
@@ -212,6 +230,8 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               <span>صفحتي</span>
             </Link>
           </nav>
+          {/* Desktop Only: DateTimeDisplay on the left */}
+            <DateTimeDisplay />
         </div>
       </div>
 
@@ -230,7 +250,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* Bottom Navigation - Categories (Desktop Only) */}
         <nav className="hidden md:block border-t border-b border-dashed border-black/10 py-2 overflow-x-auto overflow-y-visible">
           <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
