@@ -2,7 +2,6 @@ import type { Route } from "./+types/home";
 import { Link, useLoaderData, useNavigation, useOutletContext } from "react-router";
 import { useState, useEffect } from "react";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
-import { HomePageSkeleton } from "../components/skeletons";
 import { Spinner } from "../components/Spinner";
 import { postsService, type Post } from "../services/postsService";
 import { type Category } from "../services/categoriesService";
@@ -297,7 +296,7 @@ export default function Home() {
                       <img
                         src={sliderPosts[0].image}
                         alt={sliderPosts[0].title}
-                        className="w-full group-hover:scale-[1.02] transition-transform duration-500"
+                        className="w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
                         loading="eager"
                       />
                       {sliderPosts[0].authorName && (
@@ -389,11 +388,11 @@ export default function Home() {
                       )}
                     </div>
                     {categoryPosts[0].posts[3].image && (
-                      <div className="h-64 md:h-80 overflow-hidden">
+                      <div className="w-full overflow-hidden">
                         <img
                           src={categoryPosts[0].posts[3].image}
                           alt={categoryPosts[0].posts[3].title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full group-hover:scale-105 transition-transform duration-300"
                           loading="lazy"
                         />
                       </div>
@@ -506,7 +505,7 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Left side - smaller articles */}
               <div className="space-y-4">
-                {posts.slice(0, 3).map((post, index) => (
+                {posts.slice(0, 4).map((post, index) => (
                   <Link
                     key={post.id}
                     to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
@@ -534,7 +533,7 @@ export default function Home() {
                 >
                   <article className="semafor-card overflow-hidden">
                     {posts[3].image && (
-                      <div className="h-48 overflow-hidden">
+                      <div className="h-100 overflow-hidden">
                         <img
                           src={posts[3].image}
                           alt={posts[3].title}
@@ -580,11 +579,11 @@ export default function Home() {
                         )}
                       </div>
                       {post.image && (
-                        <div className="h-40 overflow-hidden">
+                        <div className="h-100 overflow-hidden">
                           <img
                             src={post.image}
                             alt={post.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="w-full h-100 object-cover group-hover:scale-105 transition-transform duration-300"
                             loading="lazy"
                           />
                         </div>
@@ -617,9 +616,9 @@ export default function Home() {
               </div>
             </div>
           ) : sectionIndex === 2 ? (
-            /* Third category - 3 articles in a row with images */
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
-              {posts.slice(0, 3).map((post, index) => (
+            /* Third category - 4 articles in a row with images */
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
+              {posts.slice(0, 4).map((post, index) => (
                 <Link
                   key={post.id}
                   to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
@@ -672,7 +671,7 @@ export default function Home() {
                         )}
                       </div>
                       {posts[0].image && (
-                        <div className="h-64 overflow-hidden">
+                        <div className="h-100 overflow-hidden">
                           <img
                             src={posts[0].image}
                             alt={posts[0].title}
