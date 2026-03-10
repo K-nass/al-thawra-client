@@ -636,7 +636,7 @@ export default function Home() {
                       )}
                     </div>
                     {post.image && (
-                      <div className="h-48 overflow-hidden">
+                      <div className="h-100 overflow-hidden">
                         <img
                           src={post.image}
                           alt={post.title}
@@ -728,7 +728,7 @@ export default function Home() {
                       )}
                     </div>
                     {post.image && (
-                      <div className="h-48 overflow-hidden mt-auto">
+                      <div className="h-100 overflow-hidden mt-auto">
                         <img
                           src={post.image}
                           alt={post.title}
