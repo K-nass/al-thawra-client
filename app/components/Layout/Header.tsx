@@ -67,7 +67,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar */}
-        <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600 border-b border-dashed border-black/20 ">
+        <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
           <div className="flex gap-4 items-center">
             {/* Burger Menu Button - Desktop Only */}
             <button
@@ -231,7 +231,9 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             </Link>
           </nav>
           {/* Desktop Only: DateTimeDisplay on the left */}
+          <div className="absolute left-85 hidden md:block">
             <DateTimeDisplay />
+          </div>
         </div>
       </div>
 
