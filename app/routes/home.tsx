@@ -10,6 +10,7 @@ import { userService } from "../services/userService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
+import Layout1 from "~/layouts/Layout1";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -204,140 +205,12 @@ export default function Home() {
 
   return (
     <main className="semafor-container py-4 md:py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 lg:border-b-2 mt-4 md:mt-4 semafor-section-title pb-4 lg:pb-7">
-        {/* right Sidebar - "The World at a Glance" */}
-        <aside className="lg:col-span-3 order-2 lg:order-1 pb-4 lg:pb-6 lg:pl-6">
-          <div className="semafor-sidebar space-y-6">
-            <div>
-              <h2 className="text-xl font-bold mb-4 pb-3">
-                العالم في لمحة
-              </h2>
-              {urgentPosts && urgentPosts.length > 0 ? (
-                <ol className="space-y-4">
-                  {urgentPosts.slice(0, 6).map((post, index) => (
-                    <li key={post.id} className="text-sm">
-                      <Link
-                        to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                        className="hover:underline leading-snug block"
-                      >
-                        <span className="font-bold">{index + 1}.</span> {post.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="text-sm text-gray-600">لا توجد أخبار عاجلة</p>
-              )}
-            </div>
-
-          </div>
-        </aside>
-
-        {/* left side bar */}
-        <div className="semafor-sidebar lg:col-span-3 order-3 pb-4 lg:pb-6 lg:pl-6">
-          {sliderPosts.length > 1 && (
-            <section className="mb-12 pb-12 border-dashed border-black/10">
-              <div className="grid grid-cols-1 gap-6">
-                {sliderPosts.slice(1, 4).map((post, index) => (
-                  <Link
-                    key={post.id}
-                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  >
-                    <article className="semafor-card p-5 h-full">
-                      <h3 className="text-lg font-bold mb-3 group-hover:text-blue-700 transition-colors leading-tight">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-sm text-gray-700 line-clamp-3">
-                          {post.description.split(' ').slice(0, 20).join(' ')}
-                        </p>
-                      )}
-                    </article>
-                  </Link>
-                ))}
-                <NewsletterSubscription />
-              </div>
-            </section>
-          )}
-        </div>
-
-
-        {/* Main Content Area */}
-        <div className="lg:col-span-6 order-1 lg:order-2 px-4 lg:px-6">
-          {/* Hero Section */}
-          {sliderPosts.length > 0 && sliderPosts[0] && (
-            <section className="mb-6 md:mb-8 pb-6 md:pb-8">
-              <Link
-                to={`/posts/categories/${sliderPosts[0].categorySlug}/articles/${sliderPosts[0].slug}`}
-                className="block group"
-              >
-                <article>
-                  {sliderPosts[0].categoryName && (
-                    <div className="mb-3">
-                      <span className="text-xs uppercase tracking-wider text-gray-600 font-semibold">
-                        {sliderPosts[0].categoryName}
-                      </span>
-                    </div>
-                  )}
-
-                  <h1 className="semafor-main-headline mb-6 group-hover:text-blue-700 transition-colors">
-                    {sliderPosts[0].title}
-                  </h1>
-
-                  {/* Subtitle/Description */}
-                  {sliderPosts[0].description && (
-                    <p className="text-gray-700 mb-6 leading-relaxed">
-                      {sliderPosts[0].description}
-                    </p>
-                  )}
-
-                  {sliderPosts[0].image && (
-                    <div className="overflow-hidden">
-                      <img
-                        src={sliderPosts[0].image}
-                        alt={sliderPosts[0].title}
-                        className="w-full h-full group-hover:scale-[1.02] transition-transform duration-500"
-                        loading="eager"
-                      />
-                      {sliderPosts[0].authorName && (
-                        <p className="text-xs text-gray-500 mt-2">
-                          تصوير: {sliderPosts[0].authorName}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </article>
-              </Link>
-            </section>
-          )}
-          {/* Right Sidebar - Featured Content */}
-          <aside className="lg:col-span-3 order-3 lg:order-3 pt-4 md:pt-6 lg:pt-0 pr-4 lg:pr-6">
-            <div className="space-y-6">
-              {/* Featured Box */}
-              <div className="semafor-sidebar pb-6">
-                {chiefEditor && chiefEditorPosts.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-bold mb-3 leading-tight">
-                      {chiefEditorPosts[0].title}
-                    </h3>
-                    {chiefEditorPosts[0].description && (
-                      <p className="text-sm text-gray-700 mb-4">
-                        {chiefEditorPosts[0].description}
-                      </p>
-                    )}
-                    <Link
-                      to={`/posts/categories/${chiefEditorPosts[0].categorySlug}/articles/${chiefEditorPosts[0].slug}`}
-                      className="text-sm font-semibold text-blue-600 hover:underline"
-                    >
-                      استمع الآن →
-                    </Link>
-                  </div>
-                )}
-              </div>
-            </div>
-          </aside>
-        </div>
-      </div>
+      <Layout1 
+        sliderPosts={sliderPosts}
+        urgentPosts={urgentPosts}
+        chiefEditor={chiefEditor}
+        chiefEditorPosts={chiefEditorPosts}
+      />
 
       {categoryPosts.length > 0 && categoryPosts[0] && (
         <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
