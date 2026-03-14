@@ -16,7 +16,7 @@ export default function Layout5({ categoryData }: Layout5Props) {
   const { category, posts } = categoryData;
 
   return (
-    <section className="mb-8 mt-6 md:mt-10">
+    <div>
       <div className="space-y-6">
         {/* Top - single featured article */}
         {posts[0] && (
@@ -73,6 +73,6 @@ export default function Layout5({ categoryData }: Layout5Props) {
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

@@ -1,0 +1,109 @@
+import { Link } from "react-router";
+import type { Post } from "../services/postsService";
+
+interface CategoryWithPosts {
+  category: {
+    name: string;
+  };
+  posts: Post[];
+}
+
+interface Layout8Props {
+  categoryData: CategoryWithPosts;
+}
+
+export default function Layout8({ categoryData }: Layout8Props) {
+  const { posts } = categoryData;
+
+  // Handle empty or undefined posts
+  const safePosts = posts || [];
+
+  // Empty state
+  if (safePosts.length === 0) {
+    return null;
+  }
+
+  // Get first post for left column (image only)
+  const leftPost = safePosts[0];
+  
+  // Get second post for right column (text only)
+  const rightPost = safePosts[1];
+  
+  // Get posts 3-6 for second row
+  const secondRowPosts = safePosts.slice(2, 6);
+
+  return (
+    <div className="w-full">
+      {/* Top row - two columns: left (image only), right (text only) */}
+      <div className="flex justify-center mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl w-full px-4">
+          {/* Left column - Image only */}
+          {leftPost && leftPost.image && (
+            <Link
+              to={`/posts/categories/${leftPost.categorySlug}/articles/${leftPost.slug}`}
+              className="block group"
+            >
+              <article className="semafor-card overflow-hidden h-full px-6 pb-6 mt-auto">
+                <div className="w-full h-full aspect-[3/2] overflow-hidden">
+                  <img
+                    src={leftPost.image}
+                    alt={leftPost.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              </article>
+            </Link>
+          )}
+
+          {/* Right column - Text only with background */}
+          {rightPost && (
+            <Link
+              to={`/posts/categories/${rightPost.categorySlug}/articles/${rightPost.slug}`}
+              className="block group"
+            >
+              <article className="semafor-card overflow-hidden flex flex-col h-full hover:bg-[#b8d4e0] transition-colors duration-300">
+                <div className="p-6 flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
+                      {rightPost.title}
+                    </h3>
+                    {rightPost.description && (
+                      <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
+                        {rightPost.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </article>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom row - four smaller articles */}
+      {secondRowPosts.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border-t border-dashed border-black/10 pt-6">
+          {secondRowPosts.map((post, index) => (
+            <Link
+              key={post.id}
+              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              className="block group h-full"
+            >
+              <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+                <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
+                  {post.title}
+                </h3>
+                {post.description && (
+                  <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
+                    {post.description}
+                  </p>
+                )}
+              </article>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

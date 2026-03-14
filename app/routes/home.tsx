@@ -11,11 +11,13 @@ import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import Layout1 from "~/layouts/Layout1";
+import Layout2 from "~/layouts/Layout2";
 import Layout4 from "~/layouts/Layout4";
 import Layout5 from "~/layouts/Layout5";
-import Layout7 from "~/layouts/Layout7";
-import Layout2 from "~/layouts/Layout2";
 import Layout6 from "~/layouts/Layout6";
+import Layout7 from "~/layouts/Layout7";
+import Layout8 from "~/layouts/Layout8";
+import Layout11 from "~/layouts/Layout11";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -135,10 +137,10 @@ export default function Home() {
     async function fetchCategoryPosts() {
       setIsLoadingCategories(true);
 
-      // Sort and limit categories
+      // Sort and limit categories to match layout order (10 layout slots)
       const limitedCategories = categories
         .sort((a: Category, b: Category) => a.order - b.order)
-        .slice(0, 6);
+        .slice(0, 10);
 
       const results = [];
       for (const category of limitedCategories) {
@@ -208,6 +210,34 @@ export default function Home() {
     );
   }
 
+  // Layout order for category sections: 2, 4, 5, 6, 7, 8, 6, 7, 11, 7(with ad)
+  const layoutOrder = [2, 4, 5, 6, 7, 8, 6, 7, 11, 7] as const;
+
+  function renderCategoryLayout(
+    layoutNumber: number,
+    data: { category: Category; posts: Post[] },
+    isLast: boolean
+  ) {
+    switch (layoutNumber) {
+      case 2:
+        return <Layout2 posts={data.posts} />;
+      case 4:
+        return <Layout4 categoryData={data} />;
+      case 5:
+        return <Layout5 categoryData={data} />;
+      case 6:
+        return <Layout6 posts={data.posts} />;
+      case 7:
+        return <Layout7 categoryData={data} showAdvertisement={isLast} />;
+      case 8:
+        return <Layout8 categoryData={data} />;
+      case 11:
+        return <Layout11 posts={data.posts} />;
+      default:
+        return null;
+    }
+  }
+
   return (
     <main className="semafor-container py-4 md:py-8">
       <Layout1
@@ -217,274 +247,25 @@ export default function Home() {
         chiefEditorPosts={chiefEditorPosts}
       />
 
-      {categoryPosts.length > 0 && categoryPosts[0] && (
-        <Layout4 categoryData={categoryPosts[0]} />
-      )}
-      
-      {/* Layout2 - Second layout section */}
-      {categoryPosts.length > 0 && categoryPosts[0] && categoryPosts[0].posts.length >= 7 && (
-        <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
-          <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
-          <Layout2 posts={categoryPosts[0].posts} />
-        </section>
-      )}
+      {categoryPosts.map((data, idx) => {
+        const layoutNumber = layoutOrder[idx % layoutOrder.length];
+        const isLast = idx === categoryPosts.length - 1;
+        const isLastInSequence = idx === layoutOrder.length - 1;
 
-      {categoryPosts.length > 0 && categoryPosts[0] && categoryPosts[0].posts.length < 7 && (
-        <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
-          <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
-
-          {/* Top section: 3 columns layout */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 mb-6">
-            {/* Left column - smaller articles */}
-            <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15 pr-2 md:pr-4">
-              {categoryPosts[0].posts.slice(0, 3).map((post, index) => (
-                <Link
-                  key={post.id}
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className="block group"
-                >
-                  <article className={`semafor-card overflow-hidden pb-6 ${index < 2 ? 'border-b border-dashed border-black/10' : ''}`}>
-                    <div className="p-3">
-                      <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-xs text-gray-700 line-clamp-2">
-                          {post.description.split(" ").slice(0, 15).join(" ")}
-                        </p>
-                      )}
-                    </div>
-                  </article>
-                </Link>
-              ))}
-            </div>
-
-            {/* Center - main featured article with image */}
-            {categoryPosts[0].posts[3] && (
-              <div className="md:col-span-6 md:border-r md:border-l md:border-dashed md:border-black/10 px-4">
-                <Link
-                  to={`/posts/categories/${categoryPosts[0].posts[3].categorySlug}/articles/${categoryPosts[0].posts[3].slug}`}
-                  className="block group"
-                >
-                  <article className="semafor-card overflow-hidden">
-                    <div className="p-4 mb-4">
-                      <h3 className="text-xl md:text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors text-center">
-                        {categoryPosts[0].posts[3].title}
-                      </h3>
-                      {categoryPosts[0].posts[3].description && (
-                        <p className="text-sm md:text-base text-gray-700 line-clamp-2 text-center">
-                          {categoryPosts[0].posts[3].description}
-                        </p>
-                      )}
-                    </div>
-                    {categoryPosts[0].posts[3].image && (
-                      <div className="w-full overflow-hidden">
-                        <img
-                          src={categoryPosts[0].posts[3].image}
-                          alt={categoryPosts[0].posts[3].title}
-                          className="w-full group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                  </article>
-                </Link>
-              </div>
-            )}
-
-            {/* Right column - smaller articles */}
-            <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15 pl-2 md:pl-4">
-              {categoryPosts[0].posts.slice(4, 7).map((post, index) => (
-                <Link
-                  key={post.id}
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className="block group"
-                >
-                  <article className={`semafor-card overflow-hidden pb-6 ${index < 2 ? 'border-b border-dashed border-black/10' : ''}`}>
-                    <div className="p-3">
-                      <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-xs text-gray-700 line-clamp-2">
-                          {post.description.split(" ").slice(0, 15).join(" ")}
-                        </p>
-                      )}
-                    </div>
-                  </article>
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          {/* Bottom section: 4 articles in a row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border-t border-dashed border-black/10 pt-6">
-            {categoryPosts[0].posts.slice(7, 11).map((post, index) => (
-              <Link
-                key={post.id}
-                to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                className="block group"
-              >
-                <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
-                    {post.title}
-                  </h3>
-                  {post.description && (
-                    <p className="text-xs text-gray-700 line-clamp-2">
-                      {post.description.split(" ").slice(0, 15).join(" ")}
-                    </p>
-                  )}
-                </article>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* will trigger later */}
-      {/* {writersPosts.length > 0 && (
-        <section className="mb-12 pb-12 border-b border-dashed border-black/10">
-          <h2 className="semafor-section-title">آراء الكتاب</h2>
-          <div className="space-y-6">
-            {writersPosts.slice(0, 3).map((post, index) => (
-              <div key={post.id} className={index < writersPosts.slice(0, 3).length - 1 ? 'pb-6 border-b border-dashed border-black/10' : ''}>
-                <Link
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className="block group"
-                >
-                  <article className="semafor-card p-5">
-                    <div className="flex items-start gap-4">
-                      {post.authorImage && (
-                        <img
-                          src={post.authorImage}
-                          alt={post.authorName || ''}
-                          className="w-16 h-16 rounded-full object-cover"
-                          loading="lazy"
-                        />
-                      )}
-                      <div className="flex-1">
-                        {post.authorName && (
-                          <p className="text-sm font-semibold text-gray-600 mb-1">
-                            {post.authorName}
-                          </p>
-                        )}
-                        <h3 className="text-lg font-bold mb-2 group-hover:text-blue-700 transition-colors">
-                          {post.title}
-                        </h3>
-                        {post.description && (
-                          <p className="text-sm text-gray-700 line-clamp-2">
-                            {post.description.split(" ").slice(0, 20).join(" ")}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </section>
-      )} */}
-
-      {categoryPosts.slice(1).map(({ category, posts }, sectionIndex) => (
-        <section key={category.id} className={`mb-8 md:mb-12 ${sectionIndex < categoryPosts.slice(1).length - 1 ? 'pb-8 md:pb-12 border-b-2 border-black' : ''}`}>
-          <Link to={`/category/${category.slug}`}>
-            <h2 className="semafor-section-title hover:text-blue-700 transition-colors">{category.name}</h2>
-          </Link>
-
-          {/* First category - special layout like the image */}
-          {sectionIndex === 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Left side - smaller articles */}
-              <div className="space-y-4">
-                {posts.slice(0, 4).map((post, index) => (
-                  <Link
-                    key={post.id}
-                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                    className="block group"
-                  >
-                    <article className="semafor-card p-4 border-b border-dashed border-black/10 pb-4">
-                      <h3 className="text-base font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-sm text-gray-600 line-clamp-2">
-                          {post.description.split(" ").slice(0, 20).join(" ")}
-                        </p>
-                      )}
-                    </article>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Right side - featured article with image */}
-              {posts[3] && (
-                <Link
-                  to={`/posts/categories/${posts[3].categorySlug}/articles/${posts[3].slug}`}
-                  className="block group"
-                >
-                  <article className="semafor-card overflow-hidden">
-                    {posts[3].image && (
-                      <div className="h-100 overflow-hidden">
-                        <img
-                          src={posts[3].image}
-                          alt={posts[3].title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    <div className="p-4">
-                      <h3 className="text-xl font-bold mb-3 text-blue-800 group-hover:text-blue-700 transition-colors">
-                        {posts[3].title}
-                      </h3>
-                      {posts[3].description && (
-                        <p className="text-sm text-gray-700 line-clamp-3">
-                          {posts[3].description}
-                        </p>
-                      )}
-                    </div>
-                  </article>
-                </Link>
-              )}
-            </div>
-          ) : sectionIndex === 1 ? (
-            /* Second category - Layout6: 2 featured articles + 4 grid articles */
-            <Layout6 posts={posts} />
-          ) : sectionIndex === 2 ? (
-            /* Third category - Security layout: 3 articles in a row with images */
-            <Layout7 categoryData={{ category, posts }} />
-          ) : sectionIndex === 3 ? (
-            /* Fourth category - Gulf layout: one featured article + 4 below */
-            <Layout5 categoryData={{ category, posts }} />
-          ) : sectionIndex === categoryPosts.slice(1).length - 1 ? (
-            /* Last category - Security layout: 3 articles in a row with images */
-            <Layout7 categoryData={{ category, posts }} />
-          ) : (
-            /* Other categories - regular grid layout */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {posts.slice(0, 4).map((post, index) => (
-                <Link
-                  key={post.id}
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className={`block group ${index % 2 === 0 ? 'md:border-r md:border-dashed md:border-black/10 md:pl-6 bg-amber-900' : ''}`}
-                >
-                  <article className="semafor-card p-5">
-                    <h3 className="text-lg font-bold mb-2 group-hover:text-blue-700 transition-colors">
-                      {post.title}
-                    </h3>
-                    {post.description && (
-                      <p className="text-sm text-gray-700 line-clamp-3">
-                        {post.description.split(" ").slice(0, 20).join(" ")}
-                      </p>
-                    )}
-                  </article>
-                </Link>
-              ))}
-            </div>
-          )}
-        </section>
-      ))}
+        return (
+          <section
+            key={data.category.slug}
+            className={`mb-8 md:mb-12 ${isLast || isLastInSequence ? '' : 'pb-8 md:pb-12 border-b-2 border-black'} mt-6 md:mt-10`}
+          >
+            <Link to={`/category/${data.category.slug}`}>
+              <h2 className="semafor-section-title hover:text-blue-700 transition-colors">
+                {data.category.name}
+              </h2>
+            </Link>
+            {renderCategoryLayout(layoutNumber, data, isLast && layoutNumber === 7)}
+          </section>
+        );
+      })}
     </main>
   );
 }
