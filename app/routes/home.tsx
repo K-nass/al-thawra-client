@@ -12,6 +12,7 @@ import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import Layout1 from "~/layouts/Layout1";
 import Layout2 from "~/layouts/Layout2";
+import Layout6 from "~/layouts/Layout6";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -439,64 +440,8 @@ export default function Home() {
               )}
             </div>
           ) : sectionIndex === 1 ? (
-            /* Second category - 2x2 grid layout with images */
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Top row - two featured articles with images */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:col-span-2">
-                {posts.slice(0, 2).map((post, index) => (
-                  <Link
-                    key={post.id}
-                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                    className="block group"
-                  >
-                    <article className="semafor-card overflow-hidden border-b border-dashed border-black/10">
-                      <div className="p-4">
-                        <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-3 ${index === 1 ? 'text-blue-800 text-lg' : 'text-base'}`}>
-                          {post.title}
-                        </h3>
-                        {post.description && (
-                          <p className="text-sm text-gray-700 line-clamp-2 mb-3">
-                            {post.description.split(" ").slice(0, 20).join(" ")}
-                          </p>
-                        )}
-                      </div>
-                      {post.image && (
-                        <div className="h-100 overflow-hidden">
-                          <img
-                            src={post.image}
-                            alt={post.title}
-                            className="w-full h-100 object-cover group-hover:scale-105 transition-transform duration-300"
-                            loading="lazy"
-                          />
-                        </div>
-                      )}
-                    </article>
-                  </Link>
-                ))}
-              </div>
-
-              {/* Bottom row - four smaller articles */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-0 md:col-span-2 border-t border-dashed border-black/10 pt-6">
-                {posts.slice(2, 6).map((post, index) => (
-                  <Link
-                    key={post.id}
-                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                    className="block group"
-                  >
-                    <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                      <h3 className="text-sm font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-xs text-gray-700 line-clamp-2">
-                          {post.description.split(" ").slice(0, 20).join(" ")}
-                        </p>
-                      )}
-                    </article>
-                  </Link>
-                ))}
-              </div>
-            </div>
+            /* Second category - Layout6: 2 featured articles + 4 grid articles */
+            <Layout6 posts={posts} />
           ) : sectionIndex === 2 ? (
             /* Third category - 4 articles in a row with images */
             <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
