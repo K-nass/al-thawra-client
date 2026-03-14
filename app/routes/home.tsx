@@ -218,6 +218,8 @@ export default function Home() {
 
       {categoryPosts.length > 0 && categoryPosts[0] && (
         <Layout4 categoryData={categoryPosts[0]} />
+      )}
+      
       {/* Layout2 - Second layout section */}
       {categoryPosts.length > 0 && categoryPosts[0] && categoryPosts[0].posts.length >= 7 && (
         <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
@@ -505,39 +507,8 @@ export default function Home() {
               </div>
             </div>
           ) : sectionIndex === 2 ? (
-            /* Third category - 4 articles in a row with images */
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
-              {posts.slice(0, 4).map((post, index) => (
-                <Link
-                  key={post.id}
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className="block group"
-                >
-                  <article className={`p-4 semafor-card overflow-hidden ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                    <div className="p-4 mb-4">
-                      <h3 className="text-base font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2">
-                        {post.title}
-                      </h3>
-                      {post.description && (
-                        <p className="text-sm text-gray-700 line-clamp-3">
-                          {post.description.split(" ").slice(0, 20).join(" ")}
-                        </p>
-                      )}
-                    </div>
-                    {post.image && (
-                      <div className="h-100 overflow-hidden">
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                  </article>
-                </Link>
-              ))}
-            </div>
+            /* Third category - Security layout: 3 articles in a row with images */
+            <Layout7 categoryData={{ category, posts }} />
           ) : sectionIndex === 3 ? (
             /* Fourth category - Gulf layout: one featured article + 4 below */
             <Layout5 categoryData={{ category, posts }} />
