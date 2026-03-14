@@ -24,7 +24,7 @@ export default function Layout7({ categoryData }: Layout7Props) {
             to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
             className="block group"
           >
-            <article className={`semafor-card overflow-hidden flex flex-col h-full pl-4 pr-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+            <article className={`semafor-card overflow-hidden flex flex-col h-full pl-4 pr-4 ${index < 2 ? 'border-l border-dashed border-black/10' : ''}`}>
               <div className="p-4 flex-1">
                 <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2 ${index === 2 ? 'text-blue-800 text-base' : 'text-base'}`}>
                   {post.title}
