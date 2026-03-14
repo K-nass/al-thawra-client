@@ -145,16 +145,14 @@ body {
   font-family: Georgia, serif;
 }
 
-.semafor-card {
-}
-
 .semafor-section-title {
-  font-size: 14px;
+  font-size: 25px;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-weight: 600;
   padding-bottom: 8px;
   margin-bottom: 16px;
+  cursor: pointer;
 }
 
 /* Horizontal dashed border separator */
