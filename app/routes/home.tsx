@@ -11,6 +11,7 @@ import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import Layout1 from "~/layouts/Layout1";
+import Layout2 from "~/layouts/Layout2";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -212,7 +213,15 @@ export default function Home() {
         chiefEditorPosts={chiefEditorPosts}
       />
 
-      {categoryPosts.length > 0 && categoryPosts[0] && (
+      {/* Layout2 - Second layout section */}
+      {categoryPosts.length > 0 && categoryPosts[0] && categoryPosts[0].posts.length >= 7 && (
+        <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
+          <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
+          <Layout2 posts={categoryPosts[0].posts} />
+        </section>
+      )}
+
+      {categoryPosts.length > 0 && categoryPosts[0] && categoryPosts[0].posts.length < 7 && (
         <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
           <h2 className="semafor-section-title">{categoryPosts[0].category.name}</h2>
 
