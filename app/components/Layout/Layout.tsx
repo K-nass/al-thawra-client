@@ -19,7 +19,7 @@ export function Layout({ children, categories = [], footerPages = [], logoSettin
       <main>
         {children}
       </main>
-      <Footer pages={footerPages} />
+      <Footer pages={footerPages} categories={categories} />
     </div>
   );
 }
