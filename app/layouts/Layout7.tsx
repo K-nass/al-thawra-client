@@ -10,13 +10,15 @@ interface CategoryWithPosts {
 
 interface Layout7Props {
   categoryData: CategoryWithPosts;
+  showAdvertisement?: boolean;
+  advertisementImage?: string;
 }
 
-export default function Layout7({ categoryData }: Layout7Props) {
+export default function Layout7({ categoryData, showAdvertisement = false, advertisementImage }: Layout7Props) {
   const { posts } = categoryData;
 
   return (
-    <section className="mb-8 mt-6 md:mt-10">
+    <div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
         {posts.slice(0, 3).map((post, index) => (
           <Link
@@ -49,6 +51,24 @@ export default function Layout7({ categoryData }: Layout7Props) {
           </Link>
         ))}
       </div>
-    </section>
+
+      {/* Advertisement Banner at the end */}
+      {showAdvertisement && (
+        <div className="w-full mt-6 border border-dashed border-black/10 overflow-hidden">
+          {advertisementImage ? (
+            <img
+              src={advertisementImage}
+              alt="Advertisement"
+              className="w-full h-auto object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full bg-[#d0e8f2] py-12 flex items-center justify-center">
+              <span className="text-gray-500 text-sm font-semibold tracking-wider">AD</span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

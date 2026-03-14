@@ -16,9 +16,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
   const { category, posts } = categoryData;
 
   return (
-    <section className="mb-8 md:mb-12 pb-8 md:pb-12 border-b-2 border-black mt-6 md:mt-10">
-      <h2 className="semafor-section-title">{category.name}</h2>
-
+    <div>
       {/* Top section: 3 columns layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 mb-6">
         {/* Left column - smaller articles */}
@@ -124,6 +122,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
           </Link>
         ))}
       </div>
-    </section>
+    </div>
   );
 }
+
