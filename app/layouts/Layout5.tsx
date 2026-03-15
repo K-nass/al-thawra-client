@@ -15,64 +15,86 @@ interface Layout5Props {
 export default function Layout5({ categoryData }: Layout5Props) {
   const { category, posts } = categoryData;
 
-  return (
-    <div>
-      <div className="space-y-6">
-        {/* Top - single featured article */}
-        {posts[0] && (
-          <Link
-            to={`/posts/categories/${posts[0].categorySlug}/articles/${posts[0].slug}`}
-            className="block group"
-          >
-            <article className="semafor-card overflow-hidden border-b border-dashed border-black/10 pb-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {posts[0].image && (
-                  <div className="h-100 overflow-hidden">
-                    <img
-                      src={posts[0].image}
-                      alt={posts[0].title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                    />
-                  </div>
-                )}
-                <div className="flex flex-col items-center justify-center">
-                  <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors text-center md:w-100">
-                    {posts[0].title}
-                  </h3>
-                  {posts[0].description && (
-                    <p className="text-base text-gray-700 line-clamp-3 text-center">
-                      {posts[0].description}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </article>
-          </Link>
-        )}
+  // Handle empty or undefined posts
+  const safePosts = posts || [];
 
-        {/* Bottom - 4 articles in a row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-          {posts.slice(1, 5).map((post, index) => (
+  // Empty state
+  if (safePosts.length === 0) {
+    return null;
+  }
+
+  // Get first post for top featured article
+  const featuredPost = safePosts[0];
+  
+  // Get posts 2-5 for bottom row
+  const bottomRowPosts = safePosts.slice(1, 5);
+
+  return (
+    <div className="w-full">
+      {/* Top - single featured article */}
+      {featuredPost && (
+        <div className="flex justify-center mb-6">
+          <div className="max-w-5xl w-full px-4">
+            <Link
+              to={`/posts/categories/${featuredPost.categorySlug}/articles/${featuredPost.slug}`}
+              className="block group"
+            >
+              <article className="semafor-card overflow-hidden">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {featuredPost.image && (
+                    <div className="w-full px-6 pb-6 mt-auto flex items-center">
+                      <div className="w-full aspect-[3/2] overflow-hidden">
+                        <img
+                          src={featuredPost.image}
+                          alt={featuredPost.title}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-6 flex items-center justify-center hover:bg-[#b8d4e0] transition-colors duration-300">
+                    <div className="text-center">
+                      <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
+                        {featuredPost.title}
+                      </h3>
+                      {featuredPost.description && (
+                        <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
+                          {featuredPost.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Bottom - 4 articles in a row */}
+      {bottomRowPosts.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border-t border-dashed border-black/10 pt-6">
+          {bottomRowPosts.map((post, index) => (
             <Link
               key={post.id}
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-              className="block group"
+              className="block group h-full"
             >
-              <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                <h3 className="text-sm font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">
+              <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+                <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
                   {post.title}
                 </h3>
                 {post.description && (
-                  <p className="text-xs text-gray-700 line-clamp-2">
-                    {post.description.split(" ").slice(0, 20).join(" ")}
+                  <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
+                    {post.description}
                   </p>
                 )}
               </article>
             </Link>
           ))}
         </div>
-      </div>
+      )}
     </div>
   );
 }
