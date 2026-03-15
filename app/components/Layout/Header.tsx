@@ -134,7 +134,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                         to="/"
                         className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
                       >
-                        عدد اليوم
+                        الرئيسية
                       </Link>
                     </li>
 
