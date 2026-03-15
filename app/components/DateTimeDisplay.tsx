@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Globe } from "lucide-react";
 
 export function DateTimeDisplay() {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -37,11 +39,17 @@ export function DateTimeDisplay() {
         <span className="text-xs">{formatTime(currentTime)}</span>
         <span className="text-xs tracking-tight">{formatDate(currentTime)}</span>
       </div>
-      <img 
-        src="spinning-earth2.gif" 
-        alt="Spinning Earth"
-        className="w-4 h-4 shrink"
-      />
+      {!imageError ? (
+        <img 
+          src="/spinning-earth2.gif" 
+          alt="Spinning Earth"
+          className="w-4 h-4 shrink-0"
+          onError={() => setImageError(true)}
+          loading="eager"
+        />
+      ) : (
+        <Globe className="w-4 h-4 shrink-0 text-blue-600 animate-spin" style={{ animationDuration: '3s' }} />
+      )}
     </div>
   );
 }

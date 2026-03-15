@@ -1,5 +1,3 @@
-import { motion } from "framer-motion";
-
 interface PDFLoadingSpinnerProps {
   message?: string;
   size?: "sm" | "md" | "lg";
@@ -22,92 +20,46 @@ export function PDFLoadingSpinner({
   };
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center gap-4">
       {/* Animated container with gradient background */}
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      >
+      <div className={`relative ${containerSizeClasses[size]} flex items-center justify-center`}>
         {/* Outer rotating gradient ring */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
+        <div className={`absolute inset-0 ${sizeClasses[size]} rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-spin`} style={{ animationDuration: '3s' }} />
         
         {/* Inner rotating gradient ring */}
-        <motion.div
-          animate={{ rotate: -360 }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        />
+        <div className={`absolute inset-2 ${sizeClasses[size]} rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500`} style={{ animation: 'spin 2s linear infinite reverse' }} />
 
         {/* Logo with spin animation */}
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 2.5,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-        >
+        <div className={`relative z-10 ${sizeClasses[size]} flex items-center justify-center animate-spin`} style={{ animationDuration: '2.5s' }}>
           <img 
             src="/formLogo.png" 
             alt="Loading"
             loading="lazy"
+            className="w-full h-full object-contain"
           />
-        </motion.div>
+        </div>
 
         {/* Pulsing glow effect */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      </motion.div>
+        <div className="absolute inset-0 rounded-full bg-blue-400/30 blur-xl animate-pulse" />
+      </div>
 
-      {/* Loading message with fade animation */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
-      >
-        <p>
+      {/* Loading message */}
+      <div className="text-center">
+        <p className="text-gray-700 dark:text-gray-300 font-medium mb-2">
           {message}
         </p>
         
         {/* Animated dots */}
-        <div>
+        <div className="flex gap-1 justify-center">
           {[0, 1, 2].map((i) => (
-            <motion.div
+            <div
               key={i}
-              animate={{
-                scale: [1, 1.5, 1],
-                opacity: [0.3, 1, 0.3]
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                delay: i * 0.2,
-                ease: "easeInOut"
-              }}
+              className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"
+              style={{ animationDelay: `${i * 0.2}s` }}
             />
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Download, ZoomIn, ZoomOut, Maximize, Minimize, ChevronLeft, ChevronRight, X, Home } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { PDFLoadingSpinner } from "~/components/PDFLoadingSpinner";
 import { usePanZoom } from "~/hooks/usePanZoom";
@@ -227,15 +226,12 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
               >
                 <ChevronRight className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               </button>
-              <motion.span
+              <span
                 key={currentPage}
-                initial={{ y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.2 }}
                 className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px] text-center font-sans-en"
               >
                 {currentPage} / {numPages}
-              </motion.span>
+              </span>
               <button
                 onClick={nextPage}
                 disabled={currentPage >= numPages || isLoading}
@@ -256,15 +252,12 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
               >
                 <ZoomOut className="w-5 h-5 text-gray-700 dark:text-gray-300" />
               </button>
-              <motion.span
+              <span
                 key={transform.scale}
-                initial={{ scale: 1.2, opacity: 0.5 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.2 }}
                 className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[60px] text-center"
               >
                 {Math.round(transform.scale * 100)}%
-              </motion.span>
+              </span>
               <button
                 onClick={zoomIn}
                 disabled={transform.scale >= 3.0}
@@ -311,37 +304,25 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
           }}
           aria-busy={isLoading}
         >
-          <motion.div
+          <div
             className="pdf-content"
-            animate={{
-              x: transform.translateX,
-              y: transform.translateY,
-            }}
-            transition={{
-              type: isDragging ? 'tween' : 'spring',
-              stiffness: isDragging ? 0 : 300,
-              damping: isDragging ? 0 : 30,
-              duration: isDragging ? 0 : 0.3,
+            style={{
+              transform: `translate(${transform.translateX}px, ${transform.translateY}px)`,
+              transition: isDragging ? 'none' : 'transform 0.3s ease-out',
             }}
           >
             <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-lg overflow-hidden relative min-h-[calc(100vh-8rem)] flex items-center justify-center">
               {/* Loading Overlay - Stable, no layout shift */}
-              <AnimatePresence>
-                {isNavigating && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-20 flex items-center justify-center pointer-events-none"
-                    role="status"
-                    aria-live="polite"
-                  >
-                    <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="md" />
-                    <span className="sr-only">Loading page {currentPage}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              {isNavigating && (
+                <div
+                  className="absolute inset-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-20 flex items-center justify-center pointer-events-none"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <PDFLoadingSpinner message="جاري تحميل الصفحة..." size="md" />
+                  <span className="sr-only">Loading page {currentPage}</span>
+                </div>
+              )}
 
               <div className="min-h-[calc(100vh-8rem)] w-full flex items-center justify-center">
                 <Document
@@ -381,7 +362,7 @@ export function MagazineViewer({ pdfUrl, issueNumber, date }: MagazineViewerProp
                 </Document>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 

@@ -7,7 +7,6 @@ import { EmptyState } from "../components/EmptyState";
 import { postsService } from "../services/postsService";
 import { categoriesService } from "../services/categoriesService";
 import { cache, CacheTTL } from "../lib/cache";
-import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 
 // Loader function for server-side data fetching
@@ -143,12 +142,7 @@ export default function CategoryPage() {
   return (
     <div className="min-h-screen">
       {/* Category Header - Centered, No Background */}
-      <motion.div 
-        key={selectedSubcategory || 'all'} 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
+      <div key={selectedSubcategory || 'all'}>
         <div className="max-w-7xl mx-auto px-4 py-6">
           {/* Category Title - Centered */}
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 text-center mb-6">
@@ -212,13 +206,7 @@ export default function CategoryPage() {
                     
                     {/* Dropdown Menu */}
                     {isDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute left-0 mt-2 w-48 bg-[#d0e8f2] border border-black/20 py-2 z-10 shadow-lg"
-                      >
+                      <div className="absolute left-0 mt-2 w-48 bg-[#d0e8f2] border border-black/20 py-2 z-10 shadow-lg">
                         {category.subCategories.slice(5).map((subcategory) => (
                           <button
                             key={subcategory.slug}
@@ -232,7 +220,7 @@ export default function CategoryPage() {
                             {subcategory.name}
                           </button>
                         ))}
-                      </motion.div>
+                      </div>
                     )}
                   </div>
                 </>
@@ -245,7 +233,7 @@ export default function CategoryPage() {
             <p className="text-gray-700 text-center max-w-3xl mx-auto">{category.description}</p>
           )}
         </div>
-      </motion.div>
+      </div>
 
       {/* Category Posts - Newspaper Grid Layout */}
       {posts.length > 0 ? (

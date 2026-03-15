@@ -31,7 +31,7 @@ export default function Layout5({ categoryData }: Layout5Props) {
                     <img
                       src={posts[0].image}
                       alt={posts[0].title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover"
                       loading="lazy"
                     />
                   </div>
