@@ -28,8 +28,10 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isSticky, setIsSticky] = useState(false);
   const location = useLocation();
   const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const navigationRef = useRef<HTMLElement>(null);
   const { toggleSidebar } = useSidebar();
 
   useEffect(() => {
@@ -54,6 +56,41 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     }
   }, [isProfileMenuOpen]);
 
+  // Scroll detection for sticky navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      // Only apply sticky behavior on desktop viewports (768px and above)
+      if (window.innerWidth >= 768 && navigationRef.current) {
+        const threshold = navigationRef.current.offsetTop;
+        setIsSticky(window.scrollY > threshold);
+      } else {
+        // Ensure sticky is disabled on mobile viewports
+        setIsSticky(false);
+      }
+    };
+
+    // Throttle scroll events using requestAnimationFrame for performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll);
+    // Also listen for resize events to handle viewport changes
+    window.addEventListener('resize', throttledScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', throttledScroll);
+      window.removeEventListener('resize', throttledScroll);
+    };
+  }, []);
+
   // Filter and sort menu categories
   const allMenuCategories = categories
     .filter(cat => cat.showOnMenu && cat.isActive)
@@ -65,6 +102,66 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       lang="ar"
       className="w-full pb-4"
     >
+      {/* Sticky Navigation Bar - Desktop Only */}
+      {isSticky && (
+        <div className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-12 py-2 border-b border-dashed border-black/10">
+              {/* Left: Menu Icon and Logo */}
+              <div className="flex items-center gap-3 shrink-0">
+                <button
+                  onClick={toggleSidebar}
+                  aria-label="فتح القائمة"
+                  className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <Link to="/">
+                  <img
+                    src="/formLogo.png"
+                    alt="الثورة لوجو"
+                    className="h-8"
+                  />
+                </Link>
+              </div>
+
+              {/* Center: Categories Navigation */}
+              <div className="flex-1 overflow-x-auto">
+                <nav>
+                  <ul className="flex justify-center space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800 whitespace-nowrap">
+                    <li>
+                      <Link
+                        to="/"
+                        className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
+                      >
+                        عدد اليوم
+                      </Link>
+                    </li>
+
+                    {/* Show first 10 categories */}
+                    {allMenuCategories.slice(0, 8).map((category) => (
+                      <li key={category.id}>
+                        <Link
+                          to={`/category/${category.slug}`}
+                          className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
+                        >
+                          {category.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+
+              {/* Right: DateTimeDisplay */}
+              <div className="shrink-0">
+                <DateTimeDisplay />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar */}
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
@@ -105,7 +202,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 </button>
 
                 {isProfileMenuOpen && (
-                  <div className="absolute left-0 mt-2 w-48 bg-[#d0e8f2] border border-dashed border-black/10 rounded-sm shadow-lg z-50">
+                  <div className="absolute left-0 mt-2 w-48 bg-[#d0e8f2] border border-dashed border-black/10 rounded-sm shadow-lg">
                     <Link
                       to="/profile"
                       onClick={() => setIsProfileMenuOpen(false)}
@@ -253,14 +350,14 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Bottom Navigation - Categories (Desktop Only) */}
-        <nav className="hidden md:block border-t border-b border-dashed border-black/10 py-2 overflow-x-auto overflow-y-visible">
+        <nav ref={navigationRef} className="hidden md:block border-t border-b border-dashed border-black/10 py-2 overflow-x-auto overflow-y-visible">
           <ul className="flex justify-center min-w-max md:min-w-0 space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800">
             <li>
               <Link
                 to="/"
                 className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
               >
-                عدد اليوم
+                الرئيسية
               </Link>
             </li>
 
@@ -277,6 +374,13 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             ))}
           </ul>
         </nav>
+        
+        {/* Placeholder to prevent layout shift when sticky activates */}
+        {isSticky && (
+          <div className="hidden md:block border-t border-b border-dashed border-black/10 py-2" aria-hidden="true">
+            <div className="h-5"></div>
+          </div>
+        )}
       </div>
 
       {/* Search Bar */}
