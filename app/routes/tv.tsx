@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Play, Share2, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { Link, useLoaderData } from "react-router";
-import { motion } from "framer-motion";
 import type { Route } from "./+types/tv";
 import { videoService, type Video } from "../services/videoService";
 import { categoriesService, type Category } from "../services/categoriesService";
@@ -138,12 +137,7 @@ export default function TVPage() {
       <ScrollAnimation animation="scale" duration={0.6} once={false}>
       <div>
         {/* Details - Left Side (1/3 width) */}
-        <motion.div
-          key={`details-${featuredVideo.id}`}
-          initial={{ opacity: 0.3, y: 4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.0, ease: "easeOut" }}
-        >
+        <div key={`details-${featuredVideo.id}`}>
           <div>
             {/* Category Badge */}
             <span>
@@ -211,18 +205,15 @@ export default function TVPage() {
               <ChevronLeft />
             </button>
           </div>
-        </motion.div>
+        </div>
 
         {/* Video Player - Right Side (2/3 width) */}
         <div>
           <div>
-            <motion.img
+            <img
               key={featuredVideo.id}
               src={featuredVideo.image || ''}
               alt={featuredVideo.imageDescription || featuredVideo.title}
-              initial={{ opacity: 0.3, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.0, ease: "easeOut" }}
             />
             {/* Play Button & Description Overlay */}
             <Link

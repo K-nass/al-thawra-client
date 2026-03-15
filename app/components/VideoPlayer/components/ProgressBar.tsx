@@ -140,8 +140,7 @@ function ProgressBarComponent({
                        opacity-0 group-hover/progress:opacity-100 
                        scale-0 group-hover/progress:scale-100
                        transition-all duration-200 ease-out
-                       ring-2 ring-[var(--color-primary)]/30 ring-offset-1 ring-offset-black/20
-                       hover:scale-110"
+                       ring-2 ring-[var(--color-primary)]/30 ring-offset-1 ring-offset-black/20"
             style={{ left: `${progressPercent}%` }}
           >
             {/* Inner glow */}
