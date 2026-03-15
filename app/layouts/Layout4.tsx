@@ -66,7 +66,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
                     <img
                       src={posts[3].image}
                       alt={posts[3].title}
-                      className="w-full group-hover:scale-105 transition-transform duration-300"
+                      className="w-full"
                       loading="lazy"
                     />
                   </div>

@@ -3,7 +3,6 @@ import { Link, Form, useActionData, useNavigation, redirect, useNavigate } from 
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import type { Route } from "./+types/login";
 import authService from "~/services/authService";
-import { motion } from "framer-motion";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "~/components/ScrollAnimation";
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -129,12 +128,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[#d0e8f2] flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md"
-      >
+      <div className="w-full max-w-md">
         <div className="border-2 border-dashed border-[#a8c5d4] rounded-lg p-8 shadow-sm">
           {/* Back to Home Link */}
           <Link
@@ -271,7 +265,7 @@ export default function LoginPage() {
             </div>
           </ScrollAnimation>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
