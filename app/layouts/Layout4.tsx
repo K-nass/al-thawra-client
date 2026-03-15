@@ -20,14 +20,14 @@ export default function Layout4({ categoryData }: Layout4Props) {
       {/* Top section: 3 columns layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 mb-6">
         {/* Left column - smaller articles */}
-        <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15 pr-2 md:pr-4">
+        <div className="md:col-span-3 space-y-6 md:space-y-10 pr-2 md:pr-4 flex flex-col justify-between">
           {posts.slice(0, 3).map((post, index) => (
             <Link
               key={post.id}
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
               className="block group"
             >
-              <article className={`semafor-card overflow-hidden pb-6 ${index < 2 ? 'border-b border-dashed border-black/10' : ''}`}>
+              <article className={`semafor-card overflow-hidden ${index < 2 ? 'pb-6 border-b border-dashed border-black/10' : ''}`}>
                 <div className="p-3">
                   <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
                     {post.title}
@@ -45,12 +45,12 @@ export default function Layout4({ categoryData }: Layout4Props) {
 
         {/* Center - main featured article with image */}
         {posts[3] && (
-          <div className="md:col-span-6 md:border-dashed md:border-black/10 px-4 mt-8 md:mt-15">
+          <div className="md:col-span-6 md:border-dashed md:border-black/10 px-4 flex justify-center">
             <Link
               to={`/posts/categories/${posts[3].categorySlug}/articles/${posts[3].slug}`}
-              className="block group"
+              className="block group w-full max-w-lg"
             >
-              <article className="semafor-card overflow-hidden">
+              <article className="semafor-card overflow-hidden h-full flex flex-col">
                 <div className="p-4 mb-4">
                   <h3 className="text-xl md:text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors text-center">
                     {posts[3].title}
@@ -62,13 +62,15 @@ export default function Layout4({ categoryData }: Layout4Props) {
                   )}
                 </div>
                 {posts[3].image && (
-                  <div className="w-full overflow-hidden">
-                    <img
-                      src={posts[3].image}
-                      alt={posts[3].title}
-                      className="w-full"
-                      loading="lazy"
-                    />
+                  <div className="w-full px-6 pb-6 flex justify-center mt-auto">
+                    <div className="w-full aspect-[4/3] overflow-hidden">
+                      <img
+                        src={posts[3].image}
+                        alt={posts[3].title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
                   </div>
                 )}
               </article>
@@ -77,14 +79,14 @@ export default function Layout4({ categoryData }: Layout4Props) {
         )}
 
         {/* Right column - smaller articles */}
-        <div className="md:col-span-3 space-y-6 md:space-y-10 mt-8 md:mt-15 pl-2 md:pl-4">
+        <div className="md:col-span-3 space-y-6 md:space-y-10 pl-2 md:pl-4 flex flex-col justify-between">
           {posts.slice(4, 7).map((post, index) => (
             <Link
               key={post.id}
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
               className="block group"
             >
-              <article className={`semafor-card overflow-hidden pb-6 ${index < 2 ? 'border-b border-dashed border-black/10' : ''}`}>
+              <article className={`semafor-card overflow-hidden ${index < 2 ? 'pb-6 border-b border-dashed border-black/10' : ''}`}>
                 <div className="p-3">
                   <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
                     {post.title}

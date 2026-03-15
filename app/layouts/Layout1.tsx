@@ -16,7 +16,7 @@ interface Layout1Props {
 
 export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEditorPosts }: Layout1Props) {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[600px] lg:min-h-[700px]">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}
       <aside className="lg:col-span-3 order-2 lg:order-1 h-full">
         <div className="h-full flex flex-col">
@@ -37,7 +37,7 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
               <img 
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%23cccccc' width='400' height='400'/%3E%3Ctext fill='%23666666' font-family='Arial' font-size='20' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EArticle Image%3C/text%3E%3C/svg%3E" 
                 alt="مبنى الكابيتول" 
-                className="w-full aspect-square object-cover"
+                className="w-full aspect-[4/3] object-cover"
               />
             </div>
             <p className="text-xs text-gray-500">
@@ -87,32 +87,46 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
       </aside>
 
       {/* Main Content Area - Swiper */}
-      <div className="lg:col-span-6 order-1 lg:order-2 md:border-r md:border-l md:border-dashed md:border-black/10 relative group/swiper p-4">
-        <Swiper
-          modules={[Navigation, Pagination, Autoplay, EffectFade]}
-          spaceBetween={0}
-          slidesPerView={1}
-          navigation={{
-            nextEl: '.swiper-button-next-custom',
-            prevEl: '.swiper-button-prev-custom',
-          }}
-          pagination={{
-            clickable: true,
-            dynamicBullets: false,
-          }}
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }}
-          effect="fade"
-          fadeEffect={{
-            crossFade: true
-          }}
-          loop={sliderPosts.length > 1}
-          speed={800}
-          className="premium-swiper h-full"
-        >
+      <div className="lg:col-span-6 order-1 lg:order-2 md:border-r md:border-l md:border-dashed md:border-black/10 relative p-4">
+        <div className="relative">
+          <Swiper
+            modules={[Navigation, Pagination, Autoplay, EffectFade]}
+            spaceBetween={0}
+            slidesPerView={1}
+            navigation={{
+              nextEl: '.swiper-button-next-custom',
+              prevEl: '.swiper-button-prev-custom',
+            }}
+            pagination={{
+              el: '.swiper-pagination-container',
+              clickable: true,
+              dynamicBullets: false,
+              renderBullet: (index: number, className: string) => {
+                const total = sliderPosts.length;
+                // Distance from nearest edge (0 = edge, higher = more central)
+                const distFromEdge = Math.min(index, total - 1 - index);
+                let sizeClass = 'dot-middle'; // default normal
+                if (distFromEdge === 0) {
+                  sizeClass = 'dot-edge';      // smallest
+                } else if (distFromEdge === 1) {
+                  sizeClass = 'dot-near-edge'; // slightly smaller
+                }
+                return `<span class="${className} graduated-bullet ${sizeClass}"></span>`;
+              },
+            }}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            effect="fade"
+            fadeEffect={{
+              crossFade: true
+            }}
+            loop={sliderPosts.length > 1}
+            speed={800}
+            className="premium-swiper h-full"
+          >
           {sliderPosts.length > 0 ? (
             sliderPosts.map((post) => (
               <SwiperSlide key={post.id} className="h-full">
@@ -142,13 +156,15 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
                     </div>
 
                     {post.image && (
-                      <div className="flex-1 overflow-hidden">
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          className="w-full h-full object-cover transition-transform duration-500"
-                          loading="lazy"
-                        />
+                      <div className="flex-1 flex items-center justify-center px-6 pb-6">
+                        <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
+                          <img
+                            src={post.image}
+                            alt={post.title}
+                            className="w-full h-full object-cover transition-transform duration-500"
+                            loading="lazy"
+                          />
+                        </div>
                       </div>
                     )}
                     
@@ -168,29 +184,36 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
               </section>
             </SwiperSlide>
           )}
-        </Swiper>
+          </Swiper>
 
-        {/* Custom Navigation Buttons */}
-        {sliderPosts.length > 1 && (
-          <>
-            <button 
-              className="swiper-button-prev-custom absolute left-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-[#b8d4e0] shadow-lg flex items-center justify-center opacity-0 group-hover/swiper:opacity-100 transition-opacity duration-300"
-              aria-label="Previous slide"
-            >
-              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button 
-              className="swiper-button-next-custom absolute right-6 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-[#b8d4e0] shadow-lg flex items-center justify-center opacity-0 group-hover/swiper:opacity-100 transition-opacity duration-300"
-              aria-label="Next slide"
-            >
-              <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </>
-        )}
+          {/* Navigation Controls Row */}
+          <div className="flex items-center justify-between mt-4">
+            {/* Pagination dots will be rendered here by Swiper */}
+            <div className="swiper-pagination-container flex-1"></div>
+            
+            {/* Custom Navigation Buttons */}
+            {sliderPosts.length > 1 && (
+              <div className="flex items-center gap-3">
+                <button 
+                  className="swiper-button-prev-custom w-10 h-10 rounded-full border-2 border-gray-800 flex items-center justify-center"
+                  aria-label="Previous slide"
+                >
+                  <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button 
+                  className="swiper-button-next-custom w-10 h-10 rounded-full border-2 border-gray-800 flex items-center justify-center"
+                  aria-label="Next slide"
+                >
+                  <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Right Sidebar - "The World at a Glance" */}
