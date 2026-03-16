@@ -24,7 +24,7 @@ interface HeaderProps {
 }
 
 export function Header({ categories = [], ceoName }: HeaderProps) {
-  const [isSearchOpen, setIsSearchOpen] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -84,7 +84,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
     window.addEventListener('scroll', throttledScroll);
     // Also listen for resize events to handle viewport changes
     window.addEventListener('resize', throttledScroll);
-    
+
     return () => {
       window.removeEventListener('scroll', throttledScroll);
       window.removeEventListener('resize', throttledScroll);
@@ -155,7 +155,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
               {/* Right: DateTimeDisplay */}
               <div className="shrink-0">
-                <DateTimeDisplay />
+                <DateTimeDisplay isSticky={true} />
               </div>
             </div>
           </div>
@@ -374,7 +374,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             ))}
           </ul>
         </nav>
-        
+
         {/* Placeholder to prevent layout shift when sticky activates */}
         {isSticky && (
           <div className="hidden md:block border-t border-b border-dashed border-black/10 py-2" aria-hidden="true">

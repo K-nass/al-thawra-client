@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Globe } from "lucide-react";
 
-export function DateTimeDisplay() {
+export function DateTimeDisplay({isSticky=false}) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [imageError, setImageError] = useState(false);
 
@@ -41,7 +41,7 @@ export function DateTimeDisplay() {
       </div>
       {!imageError ? (
         <img 
-          src="/spinning-earth2.gif" 
+          src={isSticky ? "/spinning-earth.gif" : "/spinning-earth2.gif"}
           alt="Spinning Earth"
           className="w-4 h-4 shrink-0"
           onError={() => setImageError(true)}

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "../components/ArticleImage";
 
 interface CategoryWithPosts {
   category: {
@@ -41,26 +42,23 @@ export default function Layout5({ categoryData }: Layout5Props) {
             >
               <article className="semafor-card overflow-hidden">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {featuredPost.image && (
-                    <div className="w-full px-6 pb-6 mt-auto flex items-center">
-                      <div className="w-full aspect-[3/2] overflow-hidden">
-                        <img
-                          src={featuredPost.image}
-                          alt={featuredPost.title}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      </div>
+                  <div className="w-full px-6 pb-6 mt-auto flex items-center">
+                    <div className="w-full aspect-[3/2] overflow-hidden">
+                      <ArticleImage
+                        src={featuredPost.image}
+                        alt={featuredPost.title}
+                        className="w-full h-full"
+                      />
                     </div>
-                  )}
+                  </div>
                   <div className="p-6 flex items-center justify-center hover:bg-[#b8d4e0] transition-colors duration-300">
                     <div className="text-center">
                       <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
                         {featuredPost.title}
                       </h3>
-                      {featuredPost.description && (
+                      {(featuredPost.summary || featuredPost.description) && (
                         <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                          {featuredPost.description}
+                          {featuredPost.summary || featuredPost.description}
                         </p>
                       )}
                     </div>
@@ -85,9 +83,9 @@ export default function Layout5({ categoryData }: Layout5Props) {
                 <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
                   {post.title}
                 </h3>
-                {post.description && (
+                {(post.summary || post.description) && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.description}
+                    {post.summary || post.description}
                   </p>
                 )}
               </article>

@@ -6,8 +6,10 @@ export interface Post {
   title: string;
   slug: string;
   description: string;
+  summary?: string;
   image: string;
   imageDescription?: string;
+  direction?: string;
   status: string;
   language: string;
   postType: "Article" | "Video" | "Audio" | "Gallery";
@@ -58,6 +60,7 @@ export interface PostQueryParams {
   isChiefEditorPost?: boolean;
   language?: string;
   type?: string;
+  direction?: "Left" | "Right" | string;
   from?: string;
   to?: string;
   includeLikedByUsers?: boolean;
@@ -65,7 +68,7 @@ export interface PostQueryParams {
 }
 
 class PostsService {
-  private readonly baseUrl = "/posts";
+  private readonly baseUrl = "/posts/categories/articles";
 
   /**
    * Get all posts with optional filters
@@ -92,6 +95,7 @@ class PostsService {
       apiParams.IsChiefEditorPost = params?.isChiefEditorPost ?? false;
       if (params?.language) apiParams.Language = params.language;
       if (params?.type) apiParams.Type = params.type;
+      if (params?.direction) apiParams.Direction = params.direction;
       if (params?.from) apiParams.From = params.from;
       if (params?.to) apiParams.To = params.to;
       if (params?.includeLikedByUsers !== undefined) apiParams.IncludeLikedByUsers = params.includeLikedByUsers;

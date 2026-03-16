@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "../components/ArticleImage";
 
 interface CategoryWithPosts {
   category: {
@@ -38,18 +39,17 @@ export default function Layout8({ categoryData }: Layout8Props) {
       <div className="flex justify-center mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl w-full px-4">
           {/* Left column - Image only */}
-          {leftPost && leftPost.image && (
+          {leftPost && (
             <Link
               to={`/posts/categories/${leftPost.categorySlug}/articles/${leftPost.slug}`}
               className="block group"
             >
               <article className="semafor-card overflow-hidden h-full px-6 pb-6 mt-auto">
                 <div className="w-full h-full aspect-[3/2] overflow-hidden">
-                  <img
+                  <ArticleImage
                     src={leftPost.image}
                     alt={leftPost.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    className="w-full h-full"
                   />
                 </div>
               </article>
@@ -68,9 +68,9 @@ export default function Layout8({ categoryData }: Layout8Props) {
                     <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
                       {rightPost.title}
                     </h3>
-                    {rightPost.description && (
+                    {(rightPost.summary || rightPost.description) && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {rightPost.description}
+                        {rightPost.summary || rightPost.description}
                       </p>
                     )}
                   </div>
@@ -94,9 +94,9 @@ export default function Layout8({ categoryData }: Layout8Props) {
                 <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
                   {post.title}
                 </h3>
-                {post.description && (
+                {(post.summary || post.description) && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.description}
+                    {post.summary || post.description}
                   </p>
                 )}
               </article>

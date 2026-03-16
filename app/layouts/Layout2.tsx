@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import Layout3 from "./Layout3";
+import ArticleImage from "../components/ArticleImage";
 
 interface Layout2Props {
   posts: Post[];
@@ -74,27 +75,24 @@ export default function Layout2({ posts }: Layout2Props) {
             to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
             className="block group"
           >
-            <article className="h-full flex flex-col border border-dashed border-black/10 p-3">
-              {post.image && (
-                <div className="mb-3">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    loading="lazy"
-                    className="w-full aspect-video object-cover"
-                  />
-                </div>
-              )}
-              
-              <h3 className="text-lg font-bold mb-2 leading-tight group-hover:text-blue-700 transition-colors">
-                {post.title}
-              </h3>
-              
-              {post.description && (
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {post.description}
-                </p>
-              )}
+            <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
+              <div className="p-3">
+                <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
+                  {post.title}
+                </h3>
+
+                {(post.summary || post.description) && (
+                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                    {post.summary || post.description}
+                  </p>
+                )}
+              </div>
+
+              <ArticleImage
+                src={post.image}
+                alt={post.title}
+                className="w-full flex-none mt-auto h-52 md:h-48 lg:h-44"
+              />
             </article>
           </Link>
         ))}
@@ -113,27 +111,24 @@ export default function Layout2({ posts }: Layout2Props) {
                   to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                   className="block group"
                 >
-                  <article className="h-full flex flex-col border border-dashed border-black/10 p-3">
-                    {post.image && (
-                      <div className="mb-3">
-                        <img
-                          src={post.image}
-                          alt={post.title}
-                          loading="lazy"
-                          className="w-full aspect-video object-cover"
-                        />
-                      </div>
-                    )}
-                    
-                    <h3 className="text-lg font-bold mb-2 leading-tight group-hover:text-blue-700 transition-colors">
-                      {post.title}
-                    </h3>
-                    
-                    {post.description && (
-                      <p className="text-sm text-gray-600 leading-relaxed">
-                        {post.description}
-                      </p>
-                    )}
+                  <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
+                    <div className="p-3">
+                      <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
+                        {post.title}
+                      </h3>
+
+                      {(post.summary || post.description) && (
+                        <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                          {post.summary || post.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <ArticleImage
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full flex-none mt-auto h-52 md:h-48 lg:h-44"
+                    />
                   </article>
                 </Link>
               ))}

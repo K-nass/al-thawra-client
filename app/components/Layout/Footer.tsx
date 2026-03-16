@@ -18,7 +18,7 @@ export function Footer({ pages = [], categories = [] }: FooterProps) {
     .sort((a, b) => a.order - b.order);
 
   return (
-    <footer dir="rtl" lang="ar" className="mt-16 border-t border-gray-200">
+    <footer dir="rtl" lang="ar" className="semafor-container mt-16 border-t-2 border-black">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-0">
@@ -44,9 +44,8 @@ export function Footer({ pages = [], categories = [] }: FooterProps) {
             <nav className="divide-y divide-dashed divide-black/10">
               <Link
                 to="/"
-                className={`flex items-center justify-between py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${
-                  location.pathname === "/" ? "font-bold" : ""
-                }`}
+                className={`flex items-center justify-between py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${location.pathname === "/" ? "font-bold" : ""
+                  }`}
               >
                 <span>الرئيسية</span>
                 {location.pathname === "/" && (
@@ -59,9 +58,8 @@ export function Footer({ pages = [], categories = [] }: FooterProps) {
                   <Link
                     key={category.id}
                     to={`/category/${category.slug}`}
-                    className={`flex items-center justify-between py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${
-                      isActive ? "font-bold" : ""
-                    }`}
+                    className={`flex items-center justify-between py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors ${isActive ? "font-bold" : ""
+                      }`}
                   >
                     <span>{category.name}</span>
                     {isActive && (
@@ -125,46 +123,46 @@ export function Footer({ pages = [], categories = [] }: FooterProps) {
 
             {/* Social Media Icons */}
             <div className="flex gap-3">
-              <a 
-                href="https://al-thawra-client.vercel.app/" 
-                target="_self" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://al-thawra-client.vercel.app/"
+                target="_self"
+                rel="noopener noreferrer"
                 aria-label="Telegram"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <Send className="w-5 h-5" />
               </a>
-              <a 
-                href="https://al-thawra-client.vercel.app/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://al-thawra-client.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="YouTube"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <Youtube className="w-5 h-5" />
               </a>
-              <a 
-                href="https://x.com/althawrhNet" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://x.com/althawrhNet"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="Twitter"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <Twitter className="w-5 h-5" />
               </a>
-              <a 
-                href="https://www.facebook.com/share/1BWsoa7hbV/?mibextid=wwXIfr" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://www.facebook.com/share/1BWsoa7hbV/?mibextid=wwXIfr"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="Facebook"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a 
-                href="https://whatsapp.com/channel/0029VbBeGZFInlqGhtMLs31i" 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href="https://whatsapp.com/channel/0029VbBeGZFInlqGhtMLs31i"
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label="WhatsApp"
                 className="text-gray-600 hover:text-gray-900 transition-colors"
               >

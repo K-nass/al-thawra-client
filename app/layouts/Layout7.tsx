@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "../components/ArticleImage";
 
 interface CategoryWithPosts {
   category: {
@@ -31,22 +32,19 @@ export default function Layout7({ categoryData, showAdvertisement = false, adver
                 <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2 ${index === 2 ? 'text-blue-800 text-base' : 'text-base'}`}>
                   {post.title}
                 </h3>
-                {post.description && (
+                {(post.summary || post.description) && (
                   <p className="text-sm text-gray-700 line-clamp-3">
-                    {post.description.split(" ").slice(0, 20).join(" ")}
+                    {(post.summary || post.description).split(" ").slice(0, 20).join(" ")}
                   </p>
                 )}
               </div>
-              {post.image && (
-                <div className="w-full aspect-square overflow-hidden">
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-              )}
+              <div className="w-full aspect-square overflow-hidden">
+                <ArticleImage
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-full"
+                />
+              </div>
             </article>
           </Link>
         ))}

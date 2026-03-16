@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "../components/ArticleImage";
 
 interface CategoryWithPosts {
   category: {
@@ -32,9 +33,9 @@ export default function Layout4({ categoryData }: Layout4Props) {
                   <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
                     {post.title}
                   </h3>
-                  {post.description && (
+                  {(post.summary || post.description) && (
                     <p className="text-xs text-gray-700 line-clamp-2">
-                      {post.description.split(" ").slice(0, 15).join(" ")}
+                      {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
                     </p>
                   )}
                 </div>
@@ -55,24 +56,21 @@ export default function Layout4({ categoryData }: Layout4Props) {
                   <h3 className="text-xl md:text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors text-center">
                     {posts[3].title}
                   </h3>
-                  {posts[3].description && (
+                  {(posts[3].summary || posts[3].description) && (
                     <p className="text-sm md:text-base text-gray-700 line-clamp-2 text-center">
-                      {posts[3].description}
+                      {posts[3].summary || posts[3].description}
                     </p>
                   )}
                 </div>
-                {posts[3].image && (
-                  <div className="w-full px-6 pb-6 flex justify-center mt-auto">
-                    <div className="w-full aspect-[4/3] overflow-hidden">
-                      <img
-                        src={posts[3].image}
-                        alt={posts[3].title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
+                <div className="w-full px-6 pb-6 flex justify-center mt-auto">
+                  <div className="w-full aspect-[4/3] overflow-hidden">
+                    <ArticleImage
+                      src={posts[3].image}
+                      alt={posts[3].title}
+                      className="w-full h-full"
+                    />
                   </div>
-                )}
+                </div>
               </article>
             </Link>
           </div>
@@ -91,9 +89,9 @@ export default function Layout4({ categoryData }: Layout4Props) {
                   <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
                     {post.title}
                   </h3>
-                  {post.description && (
+                  {(post.summary || post.description) && (
                     <p className="text-xs text-gray-700 line-clamp-2">
-                      {post.description.split(" ").slice(0, 15).join(" ")}
+                      {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
                     </p>
                   )}
                 </div>
@@ -115,9 +113,9 @@ export default function Layout4({ categoryData }: Layout4Props) {
               <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
                 {post.title}
               </h3>
-              {post.description && (
+              {(post.summary || post.description) && (
                 <p className="text-xs text-gray-700 line-clamp-2">
-                  {post.description.split(" ").slice(0, 15).join(" ")}
+                  {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
                 </p>
               )}
             </article>

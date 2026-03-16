@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "../components/ArticleImage";
 
 interface Layout11Props {
   posts: Post[];
@@ -40,9 +41,9 @@ export default function Layout11({ posts }: Layout11Props) {
                     <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
                       {leftPost.title}
                     </h3>
-                    {leftPost.description && (
+                    {(leftPost.summary || leftPost.description) && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {leftPost.description}
+                        {leftPost.summary || leftPost.description}
                       </p>
                     )}
                   </div>
@@ -52,18 +53,17 @@ export default function Layout11({ posts }: Layout11Props) {
           )}
 
           {/* Right column - Image only */}
-          {rightPost && rightPost.image && (
+          {rightPost && (
             <Link
               to={`/posts/categories/${rightPost.categorySlug}/articles/${rightPost.slug}`}
               className="block group"
             >
               <article className="semafor-card overflow-hidden h-full px-6 pb-6 mt-auto">
                 <div className="w-full h-full aspect-[3/2] overflow-hidden">
-                  <img
+                  <ArticleImage
                     src={rightPost.image}
                     alt={rightPost.title}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
+                    className="w-full h-full"
                   />
                 </div>
               </article>
@@ -85,9 +85,9 @@ export default function Layout11({ posts }: Layout11Props) {
                 <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
                   {post.title}
                 </h3>
-                {post.description && (
+                {(post.summary || post.description) && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.description}
+                    {post.summary || post.description}
                   </p>
                 )}
               </article>
