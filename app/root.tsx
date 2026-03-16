@@ -35,6 +35,7 @@ export async function loader() {
   // Each call has its own try-catch - failures don't block others
   let categories: any[] = [];
   let trendingPosts: any[] = [];
+  let breakingNews: any[] = [];
   let chiefEditor: ChiefEditor | null = null;
   let chiefEditorPosts: any[] = [];
   let footerPages: any[] = [];
@@ -100,7 +101,17 @@ export async function loader() {
     // Error fetching logo settings
   }
 
-  return { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings };
+  try {
+    breakingNews = await cache.getOrFetch(
+      "posts:breaking:15:Article",
+      () => postsService.getBreakingNews(15, "Article"),
+      CacheTTL.SHORT
+    );
+  } catch (error) {
+    // Error fetching breaking news
+  }
+
+  return { categories, trendingPosts, breakingNews, chiefEditor, chiefEditorPosts, footerPages, logoSettings };
 }
 
 // ... existing Layout component ...
@@ -145,7 +156,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const location = useLocation();
-  const { categories, trendingPosts, chiefEditor, chiefEditorPosts, footerPages, logoSettings } = useLoaderData<typeof loader>();
+  const { categories, trendingPosts, breakingNews, chiefEditor, chiefEditorPosts, footerPages, logoSettings } = useLoaderData<typeof loader>();
 
   // Fix Arabic numbers display issues
   useArabicNumbersFix();
@@ -167,7 +178,7 @@ export default function App() {
         // Full-width layout for PDF viewer (no header, sidebar, footer)
         <Outlet context={{ categories }} />
       ) : (
-        <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings}>
+        <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings} breakingNews={breakingNews}>
           {shouldShowSidebar ? (
             <div>
               <div>

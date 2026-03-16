@@ -1,10 +1,11 @@
 import { Link } from "react-router";
+import ArticleImage from "../components/ArticleImage";
 
 interface Layout3Props {
   category?: string;
   title: string;
   description: string;
-  image: string;
+  image?: string;
   imageCredit?: string;
   link?: string;
 }
@@ -42,11 +43,10 @@ export default function Layout3({
         {/* Image */}
         <div className="space-y-1">
           <div className="overflow-hidden">
-            <img
+            <ArticleImage
               src={image}
               alt={title}
-              className="w-full h-auto object-cover"
-              loading="lazy"
+              className="w-full aspect-video"
             />
           </div>
           {imageCredit && (

@@ -1,7 +1,9 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import ArticleImage from "../components/ArticleImage";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -10,11 +12,63 @@ import 'swiper/css/effect-fade';
 interface Layout1Props {
   sliderPosts: Post[];
   urgentPosts: Post[];
+  rightDirectionPosts: Post[];
+  leftDirectionPosts: Post[];
   chiefEditor: any;
   chiefEditorPosts: Post[];
 }
 
-export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEditorPosts }: Layout1Props) {
+export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: Layout1Props) {
+  const getFirstChar = (value?: string) => (value && value.trim().length > 0 ? value.trim()[0] : "ك");
+
+  const posts = rightDirectionPosts || [];
+  const [rightStartIndex, setRightStartIndex] = useState(0);
+
+  // Keep the index valid if the list size changes (e.g. refetch).
+  useEffect(() => {
+    if (posts.length === 0) return;
+    setRightStartIndex((i) => i % posts.length);
+  }, [posts.length]);
+
+  const rightWindow = useMemo(() => {
+    if (posts.length === 0) return [];
+    const windowSize = Math.min(3, posts.length);
+    const picked: Post[] = [];
+    const seen = new Set<string>();
+
+    // Pick up to 3 unique posts in a looping manner: 1 featured + 2 cards.
+    for (let offset = 0; offset < posts.length && picked.length < windowSize; offset++) {
+      const p = posts[(rightStartIndex + offset) % posts.length];
+      if (!p) continue;
+      if (seen.has(p.id)) continue;
+      seen.add(p.id);
+      picked.push(p);
+    }
+
+    return picked;
+  }, [posts, rightStartIndex]);
+
+  const featuredPost = rightWindow[0];
+  const authorCardPosts = rightWindow.slice(1, 3);
+
+  const canSwapRight = posts.length > 1;
+  const goNextRight = () => {
+    if (!canSwapRight) return;
+    setRightStartIndex((i) => (posts.length === 0 ? 0 : (i + 1) % posts.length));
+  };
+  const goPrevRight = () => {
+    if (!canSwapRight) return;
+    setRightStartIndex((i) => (posts.length === 0 ? 0 : (i - 1 + posts.length) % posts.length));
+  };
+
+  // Auto-rotate so the visible right articles swap as we loop through the array.
+  useEffect(() => {
+    if (!canSwapRight) return;
+    const id = window.setInterval(goNextRight, 9000);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canSwapRight, posts.length]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}
@@ -22,66 +76,107 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
         <div className="h-full flex flex-col">
           {/* Main Featured Article */}
           <div className="pb-4 border-b border-dashed border-black/10">
-            <div className="mb-3">
-              <span className="text-xs uppercase tracking-wide text-gray-600 font-semibold">
-                السياسة
-              </span>
-            </div>
-            <h3 className="text-lg font-bold mb-3 leading-tight">
-              البيت الأبيض يشير إلى مرور آمن لمشروع قانون الإسكان
-            </h3>
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-              مجلس الشيوخ في طريقه لتمرير حظر الرئيس دونالد ترامب المقترح على المستثمرين المؤسسيين في الإسكان كجزء من حزمة أكبر من الإجراءات.
-            </p>
-            <div className="mb-2">
-              <img 
-                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect fill='%23cccccc' width='400' height='400'/%3E%3Ctext fill='%23666666' font-family='Arial' font-size='20' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EArticle Image%3C/text%3E%3C/svg%3E" 
-                alt="مبنى الكابيتول" 
-                className="w-full aspect-[4/3] object-cover"
-              />
-            </div>
-            <p className="text-xs text-gray-500">
-              كايلي كوبر/رويترز
-            </p>
+            {featuredPost ? (
+              <div className="group">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="mb-0">
+                    <span className="text-xs uppercase tracking-wide text-gray-600 font-semibold">
+                      {featuredPost.categoryName}
+                    </span>
+                  </div>
+
+                  {canSwapRight && (
+                    <div className="flex items-center gap-3 opacity-0 translate-y-1 pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto focus-within:opacity-100 focus-within:translate-y-0 focus-within:pointer-events-auto">
+                      <button
+                        type="button"
+                        onClick={goPrevRight}
+                        className="w-8 h-8 rounded-full border-2 border-gray-800 text-gray-800 flex items-center justify-center transition-all duration-300 ease-out active:scale-95"
+                        aria-label="المقال السابق"
+                      >
+                        <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={goNextRight}
+                        className="w-8 h-8 rounded-full border-2 border-gray-800 text-gray-800 flex items-center justify-center transition-all duration-300 ease-out  active:scale-95"
+                        aria-label="المقال التالي"
+                      >
+                        <svg className="w-4 h-4 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <Link
+                  to={`/posts/categories/${featuredPost.categorySlug}/articles/${featuredPost.slug}`}
+                  className="block group"
+                >
+                  <h3 className="text-lg font-bold mb-3 leading-tight group-hover:text-blue-700 transition-colors">
+                    {featuredPost.title}
+                  </h3>
+                  {(featuredPost.summary || featuredPost.description) && (
+                    <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                      {featuredPost.summary || featuredPost.description}
+                    </p>
+                  )}
+                  <div className="mb-2">
+                    <ArticleImage
+                      src={featuredPost.image}
+                      alt={featuredPost.title}
+                      className="w-full overflow-hidden"
+                      aspectRatio="4 / 3"
+                      loading="eager"
+                    />
+                  </div>
+                  {(featuredPost.imageDescription || featuredPost.authorName) && (
+                    <p className="text-xs text-gray-500">
+                      {featuredPost.imageDescription || featuredPost.authorName}
+                    </p>
+                  )}
+                </Link>
+              </div>
+            ) : (
+              <div className="py-8">
+                <p className="text-sm text-gray-600">لا توجد مقالات متاحة</p>
+              </div>
+            )}
           </div>
 
           {/* Author Cards - Two Columns */}
           <div className="grid grid-cols-2 gap-3 pt-4 flex-1">
-            {/* Author Card 1 */}
-            <div className="bg-[#b8d4e0] p-3 flex flex-col">
-              <h4 className="text-sm font-bold mb-auto leading-tight">
-                رأي / صدمات النفط الماضية قد تعلمنا الدرس الخاطئ حول حرب إيران
-              </h4>
-              <div className="flex items-center gap-2 mt-3">
-                <img 
-                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle fill='%234a5568' cx='50' cy='50' r='50'/%3E%3Ctext fill='%23ffffff' font-family='Arial' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3EAS%3C/text%3E%3C/svg%3E" 
-                  alt="علاء شاهين صالحة" 
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="text-xs">
-                  <div className="font-semibold">علاء شاهين</div>
-                  <div className="font-semibold">صالحة</div>
+            {authorCardPosts.map((post) => (
+              <Link
+                key={post.id}
+                to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                className="bg-[#b8d4e0] p-3 flex flex-col group"
+              >
+                <h4 className="text-sm font-bold mb-auto leading-tight group-hover:text-blue-700 transition-colors">
+                  {post.title}
+                </h4>
+                <div className="flex items-center gap-2 mt-3">
+                  {post.authorImage ? (
+                    <img
+                      src={post.authorImage}
+                      alt={post.authorName || post.title}
+                      className="w-10 h-10 rounded-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center text-sm font-bold">
+                      {getFirstChar(post.authorName)}
+                    </div>
+                  )}
+                  <div className="text-xs">
+                    <div className="font-semibold">{post.authorName || "بدون اسم"}</div>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            {/* Author Card 2 */}
-            <div className="bg-[#b8d4e0] p-3 flex flex-col">
-              <h4 className="text-sm font-bold mb-auto leading-tight">
-                رأي / استراتيجية الطاقة الفائزة للصين
-              </h4>
-              <div className="flex items-center gap-2 mt-3">
-                <img 
-                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Ccircle fill='%234a5568' cx='50' cy='50' r='50'/%3E%3Ctext fill='%23ffffff' font-family='Arial' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3ETM%3C/text%3E%3C/svg%3E" 
-                  alt="تيم ماكدونيل" 
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div className="text-xs">
-                  <div className="font-semibold">تيم</div>
-                  <div className="font-semibold">ماكدونيل</div>
-                </div>
-              </div>
-            </div>
+              </Link>
+            ))}
           </div>
         </div>
       </aside>
@@ -148,25 +243,22 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
                         {post.title}
                       </h1>
 
-                      {post.description && (
+                      {(post.summary || post.description) && (
                         <p className="text-gray-700 mb-4 leading-relaxed">
-                          {post.description}
+                          {post.summary || post.description}
                         </p>
                       )}
                     </div>
 
-                    {post.image && (
-                      <div className="flex-1 flex items-center justify-center px-6 pb-6">
-                        <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
-                          <img
-                            src={post.image}
-                            alt={post.title}
-                            className="w-full h-full object-cover transition-transform duration-500"
-                            loading="lazy"
-                          />
-                        </div>
+                    <div className="flex-1 flex items-center justify-center px-6 pb-6">
+                      <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
+                        <ArticleImage
+                          src={post.image}
+                          alt={post.title}
+                          className="w-full h-full"
+                        />
                       </div>
-                    )}
+                    </div>
                     
                     {post.authorName && (
                       <p className="text-xs text-gray-500 py-2 text-center">
@@ -241,29 +333,35 @@ export default function Layout1({ sliderPosts, urgentPosts, chiefEditor, chiefEd
                 />
               </div>
             </div>
-            {urgentPosts && urgentPosts.length > 0 ? (
-              <ol className="space-y-4">
-                {urgentPosts.slice(0, 6).map((post, index) => (
-                  <li key={post.id} className="text-sm leading-relaxed">
-                    <Link
-                      to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                      className="block group"
-                    >
-                      <span className="font-bold text-gray-700">{index + 1}</span>{' '}
-                      <span className="underline decoration-2 underline-offset-2 font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+            {leftDirectionPosts && leftDirectionPosts.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {leftDirectionPosts.slice(0, 6).map((post) => (
+                  <Link
+                    key={post.id}
+                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                    className="group border border-dashed border-black/10 overflow-hidden transition-colors"
+                    title={post.title}
+                  >
+                    <ArticleImage
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full"
+                      aspectRatio="4 / 3"
+                    />
+
+                    <div className="p-3 pt-2">
+                      <div className="text-[11px] uppercase tracking-wide text-gray-600 font-semibold line-clamp-1">
+                        {post.categoryName}
+                      </div>
+                      <div className="mt-1 text-sm font-semibold leading-snug text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-3">
                         {post.title}
-                      </span>
-                      {post.description && (
-                        <span className="text-gray-500">
-                          {' '}{post.description.split(' ').slice(0, 15).join(' ')}...
-                        </span>
-                      )}
-                    </Link>
-                  </li>
+                      </div>
+                    </div>
+                  </Link>
                 ))}
-              </ol>
+              </div>
             ) : (
-              <p className="text-sm text-gray-600">لا توجد أخبار عاجلة</p>
+              <p className="text-sm text-gray-600">لا توجد مقالات متاحة</p>
             )}
           </div>
         </div>

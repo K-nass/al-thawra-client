@@ -77,6 +77,35 @@ export async function loader({ }: Route.LoaderArgs) {
       CacheTTL.SHORT
     ).catch(() => []);
 
+    // Fetch "right direction" articles for Layout1 left sidebar
+    const rightDirectionPosts = await cache.getOrFetch(
+      "posts:direction:right:15:Article",
+      async () => {
+        const response = await postsService.getPosts({
+          pageSize: 15,
+          type: "Article",
+          direction: "Right",
+        });
+        // Provide enough items so Layout1 can rotate/swaps through them.
+        return response.items.slice(0, 12);
+      },
+      CacheTTL.SHORT
+    ).catch(() => [] as Post[]);
+
+    // Fetch "left direction" articles for Layout1 right sidebar grid
+    const leftDirectionPosts = await cache.getOrFetch(
+      "posts:direction:left:15:Article",
+      async () => {
+        const response = await postsService.getPosts({
+          pageSize: 15,
+          type: "Article",
+          direction: "Left",
+        });
+        return response.items.slice(0, 6);
+      },
+      CacheTTL.SHORT
+    ).catch(() => [] as Post[]);
+
     // Fetch chief editor data
     let chiefEditor = null;
     let chiefEditorPosts: Post[] = [];
@@ -106,6 +135,8 @@ export async function loader({ }: Route.LoaderArgs) {
       writersPosts,
       latestMagazine,
       urgentPosts,
+      rightDirectionPosts,
+      leftDirectionPosts,
       chiefEditor,
       chiefEditorPosts,
     };
@@ -115,6 +146,8 @@ export async function loader({ }: Route.LoaderArgs) {
       writersPosts: [],
       latestMagazine: null,
       urgentPosts: [],
+      rightDirectionPosts: [],
+      leftDirectionPosts: [],
       chiefEditor: null,
       chiefEditorPosts: [],
     };
@@ -123,7 +156,7 @@ export async function loader({ }: Route.LoaderArgs) {
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
 
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
@@ -243,6 +276,8 @@ export default function Home() {
       <Layout1
         sliderPosts={sliderPosts}
         urgentPosts={urgentPosts}
+        rightDirectionPosts={rightDirectionPosts}
+        leftDirectionPosts={leftDirectionPosts}
         chiefEditor={chiefEditor}
         chiefEditorPosts={chiefEditorPosts}
       />
