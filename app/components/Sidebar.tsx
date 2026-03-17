@@ -55,7 +55,7 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
                 {chiefEditorPosts[0].title}
               </h4>
               <p>
-                {chiefEditorPosts[0].description.slice(0, 50) + '...'}
+                {(chiefEditorPosts[0].summary || "").slice(0, 50) + "..."}
               </p>
             </Link>
 

@@ -7,9 +7,11 @@ import { postsService, type Post } from "../services/postsService";
 import { type Category } from "../services/categoriesService";
 import { magazinesService } from "../services/magazinesService";
 import { userService } from "../services/userService";
+import { reelsService } from "../services/reelsService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
+import { ReelsSection, type HomepageReel } from "~/components/Reels/Home";
 import Layout1 from "~/layouts/Layout1";
 import Layout2 from "~/layouts/Layout2";
 import Layout4 from "~/layouts/Layout4";
@@ -106,6 +108,23 @@ export async function loader({ }: Route.LoaderArgs) {
       CacheTTL.SHORT
     ).catch(() => [] as Post[]);
 
+    const homeReels = await cache.getOrFetch(
+      "reels:home:10",
+      async () => {
+        const response = await reelsService.getReels(undefined, 10);
+        const reels = response.reels || [];
+        return reels.map((reel) => ({
+          id: reel.id,
+          thumbnailUrl: reel.thumbnailUrl,
+          title: reel.caption,
+          category: reel.tags?.[0] ? String(reel.tags[0]).toUpperCase() : undefined,
+          author: reel.userName || undefined,
+          isLoading: false,
+        })) satisfies HomepageReel[];
+      },
+      CacheTTL.SHORT
+    ).catch(() => [] as HomepageReel[]);
+
     // Fetch chief editor data
     let chiefEditor = null;
     let chiefEditorPosts: Post[] = [];
@@ -137,6 +156,7 @@ export async function loader({ }: Route.LoaderArgs) {
       urgentPosts,
       rightDirectionPosts,
       leftDirectionPosts,
+      homeReels,
       chiefEditor,
       chiefEditorPosts,
     };
@@ -148,6 +168,7 @@ export async function loader({ }: Route.LoaderArgs) {
       urgentPosts: [],
       rightDirectionPosts: [],
       leftDirectionPosts: [],
+      homeReels: [],
       chiefEditor: null,
       chiefEditorPosts: [],
     };
@@ -156,7 +177,7 @@ export async function loader({ }: Route.LoaderArgs) {
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
 
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
@@ -281,6 +302,8 @@ export default function Home() {
         chiefEditor={chiefEditor}
         chiefEditorPosts={chiefEditorPosts}
       />
+
+      <ReelsSection reels={homeReels} />
 
       {categoryPosts.map((data, idx) => {
         const layoutNumber = layoutOrder[idx % layoutOrder.length];

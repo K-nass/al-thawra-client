@@ -5,8 +5,7 @@ export interface Post {
   id: string;
   title: string;
   slug: string;
-  description: string;
-  summary?: string;
+  summary: string;
   image: string;
   imageDescription?: string;
   direction?: string;

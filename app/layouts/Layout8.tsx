@@ -68,9 +68,9 @@ export default function Layout8({ categoryData }: Layout8Props) {
                     <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
                       {rightPost.title}
                     </h3>
-                    {(rightPost.summary || rightPost.description) && (
+                    {rightPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {rightPost.summary || rightPost.description}
+                        {rightPost.summary}
                       </p>
                     )}
                   </div>
@@ -90,16 +90,14 @@ export default function Layout8({ categoryData }: Layout8Props) {
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
               className="block group h-full"
             >
-              <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
-                  {post.title}
-                </h3>
-                {(post.summary || post.description) && (
-                  <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.summary || post.description}
+                <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.75rem]">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
+                    {post.summary || ""}
                   </p>
-                )}
-              </article>
+                </article>
             </Link>
           ))}
         </div>
