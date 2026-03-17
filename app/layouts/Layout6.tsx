@@ -37,9 +37,9 @@ export default function Layout6({ posts }: Layout6Props) {
                   <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 text-center leading-tight">
                     {post.title}
                   </h3>
-                  {(post.summary || post.description) && (
+                  {post.summary && (
                     <p className="text-base text-gray-700 line-clamp-2 mb-6 text-center leading-relaxed">
-                      {post.summary || post.description}
+                      {post.summary}
                     </p>
                   )}
                 </div>
@@ -62,22 +62,20 @@ export default function Layout6({ posts }: Layout6Props) {
       {secondRowPosts.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border-t border-dashed border-black/10 pt-6">
           {secondRowPosts.map((post, index) => (
-            <Link
-              key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-              className="block group h-full"
-            >
-              <article className={`semafor-card p-2 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                <h3 className="text-sm font-bold flex-end group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
-                  {post.title}
-                </h3>
-                {(post.summary || post.description) && (
-                  <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.summary || post.description}
-                  </p>
-                )}
-              </article>
-            </Link>
+          <Link
+            key={post.id}
+            to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+            className="block group h-full"
+          >
+            <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+              <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.75rem]">
+                {post.title}
+              </h3>
+              <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
+                {post.summary || ""}
+              </p>
+            </article>
+          </Link>
           ))}
         </div>
       )}

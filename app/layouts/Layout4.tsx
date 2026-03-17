@@ -19,23 +19,24 @@ export default function Layout4({ categoryData }: Layout4Props) {
   return (
     <div>
       {/* Top section: 3 columns layout */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-2 mb-6">
         {/* Left column - smaller articles */}
-        <div className="md:col-span-3 space-y-6 md:space-y-10 pr-2 md:pr-4 flex flex-col justify-between">
+        {/* space-y-6 md:space-y-10 */}
+        <div className="md:col-span-3  flex flex-col ">
           {posts.slice(0, 3).map((post, index) => (
             <Link
               key={post.id}
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
               className="block group"
             >
-              <article className={`semafor-card overflow-hidden ${index < 2 ? 'pb-6 border-b border-dashed border-black/10' : ''}`}>
-                <div className="p-3">
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
+              <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
+                <div className="p-3 md:mb-16">
+                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors">
                     {post.title}
                   </h3>
-                  {(post.summary || post.description) && (
-                    <p className="text-xs text-gray-700 line-clamp-2">
-                      {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
+                  {post.summary && (
+                    <p className="text-xs text-gray-700 line-clamp-3 min-h-[3rem]">
+                      {post.summary}
                     </p>
                   )}
                 </div>
@@ -46,24 +47,24 @@ export default function Layout4({ categoryData }: Layout4Props) {
 
         {/* Center - main featured article with image */}
         {posts[3] && (
-          <div className="md:col-span-6 md:border-dashed md:border-black/10 px-4 flex justify-center">
+          <div className="md:col-span-6 md:border-dashed md:border-black/10 flex justify-center">
             <Link
               to={`/posts/categories/${posts[3].categorySlug}/articles/${posts[3].slug}`}
               className="block group w-full max-w-lg"
             >
               <article className="semafor-card overflow-hidden h-full flex flex-col">
-                <div className="p-4 mb-4">
+                <div className="p-4">
                   <h3 className="text-xl md:text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors text-center">
                     {posts[3].title}
                   </h3>
-                  {(posts[3].summary || posts[3].description) && (
+                  {posts[3].summary && (
                     <p className="text-sm md:text-base text-gray-700 line-clamp-2 text-center">
-                      {posts[3].summary || posts[3].description}
+                      {posts[3].summary}
                     </p>
                   )}
                 </div>
-                <div className="w-full px-6 pb-6 flex justify-center mt-auto">
-                  <div className="w-full aspect-[4/3] overflow-hidden">
+                <div className="w-full px-6 pb-6 flex justify-center">
+                  <div className="w-full aspect-4/3 overflow-hidden">
                     <ArticleImage
                       src={posts[3].image}
                       alt={posts[3].title}
@@ -77,21 +78,21 @@ export default function Layout4({ categoryData }: Layout4Props) {
         )}
 
         {/* Right column - smaller articles */}
-        <div className="md:col-span-3 space-y-6 md:space-y-10 pl-2 md:pl-4 flex flex-col justify-between">
+        <div className="md:col-span-3  flex flex-col ">
           {posts.slice(4, 7).map((post, index) => (
             <Link
               key={post.id}
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
               className="block group"
             >
-              <article className={`semafor-card overflow-hidden ${index < 2 ? 'pb-6 border-b border-dashed border-black/10' : ''}`}>
-                <div className="p-3">
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
+              <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
+                <div className="p-3 md:mb-16">
+                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors">
                     {post.title}
                   </h3>
-                  {(post.summary || post.description) && (
-                    <p className="text-xs text-gray-700 line-clamp-2">
-                      {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
+                  {post.summary && (
+                    <p className="text-xs text-gray-700 line-clamp-3 min-h-[3rem]">
+                      {post.summary}
                     </p>
                   )}
                 </div>
@@ -102,22 +103,20 @@ export default function Layout4({ categoryData }: Layout4Props) {
       </div>
 
       {/* Bottom section: 4 articles in a row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-0 border-t border-dashed border-black/10 pt-6">
+      <div className="grid grid-cols-1 md:grid-cols-4  border-t border-dashed border-black/10 ">
         {posts.slice(7, 11).map((post, index) => (
           <Link
             key={post.id}
             to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-            className="block group"
+            className="block group h-full"
           >
-            <article className={`semafor-card p-4 ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-              <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3">
+            <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+              <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.75rem]">
                 {post.title}
               </h3>
-              {(post.summary || post.description) && (
-                <p className="text-xs text-gray-700 line-clamp-2">
-                  {(post.summary || post.description).split(" ").slice(0, 15).join(" ")}
-                </p>
-              )}
+              <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
+                {post.summary || ""}
+              </p>
             </article>
           </Link>
         ))}

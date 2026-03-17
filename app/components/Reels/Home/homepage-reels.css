@@ -1,0 +1,225 @@
+/* ============================================
+   HOMEPAGE REELS — "Watch Today's Videos" Section
+   ============================================ */
+
+/* ---------- Section ---------- */
+.homepage-reels-section {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.homepage-reels-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.homepage-reels-title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #1a1a1a;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ---------- Scrollable List ---------- */
+.homepage-reels-list {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+
+  /* Hide scrollbar */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.homepage-reels-list::-webkit-scrollbar {
+  display: none;
+}
+
+.homepage-reels-list li {
+  flex-shrink: 0;
+}
+
+/* ---------- Card ---------- */
+.homepage-reel-card {
+  display: block;
+  width: 200px;
+  text-decoration: none;
+  color: inherit;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.homepage-reel-card:focus-visible {
+  outline: 2px solid #1a73e8;
+  outline-offset: 3px;
+}
+
+/* ---------- Thumbnail Container ---------- */
+.homepage-reel-thumbnail-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #e5e5e5;
+}
+
+.homepage-reel-thumbnail-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.homepage-reel-card:hover .homepage-reel-thumbnail-wrap img {
+  transform: scale(1.04);
+}
+
+/* ---------- Play Button Overlay ---------- */
+.homepage-reel-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.homepage-reel-play-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.homepage-reel-card:hover .homepage-reel-play-btn {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.08);
+}
+
+.homepage-reel-play-btn svg {
+  width: 20px;
+  height: 20px;
+  color: white;
+  margin-left: 2px; /* visually center the triangle */
+}
+
+/* ---------- Loading Spinner Overlay ---------- */
+.homepage-reel-spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+
+.homepage-reel-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: homepage-reel-spin 0.7s linear infinite;
+}
+
+@keyframes homepage-reel-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ---------- Text Content ---------- */
+.homepage-reel-text {
+  padding-top: 8px;
+}
+
+.homepage-reel-category {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #666;
+  margin-bottom: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.homepage-reel-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #1a1a1a;
+  font-family: Georgia, "Times New Roman", serif;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.homepage-reel-card:hover .homepage-reel-card-title {
+  color: #333;
+}
+
+/* ---------- Author overlay (bottom-left of thumbnail) ---------- */
+.homepage-reel-author {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 3;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  line-height: 1.3;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .homepage-reel-card {
+    width: 160px;
+  }
+
+  .homepage-reel-play-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .homepage-reel-play-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .homepage-reel-card-title {
+    font-size: 14px;
+  }
+
+  .homepage-reels-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .homepage-reel-card {
+    width: 140px;
+  }
+}

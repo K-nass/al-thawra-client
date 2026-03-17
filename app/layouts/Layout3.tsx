@@ -4,7 +4,7 @@ import ArticleImage from "../components/ArticleImage";
 interface Layout3Props {
   category?: string;
   title: string;
-  description: string;
+  summary: string;
   image?: string;
   imageCredit?: string;
   link?: string;
@@ -13,7 +13,7 @@ interface Layout3Props {
 export default function Layout3({ 
   category, 
   title, 
-  description, 
+  summary, 
   image, 
   imageCredit,
   link 
@@ -36,7 +36,7 @@ export default function Layout3({
             {title}
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            {description}
+            {summary}
           </p>
         </div>
 

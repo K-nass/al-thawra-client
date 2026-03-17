@@ -41,9 +41,9 @@ export default function Layout11({ posts }: Layout11Props) {
                     <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
                       {leftPost.title}
                     </h3>
-                    {(leftPost.summary || leftPost.description) && (
+                    {leftPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {leftPost.summary || leftPost.description}
+                        {leftPost.summary}
                       </p>
                     )}
                   </div>
@@ -85,9 +85,9 @@ export default function Layout11({ posts }: Layout11Props) {
                 <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
                   {post.title}
                 </h3>
-                {(post.summary || post.description) && (
+                {post.summary && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.summary || post.description}
+                    {post.summary}
                   </p>
                 )}
               </article>

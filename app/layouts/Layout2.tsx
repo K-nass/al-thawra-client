@@ -81,9 +81,9 @@ export default function Layout2({ posts }: Layout2Props) {
                   {post.title}
                 </h3>
 
-                {(post.summary || post.description) && (
+                {post.summary && (
                   <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                    {post.summary || post.description}
+                    {post.summary}
                   </p>
                 )}
               </div>
@@ -117,9 +117,9 @@ export default function Layout2({ posts }: Layout2Props) {
                         {post.title}
                       </h3>
 
-                      {(post.summary || post.description) && (
+                      {post.summary && (
                         <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                          {post.summary || post.description}
+                          {post.summary}
                         </p>
                       )}
                     </div>
@@ -138,7 +138,7 @@ export default function Layout2({ posts }: Layout2Props) {
             <Layout3
               category="إعلان"
               title="أتلانتس دبي تقدم دخولاً مجانياً للحديقة المائية بينما تستمر الحرب"
-              description="جاءت هذه البادرة الحسنة بعد أقل من أسبوعين من قيام طائرة إيرانية بدون طيار بضرب فندق فيرمونت ذا بالم على بعد حوالي ثلاثة أميال، مما أدى إلى إصابة أربعة أشخاص."
+              summary="جاءت هذه البادرة الحسنة بعد أقل من أسبوعين من قيام طائرة إيرانية بدون طيار بضرب فندق فيرمونت ذا بالم على بعد حوالي ثلاثة أميال، مما أدى إلى إصابة أربعة أشخاص."
               image="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800&h=600&fit=crop"
               imageCredit="كريم صحيح/وكالة فرانس برس عبر Getty"
             />

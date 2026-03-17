@@ -59,7 +59,7 @@ export async function loader({ params }: { params: { slug: string } }) {
       authorName: author.userName,
       authorSlug: username,
       authorImage: author.profileImageUrl || "",
-      description: post.description || "",
+      summary: post.summary || "",
       status: "Published",
       language: "Arabic",
       postType: "Article",

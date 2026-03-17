@@ -32,9 +32,9 @@ export default function Layout7({ categoryData, showAdvertisement = false, adver
                 <h3 className={`font-bold mb-3 group-hover:text-blue-700 transition-colors line-clamp-2 ${index === 2 ? 'text-blue-800 text-base' : 'text-base'}`}>
                   {post.title}
                 </h3>
-                {(post.summary || post.description) && (
+                {post.summary && (
                   <p className="text-sm text-gray-700 line-clamp-3">
-                    {(post.summary || post.description).split(" ").slice(0, 20).join(" ")}
+                    {post.summary.split(" ").slice(0, 20).join(" ")}
                   </p>
                 )}
               </div>

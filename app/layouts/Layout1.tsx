@@ -118,9 +118,9 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                   <h3 className="text-lg font-bold mb-3 leading-tight group-hover:text-blue-700 transition-colors">
                     {featuredPost.title}
                   </h3>
-                  {(featuredPost.summary || featuredPost.description) && (
+                  {featuredPost.summary && (
                     <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                      {featuredPost.summary || featuredPost.description}
+                      {featuredPost.summary}
                     </p>
                   )}
                   <div className="mb-2">
@@ -243,9 +243,9 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                         {post.title}
                       </h1>
 
-                      {(post.summary || post.description) && (
+                      {post.summary && (
                         <p className="text-gray-700 mb-4 leading-relaxed">
-                          {post.summary || post.description}
+                          {post.summary}
                         </p>
                       )}
                     </div>
@@ -313,7 +313,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
         <div className="space-y-4 h-full flex flex-col">
           <div className="flex-1">
             {/* Header with title and map */}
-            <div className="grid grid-cols-2 gap-4 pb-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <h2 className="text-2xl font-bold leading-tight">
                   العالم في لمحة
@@ -332,30 +332,48 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                   className="w-full h-32 object-contain"
                 />
               </div>
+              <hr className="w-full border-dashed border-black/10 col-span-2" />
             </div>
             {leftDirectionPosts && leftDirectionPosts.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {leftDirectionPosts.slice(0, 6).map((post) => (
+              <div className="divide-y divide-dashed divide-black/10">
+                {/* 3 rows with image */}
+                {leftDirectionPosts.slice(0, 3).map((post) => (
                   <Link
                     key={post.id}
                     to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                    className="group border border-dashed border-black/10 overflow-hidden transition-colors"
+                    className="flex items-start gap-3 py-3 group transition-colors"
                     title={post.title}
                   >
-                    <ArticleImage
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full"
-                      aspectRatio="4 / 3"
-                    />
+                    <div className="w-36 flex-none overflow-hidden border border-dashed border-black/10">
+                      <ArticleImage
+                        src={post.image}
+                        alt={post.title}
+                        className="w-full"
+                        aspectRatio="4 / 3"
+                      />
+                    </div>
 
-                    <div className="p-3 pt-2">
+                    <div className="flex-1 min-w-0 text-right">
                       <div className="text-[11px] uppercase tracking-wide text-gray-600 font-semibold line-clamp-1">
                         {post.categoryName}
                       </div>
                       <div className="mt-1 text-sm font-semibold leading-snug text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-3">
                         {post.title}
                       </div>
+                    </div>
+                  </Link>
+                ))}
+
+                {/* 4 rows without image */}
+                {leftDirectionPosts.slice(3, 7).map((post) => (
+                  <Link
+                    key={post.id}
+                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                    className="block py-3 group transition-colors"
+                    title={post.title}
+                  >
+                    <div className="text-sm font-semibold leading-snug text-gray-900 group-hover:text-blue-700 transition-colors text-right line-clamp-2">
+                      {post.title}
                     </div>
                   </Link>
                 ))}
