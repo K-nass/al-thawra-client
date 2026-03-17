@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { PostHeader } from "./PostHeader";
 import { PostImage } from "./PostImage";
 import { PostContent } from "./PostContent";
-import { CommentsSection } from "./CommentsSection";
 import { RelatedPosts } from "./RelatedPosts";
 import { ScrollAnimation } from "../ScrollAnimation";
 
@@ -58,7 +57,7 @@ export function PostDetails({
 }: PostDetailsProps) {
   return (
     <section className="min-h-screen">
-      <article className="max-w-3xl mx-auto px-4 py-8">
+      <article className="max-w-3xl mx-auto px-4">
         {/* Article Header */}
         <ScrollAnimation animation="slideUp" duration={0.6} immediate={true}>
           <PostHeader
@@ -86,14 +85,6 @@ export function PostDetails({
 
         {/* Extra content before comments (e.g. audio player) */}
         {extraContentBeforeComments}
-
-        {/* Comments Section - Login/Register Prompt */}
-        <CommentsSection
-          onRegister={onRegister}
-          onLogin={onLogin}
-          registerHref={registerHref}
-          loginHref={loginHref}
-        />
       </article>
 
       {/* Related Posts - Full Width */}
