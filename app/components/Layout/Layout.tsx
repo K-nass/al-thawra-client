@@ -1,6 +1,5 @@
 import { Header } from "./Header";
 import { Footer } from "./Footer";
-import { NavigationSidebar } from "./NavigationSidebar";
 import { SecondaryTopBar } from "./SecondaryTopBar";
 import type { Category } from "../../services/categoriesService";
 import type { Page } from "../../services/pagesService";
@@ -19,7 +18,6 @@ export function Layout({ children, categories = [], footerPages = [], logoSettin
     <div>
       <Header categories={categories} ceoName={logoSettings?.ceoName} />
       <SecondaryTopBar breakingNews={breakingNews} />
-      <NavigationSidebar categories={categories} />
       <main>
         {children}
       </main>
