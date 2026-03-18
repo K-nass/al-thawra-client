@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { Route } from "./+types/article";
 import { PostHeader } from "../components/Post/PostHeader";
+import { PostMeta } from "../components/Post/PostHeader";
 import { PostImage } from "../components/Post/PostImage";
 import { PostContent } from "../components/Post/PostContent";
+import { AuthorCard } from "../components/Post/AuthorCard";
 import { CommentsSection, PostDetails } from "../components/Post";
 import axiosInstance from "~/lib/axios";
 import { cache, CacheTTL } from "~/lib/cache";
@@ -152,10 +154,13 @@ function InlineArticle({ article }: { article: ArticleResponse }) {
           category={article.categoryName}
           categoryHref={`/category/${article.categorySlug}`}
           title={article.title}
+        />
+        <PostMeta
           date={formattedDate}
           commentsCount={0}
           authorName={article.authorName}
           authorHref={article.authorId ? `/author/${article.authorId}` : undefined}
+          title={article.title}
         />
         {article.image && article.image !== "null" && article.image !== "undefined" && (
           <PostImage src={article.image} alt={article.imageDescription} />
@@ -366,6 +371,12 @@ export default function ArticlePage({
             content={article.content}
             registerHref="/register"
             loginHref="/login"
+            authorCard={
+              <AuthorCard
+                name="سام عٍبَدِ الُِلُِه الُِغبَارٍى"
+                image="/images/سام.png"
+              />
+            }
           />
 
           {/* Inline articles loaded on scroll */}

@@ -178,7 +178,8 @@ export async function loader({ }: Route.LoaderArgs) {
 export default function Home() {
   // Get data from loader
   const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
-
+  console.log("writers posts",writersPosts);
+  
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 

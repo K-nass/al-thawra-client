@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { PostHeader } from "./PostHeader";
+import { PostMeta } from "./PostHeader";
 import { PostImage } from "./PostImage";
 import { PostContent } from "./PostContent";
 import { RelatedPosts } from "./RelatedPosts";
@@ -34,6 +35,9 @@ interface PostDetailsProps {
 
   // Optional extra content before comments (e.g. audio player)
   extraContentBeforeComments?: ReactNode;
+
+  // Author card rendered after the header
+  authorCard?: ReactNode;
 }
 
 export function PostDetails({
@@ -54,6 +58,7 @@ export function PostDetails({
   relatedPosts,
   relatedPostsTitle,
   extraContentBeforeComments,
+  authorCard,
 }: PostDetailsProps) {
   return (
     <section className="min-h-screen">
@@ -64,12 +69,20 @@ export function PostDetails({
             category={category}
             categoryHref={categoryHref}
             title={title}
-            date={date}
-            commentsCount={commentsCount}
-            authorName={authorName}
-            authorHref={authorHref}
           />
         </ScrollAnimation>
+
+        {/* Author Card */}
+        {authorCard}
+
+        {/* Meta row: after author card dashed border */}
+        <PostMeta
+          date={date}
+          commentsCount={commentsCount}
+          authorName={authorName}
+          authorHref={authorHref}
+          title={title}
+        />
 
         {/* Article Image */}
         {imageSrc && imageSrc !== "null" && imageSrc !== "undefined" && (
