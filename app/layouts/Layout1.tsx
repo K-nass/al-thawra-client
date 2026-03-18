@@ -32,11 +32,11 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
 
   const rightWindow = useMemo(() => {
     if (posts.length === 0) return [];
-    const windowSize = Math.min(3, posts.length);
+    const windowSize = Math.min(5, posts.length);
     const picked: Post[] = [];
     const seen = new Set<string>();
 
-    // Pick up to 3 unique posts in a looping manner: 1 featured + 2 cards.
+    // Pick up to 5 unique posts in a looping manner: 1 featured + 4 cards.
     for (let offset = 0; offset < posts.length && picked.length < windowSize; offset++) {
       const p = posts[(rightStartIndex + offset) % posts.length];
       if (!p) continue;
@@ -49,7 +49,9 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
   }, [posts, rightStartIndex]);
 
   const featuredPost = rightWindow[0];
-  const authorCardPosts = rightWindow.slice(1, 3);
+  const authorCardPosts = rightWindow.slice(1, 5);
+
+  console.log("rightWindow", rightWindow);
 
   const canSwapRight = posts.length > 1;
   const goNextRight = () => {
@@ -147,17 +149,17 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
           </div>
 
           {/* Author Cards - Two Columns */}
-          <div className="grid grid-cols-2 gap-3 pt-4 flex-1">
+            <div className="grid grid-cols-2 gap-3">
             {authorCardPosts.map((post) => (
               <Link
                 key={post.id}
                 to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                className="bg-[#b8d4e0] p-3 flex flex-col group"
+                className="bg-[#b8d4e0] p-3 flex flex-col group justify-between gap-6 transition-colors"
               >
-                <h4 className="text-sm font-bold mb-auto leading-tight group-hover:text-blue-700 transition-colors">
+                <h4 className="text-sm font-bold leading-tight group-hover:text-blue-700 transition-colors">
                   {post.title}
                 </h4>
-                <div className="flex items-center gap-2 mt-3">
+                <div className="flex items-center gap-2">
                   {post.authorImage ? (
                     <img
                       src={post.authorImage}

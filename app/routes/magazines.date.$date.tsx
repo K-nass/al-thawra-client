@@ -3,7 +3,7 @@ import { magazinesService, type Magazine } from "../services/magazinesService";
 import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "../components/EmptyState";
-import { MagazineViewer } from "../components/MagazineViewer";
+import { MagazineViewer } from "~/components/MagazineViewer/index";
 
 // Loader function to fetch magazine by date
 export async function loader({ params }: { params: { date: string } }) {

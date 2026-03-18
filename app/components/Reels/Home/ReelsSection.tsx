@@ -13,7 +13,7 @@ export function ReelsSection({ reels }: ReelsSectionProps) {
 
   return (
     <section
-      className="homepage-reels-section"
+      className="homepage-reels-section border-b-2 border-black py-6"
       aria-label="شاهد فيديوهات اليوم"
     >
       <div className="homepage-reels-header">
