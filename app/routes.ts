@@ -17,6 +17,7 @@ export default [
   route("magazines/issue/:issueNumber", "routes/magazines.issue.$issueNumber.tsx"),
   route("api/pdf/date/:date", "routes/api.pdf.date.$date.tsx"),
   route("api/pdf/issue/:issueNumber", "routes/api.pdf.issue.$issueNumber.tsx"),
+  route("api/pdf/proxy", "routes/api.pdf.proxy.tsx"),
   route("contact", "routes/contact.tsx"),
   route("about", "routes/about.tsx"),
   route("ads", "routes/ads.tsx"),
@@ -33,5 +34,6 @@ export default [
   route("podcast", "routes/podcast.tsx"),
   route("tv", "routes/tv.tsx"),
   route("pages/:slug", "routes/pages.$slug.tsx"),
+  route("test-pdf-viewer", "routes/test-pdf-viewer.tsx"),
   route("*", "routes/not-found.tsx")
 ] satisfies RouteConfig;

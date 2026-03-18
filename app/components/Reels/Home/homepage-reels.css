@@ -25,33 +25,21 @@
 
 /* ---------- Scrollable List ---------- */
 .homepage-reels-list {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
   padding-bottom: 4px;
   list-style: none;
   margin: 0;
   padding-left: 0;
   padding-right: 0;
-
-  /* Hide scrollbar */
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 
-.homepage-reels-list::-webkit-scrollbar {
-  display: none;
-}
-
-.homepage-reels-list li {
-  flex-shrink: 0;
+.homepage-reels-list .swiper-slide {
+  height: auto;
 }
 
 /* ---------- Card ---------- */
 .homepage-reel-card {
   display: block;
-  width: 200px;
+  width: 100%;
   text-decoration: none;
   color: inherit;
   outline-offset: 3px;
@@ -195,10 +183,6 @@
 
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
-  .homepage-reel-card {
-    width: 160px;
-  }
-
   .homepage-reel-play-btn {
     width: 40px;
     height: 40px;
@@ -219,7 +203,4 @@
 }
 
 @media (max-width: 480px) {
-  .homepage-reel-card {
-    width: 140px;
-  }
 }

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
+import ArticleImage from "./ArticleImage";
 
 export type { Post };
 
@@ -22,25 +23,20 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
     : `/posts/categories/${post.categorySlug}/articles/${post.slug}`;
 
   const isFeatured = variant === 'featured';
+  const imageSrc =
+    post.image && post.image !== "null" && post.image !== "undefined"
+      ? post.image
+      : undefined;
 
   return (
     <article className={`relative group ${isFeatured ? 'h-full' : 'h-full flex flex-col'}`}>
       <Link to={linkHref} className="block">
-        {post.image && post.image !== "null" && post.image !== "undefined" ? (
-          <div className={`relative overflow-hidden ${isFeatured ? 'aspect-[4/3] mb-4' : 'aspect-[4/3] mb-3'}`}>
-            <img
-              src={post.image}
-              alt={post.imageDescription || post.title}
-              loading="lazy"
-              decoding="async"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        ) : (
-          <div className={`flex items-center justify-center bg-gray-200/50 ${isFeatured ? 'aspect-[4/3] mb-4' : 'aspect-[4/3] mb-3'}`}>
-            <span className="text-gray-500 text-sm">لا توجد صورة</span>
-          </div>
-        )}
+        <ArticleImage
+          src={imageSrc}
+          alt={post.imageDescription || post.title}
+          className={`overflow-hidden ${isFeatured ? 'mb-4' : 'mb-3'}`}
+          aspectRatio="4 / 3"
+        />
       </Link>
 
       <div className={`flex-1 flex flex-col ${isFeatured ? '' : ''}`}>
@@ -93,3 +89,4 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
     </article>
   );
 }
+

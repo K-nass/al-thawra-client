@@ -1,0 +1,529 @@
+/* ==========================================================================
+   Magazine Viewer — Premium PDF Reader Styles
+   ========================================================================== */
+
+/* ---- Root & Layout ---- */
+.viewer-root {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0f0f1a;
+  position: relative;
+}
+
+.viewer-layout {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.viewer-main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ---- Viewport ---- */
+.viewer-viewport {
+  flex: 1;
+  overflow: auto;
+  cursor: default;
+}
+
+.viewer-viewport-pan {
+  cursor: grab;
+}
+
+.viewer-viewport-pan:active {
+  cursor: grabbing;
+}
+
+.viewer-viewport-pointer {
+  cursor: default;
+}
+
+.viewer-center-wrap {
+  min-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  padding-inline: clamp(8px, 2vw, 24px);
+}
+
+/* ---- Page ---- */
+.viewer-page {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 1px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.viewer-page:hover {
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.45),
+    0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.viewer-page-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ---- Floating Toolbar ---- */
+.viewer-toolbar {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: rgba(15, 15, 30, 0.75);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  z-index: 100;
+  user-select: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+}
+
+.viewer-toolbar:hover {
+  background: rgba(15, 15, 30, 0.85);
+}
+
+.viewer-toolbar-section {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.viewer-toolbar-section + .viewer-toolbar-section {
+  margin-inline-start: 6px;
+  padding-inline-start: 6px;
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.viewer-toolbar-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 4px;
+}
+
+.viewer-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+
+.viewer-toolbar-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.viewer-toolbar-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.viewer-toolbar-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.viewer-toolbar-btn-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.viewer-toolbar-btn-primary {
+  background: rgba(99, 102, 241, 0.5);
+  color: #fff;
+}
+
+.viewer-toolbar-btn-primary:hover:not(:disabled) {
+  background: rgba(99, 102, 241, 0.7);
+}
+
+.viewer-toolbar-page-info,
+.viewer-toolbar-zoom-info {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0 6px;
+  min-width: 52px;
+  text-align: center;
+}
+
+/* ---- Dropdown Menus ---- */
+.viewer-toolbar-dropdown {
+  position: relative;
+}
+
+.viewer-toolbar-zoom-trigger {
+  padding-inline: 8px;
+}
+
+.viewer-toolbar-dropdown-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  min-width: 190px;
+  background: rgba(18, 18, 32, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 120;
+  animation: viewer-fade-in 0.2s ease-out;
+}
+
+.viewer-toolbar-settings-menu {
+  min-width: 240px;
+}
+
+.viewer-toolbar-dropdown-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.viewer-toolbar-dropdown-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.viewer-toolbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.82);
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.viewer-toolbar-dropdown-item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.viewer-toolbar-dropdown-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.viewer-toolbar-dropdown-item-active {
+  background: rgba(99, 102, 241, 0.25);
+  color: #fff;
+}
+
+.viewer-toolbar-dropdown-item-compact {
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+.viewer-toolbar-zoom-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* ---- Thumbnail Sidebar ---- */
+.viewer-sidebar {
+  width: 0;
+  overflow: hidden;
+  background: rgba(15, 15, 30, 0.95);
+  border-inline-end: 1px solid rgba(255, 255, 255, 0.06);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.viewer-sidebar-open {
+  width: 180px;
+}
+
+.viewer-sidebar-inner {
+  width: 180px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-sidebar-header {
+  padding: 16px 14px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.viewer-sidebar-content {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.viewer-sidebar-thumb-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-sidebar-thumb-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.viewer-sidebar-thumb-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.viewer-sidebar-thumb-active {
+  border-color: rgba(99, 102, 241, 0.6);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.viewer-sidebar-thumb-img {
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.viewer-sidebar-thumb-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.viewer-sidebar-thumb-active .viewer-sidebar-thumb-label {
+  color: rgba(99, 102, 241, 0.9);
+}
+
+/* ---- Loading State ---- */
+.viewer-loading-root {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: #0f0f1a;
+}
+
+.viewer-loading-skeleton {
+  position: relative;
+}
+
+.viewer-loading-skeleton-page {
+  width: 260px;
+  height: 340px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 32px 24px;
+  animation: viewer-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.viewer-loading-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.viewer-loading-line {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+}
+
+.viewer-loading-spinner-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-loading-glow {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.15);
+  filter: blur(20px);
+  animation: viewer-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.viewer-loading-spinner {
+  width: 48px;
+  height: 48px;
+  animation: viewer-spin 3s linear infinite;
+}
+
+.viewer-loading-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.viewer-loading-message {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.viewer-loading-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.viewer-loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.6);
+  animation: viewer-dot-pulse 1.4s ease-in-out infinite;
+}
+
+/* ---- Animations ---- */
+@keyframes viewer-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes viewer-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes viewer-dot-pulse {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ---- Fade-in for loaded content ---- */
+.viewer-layout {
+  animation: viewer-fade-in 0.5s ease-out forwards;
+}
+
+@keyframes viewer-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .viewer-toolbar {
+    left: 8px;
+    right: 8px;
+    transform: none;
+    bottom: 12px;
+    border-radius: 12px;
+    padding: 4px 8px;
+    justify-content: space-between;
+  }
+
+  .viewer-sidebar-open {
+    width: 140px;
+  }
+
+  .viewer-sidebar-inner {
+    width: 140px;
+  }
+
+  .viewer-toolbar-page-info,
+  .viewer-toolbar-zoom-info {
+    min-width: 40px;
+    font-size: 11px;
+  }
+}
+
+/* ---- Scrollbar styling in viewport ---- */
+.viewer-viewport::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.viewer-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.viewer-viewport::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.viewer-viewport::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
