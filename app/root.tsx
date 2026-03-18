@@ -171,37 +171,21 @@ export default function App() {
   const shouldShowSidebar = !noSidebarRoutes.includes(location.pathname) && !disableSidebar;
 
   return (
-    <>
+    <div className="min-h-screen">
       <NavigationLoader />
+      {/* Category Sidebar — fixed overlay, out of flow */}
       <CategorySidebar categories={categories} />
-      {disableLayout ? (
-        // Full-width layout for PDF viewer (no header, sidebar, footer)
-        <Outlet context={{ categories }} />
-      ) : (
-        <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings} breakingNews={breakingNews}>
-          {shouldShowSidebar ? (
-            <div>
-              <div>
-                {/* Main Content Area */}
-                <div>
-                  <Outlet context={{ categories }} />
-                </div>
-                {/* Sidebar */}
-                <div>
-                  <Sidebar
-                    trendingPosts={trendingPosts}
-                    chiefEditor={chiefEditor}
-                    chiefEditorPosts={chiefEditorPosts}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
+      <div className="w-full min-w-0">
+        {disableLayout ? (
+          // Full-width layout for PDF viewer (no header, sidebar, footer)
+          <Outlet context={{ categories }} />
+        ) : (
+          <PageLayout categories={categories} footerPages={footerPages} logoSettings={logoSettings} breakingNews={breakingNews}>
             <Outlet context={{ categories }} />
-          )}
-        </PageLayout>
-      )}
-    </>
+          </PageLayout>
+        )}
+      </div>
+    </div>
   );
 }
 
