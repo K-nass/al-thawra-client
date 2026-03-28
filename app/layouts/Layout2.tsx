@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import type { Post } from "../services/postsService";
 import Layout3 from "./Layout3";
 import ArticleImage from "../components/ArticleImage";
@@ -51,7 +53,7 @@ export default function Layout2({ posts }: Layout2Props) {
   const displayedServices = isExpanded ? services : services.slice(0, 3);
 
   // Get first 4 posts for first row
-  const firstRowPosts = safePosts.slice(0, 4);
+  const firstRowPosts = safePosts.slice(0, 10);
   
   // Get posts 5-7 for second row
   const secondRowPosts = safePosts.slice(4, 7);
@@ -67,36 +69,44 @@ export default function Layout2({ posts }: Layout2Props) {
 
   return (
     <div className="min-h-[600px] md:min-h-[700px] space-y-4">
-      {/* First Row: 4 Articles */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* First Row: Articles Swiper */}
+      <Swiper
+        spaceBetween={16}
+        breakpoints={{
+          0:    { slidesPerView: 2 },
+          768:  { slidesPerView: 2 },
+          1024: { slidesPerView: 4 },
+        }}
+      >
         {firstRowPosts.map((post) => (
-          <Link
-            key={post.id}
-            to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-            className="block group"
-          >
-            <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
-              <div className="p-3">
-                <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
-                  {post.title}
-                </h3>
+          <SwiperSlide key={post.id}>
+            <Link
+              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              className="block group"
+            >
+              <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
+                <div className="p-3">
+                  <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
+                    {post.title}
+                  </h3>
 
-                {post.summary && (
-                  <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                    {post.summary}
-                  </p>
-                )}
-              </div>
+                  {post.summary && (
+                    <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
+                      {post.summary}
+                    </p>
+                  )}
+                </div>
 
-              <ArticleImage
-                src={post.image}
-                alt={post.title}
-                className="w-full flex-none mt-auto h-52 md:h-48 lg:h-44"
-              />
-            </article>
-          </Link>
+                <ArticleImage
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full flex-none mt-auto h-52 md:h-48 lg:h-44"
+                />
+              </article>
+            </Link>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
 
       {/* Second Row: 3 Articles + Subscription */}
       {safePosts.length >= 5 && (
