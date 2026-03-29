@@ -13,7 +13,7 @@ export const handle = {
 export default function TestPdfViewer() {
   return (
     <MagazineViewer
-      pdfUrl="https://pdfobject.com/pdf/sample.pdf"
+      pdfUrl="https://www.ijirmf.com/wp-content/uploads/IJIRMF201908054.pdf"
       issueNumber="TEST"
       date="2025-01-01"
     />
