@@ -1,6 +1,6 @@
 import type { LoaderFunctionArgs } from "react-router";
 
-const ALLOWED_HOSTS = new Set(["www.ijirmf.com"]);
+const ALLOWED_HOSTS = new Set(["www.ijirmf.com", "pdfobject.com"]);
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
