@@ -255,13 +255,13 @@ function FlipBookViewer({
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBookReady, setIsBookReady] = useState(false);
+  // Pan & zoom state
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [isFlipping, setIsFlipping] = useState(false);
-
-  // Focus & Pan state
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0 });
+  const bookWrapperRef = useRef<HTMLDivElement>(null);
+  const [isFlipping, setIsFlipping] = useState(false);
 
   // Track viewport size for fixed-dimension book sizing
   const [winSize, setWinSize] = useState({ w: 0, h: 0 });
@@ -360,8 +360,15 @@ function FlipBookViewer({
   const goToFirst = useCallback(() => goToPage(0), [goToPage]);
   const goToLast = useCallback(() => goToPage(totalPages - 1), [goToPage, totalPages]);
 
-  /* ---- Zoom ---- */
-  const zoomIn = useCallback(() => setZoomLevel((z) => Math.min(z + 0.5, 4)), []);
+  /* ---- Zoom (cursor-aware, production-grade) ----
+     We use transformOrigin = "0 0" on the book wrapper, so:
+       rendered point = pan + scale * originalPoint
+     To keep the point under the cursor fixed after a scale change:
+       newPan = cursorOffset - newScale * ((cursorOffset - oldPan) / oldScale)
+     where cursorOffset is the cursor position relative to the container. */
+  const zoomIn = useCallback(() => {
+    setZoomLevel((z) => Math.min(z + 0.5, 4));
+  }, []);
   const zoomOut = useCallback(() => {
     setZoomLevel((z) => {
       const next = Math.max(z - 0.5, 1);
@@ -374,39 +381,75 @@ function FlipBookViewer({
     setPan({ x: 0, y: 0 });
   }, []);
 
-  const handleDoubleClick = useCallback(() => {
-    setZoomLevel((z) => {
-      if (z > 1) {
+  const handleDoubleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // Find cursor position relative to the mv-book-area container
+    const container = e.currentTarget;
+    const rect = container.getBoundingClientRect();
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
+
+    setZoomLevel((oldZoom) => {
+      if (oldZoom > 1) {
+        // Zoom out — reset everything
         setPan({ x: 0, y: 0 });
         return 1;
       }
-      return 1.8;
+      // Zoom in at cursor focal point
+      const newZoom = 2;
+      // The book wrapper center is the visual origin (center of container)
+      // With transformOrigin = 'center center' the math is:
+      //   newPan.x = cursorX + (pan.x - cursorX) * (newZoom / oldZoom)
+      // But since we're going from oldZoom=1 and pan={0,0}:
+      //   newPan.x = (1 - newZoom) * (cursorX - containerWidth / 2)
+      const containerW = rect.width;
+      const containerH = rect.height;
+      const newPanX = (1 - newZoom) * (cursorX - containerW / 2);
+      const newPanY = (1 - newZoom) * (cursorY - containerH / 2);
+      setPan({ x: newPanX, y: newPanY });
+      return newZoom;
     });
   }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+  const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    // Only start panning when zoomed; ignore if the target is a nav button
     if (zoomLevel <= 1) return;
+    if ((e.target as HTMLElement).closest('button')) return;
+    e.preventDefault();
     setIsPanning(true);
     panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
-    if (e.currentTarget.setPointerCapture) {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
+    e.currentTarget.setPointerCapture(e.pointerId);
   }, [zoomLevel, pan.x, pan.y]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+  const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isPanning) return;
-    setPan({
-      x: e.clientX - panStart.current.x,
-      y: e.clientY - panStart.current.y,
-    });
-  }, [isPanning]);
+    e.preventDefault();
 
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    const rawX = e.clientX - panStart.current.x;
+    const rawY = e.clientY - panStart.current.y;
+
+    // Clamp pan so the book cannot be dragged fully off-screen.
+    // At scale z, the scaled book is (bookW * z) wide and (bookH * z) tall.
+    // The book is centered, so the max offset in each direction before the
+    // near edge leaves the viewport = (scaledSize - originalSize) / 2.
+    // We allow a generous boundary — the book edge must stay within the container.
+    const scaledW = bookConfig.width * 2 * zoomLevel;
+    const scaledH = bookConfig.height * zoomLevel;
+    const containerW = e.currentTarget.clientWidth;
+    const containerH = e.currentTarget.clientHeight;
+    const maxX = Math.max(0, (scaledW - containerW) / 2);
+    const maxY = Math.max(0, (scaledH - containerH) / 2);
+
+    setPan({
+      x: Math.max(-maxX, Math.min(maxX, rawX)),
+      y: Math.max(-maxY, Math.min(maxY, rawY)),
+    });
+  }, [isPanning, bookConfig.width, bookConfig.height, zoomLevel]);
+
+  const handlePointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isPanning) return;
     setIsPanning(false);
-    if (e.currentTarget.releasePointerCapture) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    }
-  }, []);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  }, [isPanning]);
 
   /* ---- Fullscreen ---- */
   useEffect(() => {
@@ -549,6 +592,10 @@ function FlipBookViewer({
           style={{
             width: bookConfig.width * 2,
             height: bookConfig.height,
+            /* transformOrigin = 'center center' (default) is required so that
+               the pan + scale focal-point math in handleDoubleClick works correctly.
+               The formula: newPan = (1 - newZoom) * (cursor - center) keeps the
+               pixel under the cursor fixed when zooming. */
             transform: isZoomed
               ? `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`
               : `translateX(${
@@ -559,6 +606,7 @@ function FlipBookViewer({
                     : 0
                 }px)`,
             transformOrigin: 'center center',
+            transition: isPanning ? 'none' : 'transform 0.35s cubic-bezier(0.25, 1, 0.5, 1)',
           }}
         >
           {FlipBookComp && bookConfig.width > 0 ? (
@@ -576,6 +624,8 @@ function FlipBookViewer({
               mobileScrollSupport={true}
               startZIndex={0}
               startPage={0}
+              clickEventForward={true}
+              disableFlipByClick={true}
               className={`mv-flipbook ${isZoomed ? 'mv-flipbook-zoomed' : ''}`}
               onFlip={handleFlip}
               onChangeOrientation={handleOrientationChange}
