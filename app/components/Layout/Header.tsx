@@ -64,8 +64,8 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         const threshold = navigationRef.current.offsetTop;
         setIsSticky(window.scrollY > threshold);
       } else {
-        // Ensure sticky is disabled on mobile viewports
-        setIsSticky(false);
+        // Apply sticky behavior on mobile viewports
+        setIsSticky(window.scrollY > 70);
       }
     };
 
@@ -102,28 +102,44 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
       lang="ar"
       className="w-full pb-4"
     >
-      {/* Sticky Navigation Bar - Desktop Only */}
+      {/* Sticky Navigation Bars (Desktop & Mobile) */}
       {isSticky && (
-        <div className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-12 py-2 border-b border-dashed border-black/10">
-              {/* Left: Menu Icon and Logo */}
-              <div className="flex items-center gap-3 shrink-0">
-                <button
-                  onClick={toggleSidebar}
-                  aria-label="فتح القائمة"
-                  className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
-                >
-                  <Menu className="w-5 h-5" />
-                </button>
-                <Link to="/">
-                  <img
-                    src="/formLogo.png"
-                    alt="الثورة لوجو"
-                    className="h-8"
-                  />
-                </Link>
-              </div>
+        <>
+          {/* Mobile Sticky Nav */}
+          <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300 px-4 py-2 border-b border-dashed border-black/10">
+            <div className="flex justify-between items-center max-w-7xl mx-auto">
+              <button
+                onClick={toggleSidebar}
+                aria-label="فتح القائمة"
+                className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <DateTimeDisplay isSticky={true} />
+            </div>
+          </div>
+
+          {/* Desktop Sticky Nav */}
+          <div className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-12 py-2 border-b border-dashed border-black/10">
+                {/* Left: Menu Icon and Logo */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <button
+                    onClick={toggleSidebar}
+                    aria-label="فتح القائمة"
+                    className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+                  >
+                    <Menu className="w-5 h-5" />
+                  </button>
+                  <Link to="/">
+                    <img
+                      src="/formLogo.png"
+                      alt="الثورة لوجو"
+                      className="h-8"
+                    />
+                  </Link>
+                </div>
 
               {/* Center: Categories Navigation */}
               <div className="flex-1 overflow-x-auto">
@@ -160,6 +176,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             </div>
           </div>
         </div>
+        </>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
