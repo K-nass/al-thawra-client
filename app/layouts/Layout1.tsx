@@ -316,7 +316,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <h2 className="text-2xl font-bold leading-tight">
-                  العالم في لمحة
+                  اليمن في لمحة
                 </h2>
                 <div className="flex items-center gap-2 pt-2">
                   <span className="w-2 h-2 bg-red-600 rounded-full flex-shrink-0"></span>
