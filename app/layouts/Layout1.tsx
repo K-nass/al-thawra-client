@@ -69,7 +69,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwapRight, posts.length]);
   console.log(authorCardPosts);
-  
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}
@@ -148,7 +148,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
           </div>
 
           {/* Author Cards - Two Columns */}
-            <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {authorCardPosts.map((post) => (
               <Link
                 key={post.id}
@@ -169,11 +169,11 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center text-sm font-bold">
-                      {getFirstChar(post.createdBy==="admin"?"م":post.createdBy)}
+                      {getFirstChar(post.createdBy)}
                     </div>
                   )}
                   <div className="text-xs">
-                    <div className="font-semibold">{post.createdBy==="admin" ? "مسئول":post.createdBy}</div>
+                    <div className="font-semibold">{post.createdBy}</div>
                   </div>
                 </div>
               </Link>
@@ -223,71 +223,71 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
             speed={800}
             className="premium-swiper h-full"
           >
-          {sliderPosts.length > 0 ? (
-            sliderPosts.map((post) => (
-              <SwiperSlide key={post.id} className="h-full">
-                <Link
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-                  className="block group h-full"
-                >
-                  <article className="h-full flex flex-col">
-                    <div className="px-4 py-4 text-center">
-                      {post.categoryName && (
-                        <div className="mb-3">
-                          <span className="text-lg uppercase tracking-wider text-gray-600 font-bold">
-                            {post.categoryName}
-                          </span>
+            {sliderPosts.length > 0 ? (
+              sliderPosts.map((post) => (
+                <SwiperSlide key={post.id} className="h-full">
+                  <Link
+                    to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                    className="block group h-full"
+                  >
+                    <article className="h-full flex flex-col">
+                      <div className="px-4 py-4 text-center">
+                        {post.categoryName && (
+                          <div className="mb-3">
+                            <span className="text-lg uppercase tracking-wider text-gray-600 font-bold">
+                              {post.categoryName}
+                            </span>
+                          </div>
+                        )}
+
+                        <h1 className="semafor-main-headline mb-4 group-hover:text-blue-700 transition-colors">
+                          {post.title}
+                        </h1>
+
+                        {post.summary && (
+                          <p className="text-gray-700 mb-4 leading-relaxed">
+                            {post.summary}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex-1 flex items-center justify-center px-6 pb-6">
+                        <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
+                          <ArticleImage
+                            src={post.image}
+                            alt={post.title}
+                            className="w-full h-full"
+                          />
                         </div>
-                      )}
+                      </div>
 
-                      <h1 className="semafor-main-headline mb-4 group-hover:text-blue-700 transition-colors">
-                        {post.title}
-                      </h1>
-
-                      {post.summary && (
-                        <p className="text-gray-700 mb-4 leading-relaxed">
-                          {post.summary}
+                      {post.authorName && (
+                        <p className="text-xs text-gray-500 py-2 text-center">
+                          تصوير: {post.authorName}
                         </p>
                       )}
-                    </div>
-
-                    <div className="flex-1 flex items-center justify-center px-6 pb-6">
-                      <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
-                        <ArticleImage
-                          src={post.image}
-                          alt={post.title}
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </div>
-                    
-                    {post.authorName && (
-                      <p className="text-xs text-gray-500 py-2 text-center">
-                        تصوير: {post.authorName}
-                      </p>
-                    )}
-                  </article>
-                </Link>
+                    </article>
+                  </Link>
+                </SwiperSlide>
+              ))
+            ) : (
+              <SwiperSlide>
+                <section className="h-full flex items-center justify-center">
+                  <p className="text-gray-500">لا توجد مقالات متاحة</p>
+                </section>
               </SwiperSlide>
-            ))
-          ) : (
-            <SwiperSlide>
-              <section className="h-full flex items-center justify-center">
-                <p className="text-gray-500">لا توجد مقالات متاحة</p>
-              </section>
-            </SwiperSlide>
-          )}
+            )}
           </Swiper>
 
           {/* Navigation Controls Row */}
           <div className="flex items-center justify-between mt-4">
             {/* Pagination dots will be rendered here by Swiper */}
             <div className="swiper-pagination-container flex-1"></div>
-            
+
             {/* Custom Navigation Buttons */}
             {sliderPosts.length > 1 && (
               <div className="flex items-center gap-3">
-                <button 
+                <button
                   className="swiper-button-prev-custom w-10 h-10 rounded-full border-2 border-gray-800 flex items-center justify-center"
                   aria-label="Previous slide"
                 >
@@ -295,7 +295,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
-                <button 
+                <button
                   className="swiper-button-next-custom w-10 h-10 rounded-full border-2 border-gray-800 flex items-center justify-center"
                   aria-label="Next slide"
                 >
@@ -327,9 +327,9 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                 </div>
               </div>
               <div className="flex items-start justify-end">
-                <img 
-                  src="/map.png" 
-                  alt="خريطة العالم" 
+                <img
+                  src="/map.png"
+                  alt="خريطة العالم"
                   className="w-full h-32 object-contain"
                 />
               </div>
