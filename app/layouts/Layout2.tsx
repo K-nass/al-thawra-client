@@ -47,7 +47,6 @@ export default function Layout2({ posts }: Layout2Props) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle newsletter subscription
-    console.log("Email:", email, "Selected services:", selectedServices);
   };
 
   const displayedServices = isExpanded ? services : services.slice(0, 3);

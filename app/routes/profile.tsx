@@ -40,7 +40,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       savedPosts = savedPostsResponse.items || [];
     } catch (error) {
       // If fetching saved posts fails, just return empty array
-      console.error('Failed to fetch saved posts:', error);
     }
 
     return { profile, savedPosts, error: null };

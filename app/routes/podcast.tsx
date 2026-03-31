@@ -24,7 +24,6 @@ export async function loader({ request }: { request: Request }) {
             pageNumber,
         };
     } catch (error) {
-        console.error("Failed to load podcasts:", error);
         throw new Response("Failed to load podcasts", { status: 500 });
     }
 }

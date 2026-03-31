@@ -51,8 +51,6 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
   const featuredPost = rightWindow[0];
   const authorCardPosts = rightWindow.slice(1, 5);
 
-  console.log("rightWindow", rightWindow);
-
   const canSwapRight = posts.length > 1;
   const goNextRight = () => {
     if (!canSwapRight) return;
@@ -170,11 +168,11 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center text-sm font-bold">
-                      {getFirstChar(post.authorName)}
+                      {getFirstChar(post.createdBy==="admin"?"م":post.createdBy)}
                     </div>
                   )}
                   <div className="text-xs">
-                    <div className="font-semibold">{post.authorName || "بدون اسم"}</div>
+                    <div className="font-semibold">{post.createdBy==="admin" ? "مسئول":post.createdBy}</div>
                   </div>
                 </div>
               </Link>

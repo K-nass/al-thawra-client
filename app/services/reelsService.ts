@@ -52,16 +52,13 @@ class ReelsService {
         params.Cursor = cursor;
       }
 
-      console.log('[ReelsService] getReels request:', { url: this.baseUrl, params });
       const response = await axios.get<ReelsResponse>(this.baseUrl, { params });
-      console.log('[ReelsService] getReels response:', JSON.stringify(response.data, null, 2));
       return {
         reels: response.data.reels || [],
         nextCursor: response.data.nextCursor ?? null,
         hasMore: response.data.hasMore ?? false,
       };
     } catch (error: any) {
-      console.error('[ReelsService] getReels error:', error?.response?.status, error?.response?.data || error.message);
       throw this.parseError(error);
     }
   }

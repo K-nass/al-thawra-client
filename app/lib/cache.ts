@@ -18,6 +18,7 @@ class Cache {
    */
   get<T>(key: string, ttl?: number): T | null {
     const entry = this.store.get(key);
+    console.log("entry",entry);
     
     if (!entry) {
       return null;

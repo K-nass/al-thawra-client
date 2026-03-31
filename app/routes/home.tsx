@@ -57,11 +57,9 @@ export async function loader({ }: Route.LoaderArgs) {
       () => postsService.getPostsWithAuthors(15, "Article"),
       CacheTTL.SHORT
     ).catch((error) => {
-      console.error("Error fetching writers posts:", error);
       return [];
     });
 
-    console.log("Loader - writersPosts fetched:", writersPosts);
 
     // Fetch the latest magazine (today's issue or most recent)
     let latestMagazine = await cache.getOrFetch(
@@ -178,8 +176,7 @@ export async function loader({ }: Route.LoaderArgs) {
 export default function Home() {
   // Get data from loader
   const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
-  console.log("writers posts",writersPosts);
-  
+    
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 
