@@ -108,13 +108,24 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
           {/* Mobile Sticky Nav */}
           <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-white shadow-md transition-all duration-300 px-4 py-2 border-b border-dashed border-black/10">
             <div className="flex justify-between items-center max-w-7xl mx-auto">
-              <button
-                onClick={toggleSidebar}
-                aria-label="فتح القائمة"
-                className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleSidebar}
+                  aria-label="فتح القائمة"
+                  className="p-2 hover:bg-[#a8c5d4] rounded transition-colors"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                
+                <Link to="/">
+                  <img
+                    src="/formLogo.png"
+                    alt="الثورة لوجو"
+                    className="h-7 object-contain"
+                  />
+                </Link>
+              </div>
+
               <DateTimeDisplay isSticky={true} />
             </div>
           </div>
