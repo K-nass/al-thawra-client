@@ -61,7 +61,7 @@ export function PostDetails({
   authorCard,
 }: PostDetailsProps) {
   return (
-    <section className="min-h-screen">
+    <section className="min-h-screen ">
       <article className="max-w-3xl mx-auto px-4">
         {/* Article Header */}
         <ScrollAnimation animation="slideUp" duration={0.6} immediate={true}>
