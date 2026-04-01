@@ -5,6 +5,7 @@ import "swiper/css";
 import type { Post } from "../services/postsService";
 import Layout3 from "./Layout3";
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface Layout2Props {
   posts: Post[];
@@ -91,7 +92,7 @@ export default function Layout2({ posts }: Layout2Props) {
 
                   {post.summary && (
                     <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                      {post.summary}
+                      {cleanPlainText(post.summary)}
                     </p>
                   )}
                 </div>
@@ -128,7 +129,7 @@ export default function Layout2({ posts }: Layout2Props) {
 
                       {post.summary && (
                         <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
-                          {post.summary}
+                          {cleanPlainText(post.summary)}
                         </p>
                       )}
                     </div>

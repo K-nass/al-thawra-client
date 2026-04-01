@@ -3,6 +3,7 @@ import type { Post } from "../services/postsService";
 import type { ChiefEditor } from "../services/userService";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "./ScrollAnimation";
 import { Image, User } from "lucide-react";
+import { cleanPlainText } from "../utils/arabicTextUtils";
 
 interface SidebarProps {
   trendingPosts: Post[];
@@ -55,7 +56,7 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
                 {chiefEditorPosts[0].title}
               </h4>
               <p>
-                {(chiefEditorPosts[0].summary || "").slice(0, 50) + "..."}
+                {cleanPlainText(chiefEditorPosts[0].summary).slice(0, 50) + "..."}
               </p>
             </Link>
 

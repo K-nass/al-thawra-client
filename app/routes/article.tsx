@@ -11,6 +11,7 @@ import { cache, CacheTTL } from "~/lib/cache";
 import { generateMetaTags, generateArticleSchema, generateBreadcrumbSchema } from "~/utils/seo";
 import { postsService, type Post, type PaginatedPostsResponse } from "~/services/postsService";
 import { Link } from "react-router";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface ArticleResponse {
   id: string;
@@ -299,7 +300,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
   return [
     ...generateMetaTags({
       title: article.title,
-      description: article.summary || article.content.substring(0, 155),
+      description: cleanPlainText(article.summary || article.content.substring(0, 155)),
       image: article.image,
       url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
       type: "article",
@@ -312,7 +313,7 @@ export function meta({ loaderData }: Route.MetaArgs) {
     {
       "script:ld+json": generateArticleSchema({
         title: article.title,
-        description: article.summary,
+        description: cleanPlainText(article.summary),
         image: article.image,
         publishedAt: article.publishedAt,
         updatedAt: article.publishedAt,

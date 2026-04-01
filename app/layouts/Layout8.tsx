@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface CategoryWithPosts {
   category: {
@@ -70,7 +71,7 @@ export default function Layout8({ categoryData }: Layout8Props) {
                     </h3>
                     {rightPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {rightPost.summary}
+                        {cleanPlainText(rightPost.summary)}
                       </p>
                     )}
                   </div>
@@ -95,7 +96,7 @@ export default function Layout8({ categoryData }: Layout8Props) {
                     {post.title}
                   </h3>
                   <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
-                    {post.summary || ""}
+                    {cleanPlainText(post.summary) || ""}
                   </p>
                 </article>
             </Link>

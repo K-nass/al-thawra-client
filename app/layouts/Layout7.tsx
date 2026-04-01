@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface CategoryWithPosts {
   category: {
@@ -34,7 +35,7 @@ export default function Layout7({ categoryData, showAdvertisement = false, adver
                 </h3>
                 {post.summary && (
                   <p className="text-sm text-gray-700 line-clamp-3">
-                    {post.summary.split(" ").slice(0, 20).join(" ")}
+                    {cleanPlainText(post.summary).split(" ").slice(0, 20).join(" ")}
                   </p>
                 )}
               </div>

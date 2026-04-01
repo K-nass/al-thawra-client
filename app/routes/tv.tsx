@@ -8,6 +8,7 @@ import { cache, CacheTTL } from "../lib/cache";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "../components/ScrollAnimation";
 import { generateMetaTags } from "~/utils/seo";
 import { showToast } from "~/components/Toast";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 export function meta({}: Route.MetaArgs) {
   return generateMetaTags({
@@ -151,7 +152,7 @@ export default function TVPage() {
 
             {/* Subtitle */}
             <p>
-              {featuredVideo.summary || featuredVideo.content?.substring(0, 100)}
+              {cleanPlainText(featuredVideo.summary || featuredVideo.content?.substring(0, 100))}
             </p>
 
             {/* Meta Info */}
@@ -405,7 +406,7 @@ function VideoCard({ video }: { video: Video }) {
           {video.title}
         </h3>
         <p>
-          {video.summary || video.content?.substring(0, 100)}
+          {cleanPlainText(video.summary || video.content?.substring(0, 100))}
         </p>
         <div>
           <span>{new Date(video.publishedAt || video.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' })}</span>

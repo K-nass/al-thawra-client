@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "./ArticleImage";
+import { cleanPlainText } from "../utils/arabicTextUtils";
 
 export type { Post };
 
@@ -56,7 +57,7 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
         </Link>
 
         <p className={`text-gray-700 leading-relaxed mb-3 ${isFeatured ? 'text-sm line-clamp-3' : 'text-sm line-clamp-2'}`}>
-          {post.imageDescription || post.title}
+          {cleanPlainText(post.summary || post.imageDescription || post.title)}
         </p>
 
         <div className="mt-auto">
