@@ -187,8 +187,8 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
           <button
             onClick={() => setActiveTab("today")}
             className={`px-3 py-1 transition-colors cursor-pointer ${activeTab === "today"
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-600 hover:bg-gray-100"
               }`}
           >
             اليوم
@@ -196,15 +196,14 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
           <button
             onClick={() => setActiveTab("week")}
             className={`px-3 py-1 transition-colors cursor-pointer ${activeTab === "week"
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-600 hover:bg-gray-100"
               }`}
           >
             الأسبوع
           </button>
         </div>
       </div>
-
       {posts.length === 0 ? null : (
         <>
           {/* Featured top post with image */}
@@ -227,7 +226,6 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
               )}
             </Link>
           )}
-
           {/* Numbered list */}
           <ol className="space-y-0">
             {(featured ? [featured, ...rest] : posts).map((post, index) => (
@@ -251,7 +249,6 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
     </div>
   );
 }
-
 // Loader function for SSR with caching
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const { slug, categorySlug } = params;
@@ -353,10 +350,19 @@ export default function ArticlePage({
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main article column */}
-        <div className="flex-1 min-w-0">
+    <div className="max-w-7xl mx-auto px-4 lg:px-0">
+      <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
+        {/* Right Sidebar - Author Card */}
+        <aside className="w-full lg:w-72 shrink-0 order-1 lg:order-1">
+          <AuthorCard 
+            name="سام عبد الله الغابرى" 
+            bio="إعلامي ومثقف سعودي، رئيس التحرير الأسبق لصحيفة «الشرق الأوسط» وجريدة «المجلة» والمدير العام السابق لقناة العربية. خريج إعلام الجامعة الأمريكية في واشنطن، وهو من ضمن الكتاب الدائمين في الصحيفة"
+            image="/images/سام.png"
+          />
+        </aside>
+
+        {/* Main Content Column */}
+        <main className="flex-1 min-w-0 order-2 lg:order-2">
           {/* Primary article via SSR */}
           <PostDetails
             category={article.categoryName}
@@ -371,12 +377,6 @@ export default function ArticlePage({
             content={article.content}
             registerHref="/register"
             loginHref="/login"
-            authorCard={
-              <AuthorCard
-                name="سام عٍبَدِ الُِلُِه الُِغبَارٍى"
-                image="/images/سام.png"
-              />
-            }
           />
 
           {/* Inline articles loaded on scroll */}
@@ -392,18 +392,19 @@ export default function ArticlePage({
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
             </div>
           )}
-        </div>
 
-        {/* Sticky sidebar */}
-        <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4">
+          {/* Comments Section */}
+          <CommentsSection
+            registerHref="/register"
+            loginHref="/login"
+          />
+        </main>
+
+        {/* Left Sidebar - Most Read */}
+        <aside className="w-full lg:w-72 shrink-0 order-3 lg:order-3">
           <MostReadSidebar todayPosts={mostReadToday} weekPosts={mostReadWeek} />
         </aside>
       </div>
-      {/* Comments Section - Login/Register Prompt */}
-      <CommentsSection
-        registerHref="/register"
-        loginHref="/login"
-      />
     </div>
   );
 }
