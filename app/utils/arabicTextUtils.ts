@@ -99,3 +99,21 @@ export function cleanArabicArticleContent(content: string): string {
 
   return cleaned.trim();
 }
+
+/**
+ * Clean plain text summaries for cards and meta tags
+ * Removes literal "rnrn" and "rn" artifacts that appear as strange text
+ * @param text - The raw summary or title
+ * @returns Cleaned plain text
+ */
+export function cleanPlainText(text: string | null | undefined): string {
+  if (!text) return "";
+
+  return text
+    // Remove rn sequences
+    .replace(/rnrn/gi, " ")
+    .replace(/rn/gi, " ")
+    // Clean up excessive whitespace
+    .replace(/\s+/g, " ")
+    .trim();
+}

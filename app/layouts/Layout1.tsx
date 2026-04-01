@@ -4,6 +4,7 @@ import type { Post } from "../services/postsService";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -121,7 +122,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                   </h3>
                   {featuredPost.summary && (
                     <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-                      {featuredPost.summary}
+                      {cleanPlainText(featuredPost.summary)}
                     </p>
                   )}
                   <div className="mb-2">
@@ -246,14 +247,14 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
 
                         {post.summary && (
                           <p className="text-gray-700 mb-4 leading-relaxed">
-                            {post.summary}
+                            {cleanPlainText(post.summary)}
                           </p>
                         )}
                       </div>
 
                       <div className="flex-1 flex items-center justify-center px-6 pb-6">
                         <div className="w-full max-w-2xl aspect-[4/3] overflow-hidden">
-                          <ArticleImage
+                          < ArticleImage
                             src={post.image}
                             alt={post.title}
                             className="w-full h-full"

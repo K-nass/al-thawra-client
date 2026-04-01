@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface Layout11Props {
   posts: Post[];
@@ -43,7 +44,7 @@ export default function Layout11({ posts }: Layout11Props) {
                     </h3>
                     {leftPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {leftPost.summary}
+                    {cleanPlainText(leftPost.summary)}
                       </p>
                     )}
                   </div>
@@ -87,7 +88,7 @@ export default function Layout11({ posts }: Layout11Props) {
                 </h3>
                 {post.summary && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
-                    {post.summary}
+                    {cleanPlainText(post.summary)}
                   </p>
                 )}
               </article>

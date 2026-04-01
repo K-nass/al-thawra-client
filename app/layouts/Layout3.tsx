@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import ArticleImage from "../components/ArticleImage";
+import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface Layout3Props {
   category?: string;
@@ -36,7 +37,7 @@ export default function Layout3({
             {title}
           </h2>
           <p className="text-sm text-gray-600 leading-relaxed">
-            {summary}
+            {cleanPlainText(summary)}
           </p>
         </div>
 
