@@ -192,10 +192,14 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar */}
+        <div className="w-full bg-[#d0e8f2] py-12 flex items-center justify-center">
+              <span className="text-gray-500 text-sm font-semibold tracking-wider">AD</span>
+            </div>
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
+          
           <div className="flex gap-4 items-center">
             <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
-              رٍئيس مجٍلُِس الُِادِارٍة: {ceoName || "سام عٍبَدِ الُِلُِه الُِغبَارٍى"}
+              رئيس التحرير: سام عبد الله الغبارى
             </span>
           </div>
 
