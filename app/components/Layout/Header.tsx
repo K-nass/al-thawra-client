@@ -202,11 +202,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
               رئيس مجلس الإدارة/رئيس التحرير:سام عبد الله الغبارى
             </span>
           </div>
-
-          <div className="text-center italic font-serif text-gray-500 normal-case hidden md:block">
-            صحيفة الثورة اليمنية
-          </div>
-
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -375,9 +370,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             className="h-40 w-full object-contain"
           />
         </Link>
-        <div className="text-center italic font-serif text-gray-500 normal-case mt-2">
-          صحيفة الثورة اليمنية
-        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
