@@ -3,12 +3,14 @@ import { Link } from "react-router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import type { Post } from "../services/postsService";
+import type { Category } from "../services/categoriesService";
 import Layout3 from "./Layout3";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 
 interface Layout2Props {
   posts: Post[];
+  newsletterCategories?: Category[];
 }
 
 interface BriefingService {
@@ -18,24 +20,28 @@ interface BriefingService {
   frequency: string;
 }
 
-export default function Layout2({ posts }: Layout2Props) {
+export default function Layout2({ posts, newsletterCategories = [] }: Layout2Props) {
   const [email, setEmail] = useState("");
-  const [selectedServices, setSelectedServices] = useState<string[]>(["1", "2"]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Handle empty or undefined posts
   const safePosts = posts || [];
 
-  // Briefing services data in Arabic
-  const services: BriefingService[] = [
-    { id: "1", name: "النشرة الرئيسية", description: "نشرة الأخبار العالمية اليومية التي يمكنك الوثوق بها.", frequency: "كل يوم عمل" },
-    { id: "2", name: "واشنطن العاصمة", description: "ما يقرأه البيت الأبيض.", frequency: "كل يوم عمل" },
-    { id: "3", name: "الأعمال", description: "القصص والأخبار الحصرية من وول ستريت.", frequency: "مرتين أسبوعياً" },
-    { id: "4", name: "التكنولوجيا", description: "ما هو قادم في العصر الجديد للتقنية.", frequency: "مرتين أسبوعياً" },
-    { id: "5", name: "الطاقة", description: "نقطة التقاء السياسة والتقنية والطاقة.", frequency: "مرتين أسبوعياً" },
-    { id: "6", name: "الخليج", description: "التنقل في عاصمة المنطقة ونفوذها وقوتها.", frequency: "3 مرات أسبوعياً" },
-    { id: "7", name: "الصين", description: "معلومات استخباراتية عن إعادة التنظيم العالمي.", frequency: "مرة أسبوعياً" },
-  ];
+  // Map categories to BriefingService format (limit to 10)
+  const services: BriefingService[] = newsletterCategories
+    .sort((a, b) => a.order - b.order)
+    .slice(0, 10)
+    .map((cat) => ({
+      id: cat.id,
+      name: cat.name,
+      description: cat.description || "اشترك للحصول على آخر التحديثات",
+      frequency: "حسب التحديثات",
+    }));
+
+  // Initialize selected services with first two items
+  const [selectedServices, setSelectedServices] = useState<string[]>(() => 
+    services.slice(0, 2).map(s => s.id)
+  );
 
   const handleServiceToggle = (serviceId: string) => {
     setSelectedServices(prev => 
@@ -166,19 +172,18 @@ export default function Layout2({ posts }: Layout2Props) {
 
                   {/* Email Input Form */}
                   <form onSubmit={handleSubmit} className="mb-2">
-                    <div className="flex border border-black">
+                    <div className="flex border border-black overflow-hidden">
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="البريد الإلكتروني"
-                        required
                         dir="rtl"
-                        className="flex-1 px-2 py-1.5 text-sm text-black placeholder-gray-600 focus:outline-none bg-white border-0"
+                        className="flex-1 min-w-0 px-2 py-1.5 text-sm text-black placeholder-gray-600 focus:outline-none bg-white border-0"
                       />
                       <button
                         type="submit"
-                        className="px-3 py-1.5 bg-black text-white text-sm font-bold hover:bg-gray-800 transition-colors border-r border-black"
+                        className="shrink-0 px-3 py-1.5 bg-black text-white text-sm font-bold hover:bg-gray-800 transition-colors border-r border-black"
                       >
                         إرسال
                       </button>
@@ -199,7 +204,7 @@ export default function Layout2({ posts }: Layout2Props) {
                     <div key={service.id} className="border-b border-dashed border-black/30 pb-3 last:border-b-0">
                       <label className="flex items-start gap-2 cursor-pointer group">
                         {/* Custom Styled Checkbox */}
-                        <div className="relative flex-shrink-0 mt-0.5">
+                        <div className="relative shrink-0 mt-0.5">
                           <input
                             type="checkbox"
                             checked={selectedServices.includes(service.id)}
@@ -219,9 +224,9 @@ export default function Layout2({ posts }: Layout2Props) {
                           <h3 className="text-base font-bold text-black mb-1 group-hover:text-gray-700 transition-colors">
                             {service.name}
                           </h3>
-                          <p className="text-sm text-gray-700 mb-1 leading-snug">
+                          {/* <p className="text-sm text-gray-700 mb-1 leading-snug">
                             {service.description}
-                          </p>
+                          </p> */}
                           <div className="flex items-center gap-2 text-sm">
                             <span className="text-gray-600 font-semibold">{service.frequency}</span>
                             <span className="text-blue-700 hover:underline cursor-pointer">اقرأها</span>
