@@ -37,13 +37,13 @@
 
 /* RTL (Arabic) Font Handling */
 html[dir="rtl"] {
-  --font-family-base: system-ui, -apple-system, "Segoe UI", "Roboto", "Inter", "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --font-family-arabic: "Noto Sans Arabic", "Amiri", "Scheherazade New", "Arabic Typesetting", "Traditional Arabic", "Al Bayan", "Geeza Pro", system-ui, sans-serif;
+  --font-family-base: "ArbFONTS Amiri", "Dialogue", "Yakout", system-ui, -apple-system, "Segoe UI", "Roboto", "Inter", "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  --font-family-arabic: "ArbFONTS Amiri", "Dialogue", "Yakout", "Noto Sans Arabic", "Amiri", "Scheherazade New", system-ui, sans-serif;
 }
 
 html[dir="rtl"] body,
 html[dir="rtl"] * {
-  font-family: var(--font-family-base);
+  font-family: var(--font-family-arabic);
 }
 
 /* Arabic text with proper font fallback */
@@ -115,7 +115,7 @@ html[dir="rtl"] * {
 
 body {
   background-color: #d0e8f2;
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Inter", "Helvetica Neue", Arial, sans-serif;
+  font-family: "ArbFONTS Amiri", "Dialogue", "Yakout", system-ui, -apple-system, "Segoe UI", "Roboto", "Inter", "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Semafor-inspired styles */
@@ -186,10 +186,7 @@ body {
 /* Comprehensive fix for Arabic number display issues */
 /* This overrides any problematic font that might be causing the strange symbols */
 
-/* Global fix for all text in RTL context */
-[dir="rtl"] * {
-  font-family: system-ui, -apple-system, "Segoe UI", "Roboto", "Inter", "Helvetica Neue", Arial, sans-serif !important;
-}
+/* Remove the global override - it was preventing custom fonts from loading */
 
 /* Specific fix for numbers - force system fonts */
 [dir="rtl"] *:has-text(/\d/) {
