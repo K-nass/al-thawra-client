@@ -116,7 +116,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                 >
                   <Menu className="w-5 h-5" />
                 </button>
-                
+
                 <Link to="/">
                   <img
                     src="/formLogo.png"
@@ -152,61 +152,56 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
                   </Link>
                 </div>
 
-              {/* Center: Categories Navigation */}
-              <div className="flex-1 overflow-x-auto">
-                <nav>
-                  <ul className="flex justify-center space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800 whitespace-nowrap">
-                    <li>
-                      <Link
-                        to="/"
-                        className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
-                      >
-                        الرئيسية
-                      </Link>
-                    </li>
-
-                    {/* Show first 10 categories */}
-                    {allMenuCategories.slice(0, 8).map((category) => (
-                      <li key={category.id}>
+                {/* Center: Categories Navigation */}
+                <div className="flex-1 overflow-x-auto">
+                  <nav>
+                    <ul className="flex justify-center space-x-reverse space-x-6 lg:space-x-10 text-sm font-sans text-gray-800 whitespace-nowrap">
+                      <li>
                         <Link
-                          to={`/category/${category.slug}`}
-                          className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
+                          to="/"
+                          className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4 font-medium"
                         >
-                          {category.name}
+                          الرئيسية
                         </Link>
                       </li>
-                    ))}
-                  </ul>
-                </nav>
-              </div>
 
-              {/* Right: DateTimeDisplay */}
-              <div className="shrink-0">
-                <DateTimeDisplay isSticky={true} />
+                      {/* Show first 10 categories */}
+                      {allMenuCategories.slice(0, 8).map((category) => (
+                        <li key={category.id}>
+                          <Link
+                            to={`/category/${category.slug}`}
+                            className="hover:text-blue-600 hover:underline decoration-2 underline-offset-4"
+                          >
+                            {category.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                </div>
+
+                {/* Right: DateTimeDisplay */}
+                <div className="shrink-0">
+                  <DateTimeDisplay isSticky={true} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top Bar */}
         <div className="w-full bg-[#d0e8f2] py-12 flex items-center justify-center">
-              <span className="text-gray-500 text-sm font-semibold tracking-wider">AD</span>
-            </div>
+          <span className="text-gray-500 text-sm font-semibold tracking-wider">AD</span>
+        </div>
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
-          
+
           <div className="flex gap-4 items-center">
             <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
-              رئيس التحرير: سام عبد الله الغبارى
+              رئيس مجلس الإدارة/رئيس التحرير:سام عبد الله الغبارى
             </span>
           </div>
-
-          <div className="text-center italic font-serif text-gray-500 normal-case hidden md:block">
-            صحيفة الثورة اليمنية
-          </div>
-
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -375,9 +370,6 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             className="h-40 w-full object-contain"
           />
         </Link>
-        <div className="text-center italic font-serif text-gray-500 normal-case mt-2">
-          صحيفة الثورة اليمنية
-        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
