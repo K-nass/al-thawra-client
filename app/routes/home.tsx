@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { NewsletterSubscription } from "../components/NewsletterSubscription";
 import { Spinner } from "../components/Spinner";
 import { postsService, type Post } from "../services/postsService";
-import { type Category } from "../services/categoriesService";
+import { categoriesService, type Category } from "../services/categoriesService";
 import { magazinesService } from "../services/magazinesService";
 import { userService } from "../services/userService";
 import { reelsService } from "../services/reelsService";
@@ -147,6 +147,13 @@ export async function loader({ }: Route.LoaderArgs) {
       // Error fetching chief editor data
     }
 
+    // Fetch newsletter categories for Layout2
+    const newsletterCategories = await cache.getOrFetch(
+      "categories:newsletter:Arabic",
+      () => categoriesService.getActiveCategories("Arabic"),
+      CacheTTL.SHORT
+    ).catch(() => []);
+
     return {
       sliderPosts,
       writersPosts,
@@ -157,6 +164,7 @@ export async function loader({ }: Route.LoaderArgs) {
       homeReels,
       chiefEditor,
       chiefEditorPosts,
+      newsletterCategories,
     };
   } catch (error: any) {
     return {
@@ -169,13 +177,14 @@ export async function loader({ }: Route.LoaderArgs) {
       homeReels: [],
       chiefEditor: null,
       chiefEditorPosts: [],
+      newsletterCategories: [],
     };
   }
 }
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts } = useLoaderData<typeof loader>();
+  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts, newsletterCategories } = useLoaderData<typeof loader>();
     
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
@@ -272,7 +281,7 @@ export default function Home() {
   ) {
     switch (layoutNumber) {
       case 2:
-        return <Layout2 posts={data.posts} />;
+        return <Layout2 posts={data.posts} newsletterCategories={newsletterCategories} />;
       case 4:
         return <Layout4 categoryData={data} />;
       case 5:
