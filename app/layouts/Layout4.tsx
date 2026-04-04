@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface CategoryWithPosts {
   category: {
@@ -32,9 +33,11 @@ export default function Layout4({ categoryData }: Layout4Props) {
             >
               <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
                 <div className="p-3 md:mb-16">
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors">
-                    {post.title}
-                  </h3>
+                  <ColoredTitle
+                    title={post.title}
+                    coloredWordsCount={2}
+                    className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
+                  />
                   {post.summary && (
                     <p className="text-xs text-gray-700 line-clamp-3 min-h-[3rem]">
                       {cleanPlainText(post.summary)}
@@ -55,9 +58,11 @@ export default function Layout4({ categoryData }: Layout4Props) {
             >
               <article className="semafor-card overflow-hidden h-full flex flex-col">
                 <div className="p-4">
-                  <h3 className="text-xl md:text-2xl font-bold mb-3 group-hover:text-blue-700 transition-colors text-center">
-                    {posts[3].title}
-                  </h3>
+                  <ColoredTitle
+                    title={posts[3].title}
+                    coloredWordsCount={2}
+                    className="text-xl md:text-2xl font-bold mb-3 hover:text-blue-700 transition-colors text-center"
+                  />
                   {posts[3].summary && (
                     <p className="text-sm md:text-base text-gray-700 line-clamp-2 text-center">
                       {cleanPlainText(posts[3].summary)}
@@ -88,9 +93,11 @@ export default function Layout4({ categoryData }: Layout4Props) {
             >
               <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
                 <div className="p-3 md:mb-16">
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors">
-                    {post.title}
-                  </h3>
+                  <ColoredTitle
+                    title={post.title}
+                    coloredWordsCount={2}
+                    className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
+                  />
                   {post.summary && (
                     <p className="text-xs text-gray-700 line-clamp-3 min-h-[3rem]">
                       {cleanPlainText(post.summary)}
@@ -112,10 +119,12 @@ export default function Layout4({ categoryData }: Layout4Props) {
             className="block group h-full"
           >
             <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-              <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.75rem]">
-                {post.title}
-              </h3>
-              <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
+              <ColoredTitle
+                title={post.title}
+                coloredWordsCount={2}
+                className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
+              />
+              <p className="text-xs text-gray-700 line-clamp-2">
                 {cleanPlainText(post.summary) || ""}
               </p>
             </article>

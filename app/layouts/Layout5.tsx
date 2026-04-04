@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface CategoryWithPosts {
   category: {
@@ -54,9 +55,11 @@ export default function Layout5({ categoryData }: Layout5Props) {
                   </div>
                   <div className="p-6 flex items-center justify-center hover:bg-[#b8d4e0] transition-colors duration-300">
                     <div className="text-center">
-                      <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
-                        {featuredPost.title}
-                      </h3>
+                      <ColoredTitle
+                        title={featuredPost.title}
+                        coloredWordsCount={2}
+                        className="text-2xl font-bold mb-4 hover:text-blue-700 transition-colors line-clamp-4 leading-tight"
+                      />
                       {featuredPost.summary && (
                         <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
                           {cleanPlainText(featuredPost.summary)}
@@ -81,10 +84,12 @@ export default function Layout5({ categoryData }: Layout5Props) {
               className="block group h-full"
             >
                 <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                  <h3 className="text-md font-bold mb-2 group-hover:text-blue-700 transition-colors line-clamp-3 min-h-[3.75rem]">
-                    {post.title}
-                  </h3>
-                  <p className="text-xs text-gray-700 line-clamp-2 min-h-[2rem]">
+                  <ColoredTitle
+                    title={post.title}
+                    coloredWordsCount={2}
+                    className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
+                  />
+                  <p className="text-xs text-gray-700 line-clamp-2">
                     {cleanPlainText(post.summary) || ""}
                   </p>
                 </article>

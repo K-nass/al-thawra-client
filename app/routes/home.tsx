@@ -20,6 +20,7 @@ import Layout6 from "~/layouts/Layout6";
 import Layout7 from "~/layouts/Layout7";
 import Layout8 from "~/layouts/Layout8";
 import Layout11 from "~/layouts/Layout11";
+import { ColoredTitle } from "~/components/ColoredTitle";
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -28,6 +29,13 @@ export function meta({ }: Route.MetaArgs) {
     url: "/",
     type: "website",
   });
+}
+
+export function links() {
+  return [
+    { rel: "icon", href: "/favIcon.png", type: "image/png" },
+    { rel: "apple-touch-icon", href: "/favIcon.png" },
+  ];
 }
 
 // Loading fallback for hydration

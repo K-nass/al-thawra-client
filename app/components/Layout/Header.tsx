@@ -197,10 +197,11 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
         </div>
         <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider text-gray-600">
 
-          <div className="flex gap-4 items-center">
-            <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
+          <div className="flex items-center">
+            {/* <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
               رئيس مجلس الإدارة/رئيس التحرير:سام عبد الله الغبارى
-            </span>
+            </span> */}
+            <img src="/sam-title.png" width={150}/>
           </div>
           <div className="flex items-center gap-4">
             <button

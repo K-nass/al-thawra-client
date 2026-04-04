@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface Layout3Props {
   category?: string;
@@ -33,9 +34,6 @@ export default function Layout3({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {/* Text Content */}
         <div className="space-y-2">
-          <h2 className="text-xl md:text-2xl font-serif text-gray-800 leading-tight">
-            {title}
-          </h2>
           <p className="text-sm text-gray-600 leading-relaxed">
             {cleanPlainText(summary)}
           </p>

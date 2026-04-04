@@ -7,6 +7,7 @@ import type { Category } from "../services/categoriesService";
 import Layout3 from "./Layout3";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface Layout2Props {
   posts: Post[];
@@ -39,13 +40,13 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
     }));
 
   // Initialize selected services with first two items
-  const [selectedServices, setSelectedServices] = useState<string[]>(() => 
+  const [selectedServices, setSelectedServices] = useState<string[]>(() =>
     services.slice(0, 2).map(s => s.id)
   );
 
   const handleServiceToggle = (serviceId: string) => {
-    setSelectedServices(prev => 
-      prev.includes(serviceId) 
+    setSelectedServices(prev =>
+      prev.includes(serviceId)
         ? prev.filter(id => id !== serviceId)
         : [...prev, serviceId]
     );
@@ -60,7 +61,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
 
   // Get first 4 posts for first row
   const firstRowPosts = safePosts.slice(0, 10);
-  
+
   // Get posts 5-7 for second row
   const secondRowPosts = safePosts.slice(4, 7);
 
@@ -79,22 +80,25 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
       <Swiper
         spaceBetween={16}
         breakpoints={{
-          0:    { slidesPerView: 2 },
-          768:  { slidesPerView: 2 },
+          0: { slidesPerView: 2 },
+          768: { slidesPerView: 2 },
           1024: { slidesPerView: 4 },
         }}
+        style={{ height: 'auto' }}
       >
         {firstRowPosts.map((post) => (
-          <SwiperSlide key={post.id}>
+          <SwiperSlide key={post.id} style={{ height: 'auto' }}>
             <Link
               to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
-              className="block group"
+              className="block group h-full"
             >
               <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
-                <div className="p-3">
-                  <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
-                    {post.title}
-                  </h3>
+                <div className="p-3 min-h-[180px] flex flex-col">
+                  <ColoredTitle
+                    title={post.title}
+                    coloredWordsCount={2}
+                    className="semafor-section-title hover:text-blue-700 transition-colors mb-2"
+                  />
 
                   {post.summary && (
                     <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
@@ -106,7 +110,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
                 <ArticleImage
                   src={post.image}
                   alt={post.title}
-                  className="w-full flex-none mt-auto h-52 md:h-48 lg:h-44"
+                  className="w-full flex-none h-52 md:h-48 lg:h-44 mt-auto"
                 />
               </article>
             </Link>
@@ -129,9 +133,11 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
                 >
                   <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
                     <div className="p-3">
-                      <h3 className="text-lg font-bold mb-2 leading-tight line-clamp-2 group-hover:text-blue-700 transition-colors">
-                        {post.title}
-                      </h3>
+                      <ColoredTitle
+                        title={post.title}
+                        coloredWordsCount={2}
+                        className="text-lg font-bold mb-2 leading-tight line-clamp-2 hover:text-blue-700 transition-colors"
+                      />
 
                       {post.summary && (
                         <p className="text-sm text-gray-600 leading-relaxed line-clamp-3">
@@ -219,7 +225,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
                             )}
                           </div>
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <h3 className="text-base font-bold text-black mb-1 group-hover:text-gray-700 transition-colors">
                             {service.name}
