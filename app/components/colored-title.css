@@ -1,0 +1,9 @@
+.colored-title {
+  display: inline;
+}
+
+.colored-title .inline-diamond {
+  display: inline-flex;
+  vertical-align: middle;
+  margin-inline-end: 0.5rem;
+}

@@ -9,6 +9,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface Layout1Props {
   sliderPosts: Post[];
@@ -120,6 +121,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                   <h3 className="text-lg font-bold mb-3 leading-tight group-hover:text-blue-700 transition-colors">
                     {featuredPost.title}
                   </h3>
+                  
                   {featuredPost.summary && (
                     <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                       {cleanPlainText(featuredPost.summary)}
@@ -240,10 +242,15 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                             </span>
                           </div>
                         )}
-
+                        {/* 
                         <h1 className="semafor-main-headline mb-4 group-hover:text-blue-700 transition-colors">
                           {post.title}
-                        </h1>
+                        </h1> */}
+                        <ColoredTitle
+                          title={post.title}
+                          coloredWordsCount={3}
+                          className="semafor-section-title hover:text-blue-700 transition-colors"
+                        />
 
                         {post.summary && (
                           <p className="text-gray-700 mb-4 leading-relaxed">
@@ -317,7 +324,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
             {/* Header with title and map */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <h2 className="text-2xl font-bold leading-tight">
+                <h2 className="text-xl leading-tight">
                   اليمن في لمحة
                 </h2>
                 <div className="flex items-center gap-2 pt-2">

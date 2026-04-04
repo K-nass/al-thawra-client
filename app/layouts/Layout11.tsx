@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
+import ColoredTitle from "~/components/ColoredTitle";
 
 interface Layout11Props {
   posts: Post[];
@@ -39,9 +40,11 @@ export default function Layout11({ posts }: Layout11Props) {
               <article className="semafor-card overflow-hidden flex flex-col h-full hover:bg-[#b8d4e0] transition-colors duration-300">
                 <div className="p-6 flex items-center justify-center h-full">
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-4 leading-tight">
-                      {leftPost.title}
-                    </h3>
+                    <ColoredTitle
+                      title={leftPost.title}
+                      coloredWordsCount={2}
+                      className="text-2xl font-bold mb-4 hover:text-blue-700 transition-colors leading-tight"
+                    />
                     {leftPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
                     {cleanPlainText(leftPost.summary)}
@@ -83,9 +86,11 @@ export default function Layout11({ posts }: Layout11Props) {
               className="block group h-full"
             >
               <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                <h3 className="text-sm font-bold mb-4 group-hover:text-blue-700 transition-colors line-clamp-2 flex-grow">
-                  {post.title}
-                </h3>
+                <ColoredTitle
+                  title={post.title}
+                  coloredWordsCount={2}
+                  className="text-sm font-bold mb-4 hover:text-blue-700 transition-colors"
+                />
                 {post.summary && (
                   <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
                     {cleanPlainText(post.summary)}
