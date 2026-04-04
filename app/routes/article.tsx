@@ -374,7 +374,7 @@ export default function ArticlePage({
             loginHref="/login"
             authorCard={
               <AuthorCard
-                name="سام عٍبَدِ الُِلُِه الُِغبَارٍى"
+                name="سام عبد الغبارى"
                 image="/images/سام.png"
               />
             }
