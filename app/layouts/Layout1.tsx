@@ -70,8 +70,8 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwapRight, posts.length]);
-  console.log(authorCardPosts);
-
+  console.log("sliderPosts",sliderPosts);
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}
@@ -121,7 +121,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                   <h3 className="text-lg font-bold mb-3 leading-tight group-hover:text-blue-700 transition-colors">
                     {featuredPost.title}
                   </h3>
-                  
+
                   {featuredPost.summary && (
                     <p className="text-sm text-gray-600 mb-4 leading-relaxed">
                       {cleanPlainText(featuredPost.summary)}
@@ -254,7 +254,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
 
                         {post.summary && (
                           <p className="text-gray-700 mb-4 leading-relaxed">
-                            {cleanPlainText(post.summary)}
+                            {cleanPlainText(post.summary.split(" ").length >= 30 ? post.summary.split(" ").slice(0, 30).join(" ") + ".." : post.summary)}
                           </p>
                         )}
                       </div>
