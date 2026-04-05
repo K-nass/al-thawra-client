@@ -253,7 +253,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                         />
 
                         {post.summary && (
-                          <p className="text-gray-700 mb-4 leading-relaxed">
+                          <p className="text-gray-700 mb-4 leading-relaxed text-sm mt-1">
                             {cleanPlainText(post.summary.split(" ").length >= 30 ? post.summary.split(" ").slice(0, 30).join(" ") + ".." : post.summary)}
                           </p>
                         )}
