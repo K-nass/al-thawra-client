@@ -11,11 +11,11 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout4Props {
+interface BalancedColumnsLayoutProps {
   categoryData: CategoryWithPosts;
 }
 
-export default function Layout4({ categoryData }: Layout4Props) {
+export default function BalancedColumnsLayout({ categoryData }: BalancedColumnsLayoutProps) {
   const { category, posts } = categoryData;
 
   return (

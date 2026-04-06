@@ -9,7 +9,7 @@ import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
 
-interface Layout2Props {
+interface NewsletterGridLayoutProps {
   posts: Post[];
   newsletterCategories?: Category[];
 }
@@ -21,7 +21,7 @@ interface BriefingService {
   frequency: string;
 }
 
-export default function Layout2({ posts, newsletterCategories = [] }: Layout2Props) {
+export default function NewsletterGridLayout({ posts, newsletterCategories = [] }: NewsletterGridLayoutProps) {
   const [email, setEmail] = useState("");
   const [isExpanded, setIsExpanded] = useState(false);
 

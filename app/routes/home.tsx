@@ -12,27 +12,41 @@ import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import { ReelsSection, type HomepageReel } from "~/components/Reels/Home";
-import Layout1 from "~/layouts/Layout1";
-import Layout2 from "~/layouts/Layout2";
-import Layout4 from "~/layouts/Layout4";
-import Layout5 from "~/layouts/Layout5";
-import Layout6 from "~/layouts/Layout6";
-import Layout7 from "~/layouts/Layout7";
-import Layout8 from "~/layouts/Layout8";
-import Layout11 from "~/layouts/Layout11";
+import HeroSliderLayout from "~/layouts/HeroSliderLayout";
+import NewsletterGridLayout from "~/layouts/NewsletterGridLayout";
+import BalancedColumnsLayout from "~/layouts/BalancedColumnsLayout";
+import FeaturedWithRowLayout from "~/layouts/FeaturedWithRowLayout";
+import DualFeaturedLayout from "~/layouts/DualFeaturedLayout";
+import TripleColumnLayout from "~/layouts/TripleColumnLayout";
+import InvertedSplitLayout from "~/layouts/InvertedSplitLayout";
+import SplitHeroLayout from "~/layouts/SplitHeroLayout";
 import { ColoredTitle } from "~/components/ColoredTitle";
-import type { ImplementedLayoutId } from "~/services/categoriesService";
 
 type CategoryData = { category: Category; posts: Post[] };
 
-const LAYOUT_COMPONENTS: Record<ImplementedLayoutId, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
-  Layout2:  (data, { newsletterCategories }) => <Layout2 posts={data.posts} newsletterCategories={newsletterCategories} />,
-  Layout4:  (data) => <Layout4 categoryData={data} />,
-  Layout5:  (data) => <Layout5 categoryData={data} />,
-  Layout6:  (data) => <Layout6 posts={data.posts} />,
-  Layout7:  (data, { isLast }) => <Layout7 categoryData={data} showAdvertisement={isLast} />,
-  Layout8:  (data) => <Layout8 categoryData={data} />,
-  Layout11: (data) => <Layout11 posts={data.posts} />,
+const LAYOUT_COMPONENTS: Record<string, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
+  "hero-slider":       (data, { newsletterCategories }) => <HeroSliderLayout sliderPosts={data.posts} urgentPosts={[]} rightDirectionPosts={[]} leftDirectionPosts={[]} chiefEditor={null} chiefEditorPosts={[]} />,
+  "newsletter-grid":   (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
+  "balanced-columns":  (data) => <BalancedColumnsLayout categoryData={data} />,
+  "featured-with-row": (data) => <FeaturedWithRowLayout categoryData={data} />,
+  "dual-featured":     (data) => <DualFeaturedLayout posts={data.posts} />,
+  "split-hero":        (data) => <SplitHeroLayout posts={data.posts} />,
+  "triple-column":     (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  "inverted-split":    (data) => <InvertedSplitLayout categoryData={data} />,
+  // Legacy numeric identifiers for backward compatibility
+  Layout1:  (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
+  Layout2:  (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
+  Layout3:  (data) => <DualFeaturedLayout posts={data.posts} />,
+  Layout4:  (data) => <BalancedColumnsLayout categoryData={data} />,
+  Layout5:  (data) => <FeaturedWithRowLayout categoryData={data} />,
+  Layout6:  (data) => <DualFeaturedLayout posts={data.posts} />,
+  Layout7:  (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  Layout8:  (data) => <InvertedSplitLayout categoryData={data} />,
+  Layout9:  (data) => <FeaturedWithRowLayout categoryData={data} />,
+  Layout10: (data) => <SplitHeroLayout posts={data.posts} />,
+  Layout11: (data) => <SplitHeroLayout posts={data.posts} />,
+  Layout12: (data) => <BalancedColumnsLayout categoryData={data} />,
+  Layout13: (data) => <DualFeaturedLayout posts={data.posts} />,
 };
 
 export function meta({ }: Route.MetaArgs) {
@@ -235,6 +249,7 @@ export default function Home() {
                 { pageSize: 15 },
                 "Article"
               );
+              console.log(`[Homepage] Fetched ${response.items.length} posts for category "${category.name}" (${category.slug})`);
               return response.items;
             },
             CacheTTL.SHORT
@@ -245,9 +260,11 @@ export default function Home() {
               category,
               posts,
             });
+          } else {
+            console.warn(`[Homepage] No posts found for category "${category.name}" (${category.slug})`);
           }
         } catch (error) {
-          // Error fetching posts for category
+          console.error(`[Homepage] Error fetching posts for category "${category.name}" (${category.slug}):`, error);
         }
       }
 
@@ -299,7 +316,7 @@ export default function Home() {
     newsletterCats: Category[]
   ) {
     if (!layoutId) return null;
-    const renderer = LAYOUT_COMPONENTS[layoutId as ImplementedLayoutId];
+    const renderer = LAYOUT_COMPONENTS[layoutId];
     if (!renderer) {
       console.warn(`[Homepage] Unimplemented layout "${layoutId}" for category "${data.category.slug}" — skipping.`);
       return null;
@@ -309,7 +326,7 @@ export default function Home() {
 
   return (
     <main className="semafor-container py-4 md:py-8">
-      <Layout1
+      <HeroSliderLayout
         sliderPosts={sliderPosts}
         urgentPosts={urgentPosts}
         rightDirectionPosts={rightDirectionPosts}
@@ -322,7 +339,13 @@ export default function Home() {
 
       {(() => {
         // Find the index of the last category with an implemented layout
-        const IMPLEMENTED = new Set(["Layout2", "Layout4", "Layout5", "Layout6", "Layout7", "Layout8", "Layout11"]);
+        const IMPLEMENTED = new Set([
+          "hero-slider", "newsletter-grid", "balanced-columns", 
+          "featured-with-row", "dual-featured", "split-hero", "triple-column", "inverted-split",
+          // Legacy numeric identifiers
+          "Layout1", "Layout2", "Layout3", "Layout4", "Layout5", "Layout6",
+          "Layout7", "Layout8", "Layout9", "Layout10", "Layout11", "Layout12", "Layout13"
+        ]);
         const lastImplementedIdx = categoryPosts.reduce((last, item, idx) =>
           IMPLEMENTED.has(item.category.layout) ? idx : last, -1
         );

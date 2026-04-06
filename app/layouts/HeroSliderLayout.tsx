@@ -11,7 +11,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import ColoredTitle from "~/components/ColoredTitle";
 
-interface Layout1Props {
+interface HeroSliderLayoutProps {
   sliderPosts: Post[];
   urgentPosts: Post[];
   rightDirectionPosts: Post[];
@@ -20,7 +20,7 @@ interface Layout1Props {
   chiefEditorPosts: Post[];
 }
 
-export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: Layout1Props) {
+export default function HeroSliderLayout({ sliderPosts, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: HeroSliderLayoutProps) {
   const getFirstChar = (value?: string) => (value && value.trim().length > 0 ? value.trim()[0] : "ك");
 
   const posts = rightDirectionPosts || [];
