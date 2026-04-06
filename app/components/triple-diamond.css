@@ -4,6 +4,7 @@
   align-items: center;
   gap: calc(var(--diamond-size) * 0.15);
   width: fit-content;
+  transform: skewX(15deg);
 }
 
 .diamond {

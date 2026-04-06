@@ -33,7 +33,7 @@ export default function Layout7({ categoryData, showAdvertisement = false, adver
               <div className="p-4 flex-1">
                 <ColoredTitle
                   title={post.title}
-                  coloredWordsCount={2}
+                  coloredWordsCount={0}
                   className="font-bold mb-3 hover:text-blue-700 transition-colors"
                 />
                 {post.summary && (

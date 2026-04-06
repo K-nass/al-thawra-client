@@ -248,7 +248,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
                         </h1> */}
                         <ColoredTitle
                           title={post.title}
-                          coloredWordsCount={3}
+                          coloredWordsCount={0}
                           className="semafor-section-title hover:text-blue-700 transition-colors"
                         />
 
