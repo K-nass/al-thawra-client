@@ -9,6 +9,7 @@ export interface Category {
   description: string;
   colorHex: string;
   order: number;
+  layout: string;
   isActive: boolean;
   showOnMenu: boolean;
   showOnHomepage: boolean;
@@ -19,6 +20,8 @@ export interface Category {
   subCategoriesCount: number;
   subCategories: Category[];
 }
+
+export type ImplementedLayoutId = "Layout2" | "Layout4" | "Layout5" | "Layout6" | "Layout7" | "Layout8" | "Layout11";
 
 // Query parameters for fetching categories
 export interface CategoryQueryParams {

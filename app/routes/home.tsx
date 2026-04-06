@@ -21,6 +21,19 @@ import Layout7 from "~/layouts/Layout7";
 import Layout8 from "~/layouts/Layout8";
 import Layout11 from "~/layouts/Layout11";
 import { ColoredTitle } from "~/components/ColoredTitle";
+import type { ImplementedLayoutId } from "~/services/categoriesService";
+
+type CategoryData = { category: Category; posts: Post[] };
+
+const LAYOUT_COMPONENTS: Record<ImplementedLayoutId, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
+  Layout2:  (data, { newsletterCategories }) => <Layout2 posts={data.posts} newsletterCategories={newsletterCategories} />,
+  Layout4:  (data) => <Layout4 categoryData={data} />,
+  Layout5:  (data) => <Layout5 categoryData={data} />,
+  Layout6:  (data) => <Layout6 posts={data.posts} />,
+  Layout7:  (data, { isLast }) => <Layout7 categoryData={data} showAdvertisement={isLast} />,
+  Layout8:  (data) => <Layout8 categoryData={data} />,
+  Layout11: (data) => <Layout11 posts={data.posts} />,
+};
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -206,13 +219,13 @@ export default function Home() {
     async function fetchCategoryPosts() {
       setIsLoadingCategories(true);
 
-      // Sort and limit categories to match layout order (10 layout slots)
-      const limitedCategories = categories
-        .sort((a: Category, b: Category) => a.order - b.order)
-        .slice(0, 10);
+      // Filter by showOnHomepage, sort by order ascending then name alphabetically
+      const homepageCategories = categories
+        .filter((cat: Category) => cat.showOnHomepage)
+        .sort((a: Category, b: Category) => a.order - b.order || a.name.localeCompare(b.name));
 
       const results = [];
-      for (const category of limitedCategories) {
+      for (const category of homepageCategories) {
         try {
           const posts = await cache.getOrFetch(
             `posts:category:${category.slug}:15:Article`,
@@ -279,32 +292,19 @@ export default function Home() {
     );
   }
 
-  // Layout order for category sections: 2, 4, 5, 6, 7, 8, 6, 7, 11, 7(with ad)
-  const layoutOrder = [2, 4, 5, 6, 7, 8, 6, 7, 11, 7] as const;
-
   function renderCategoryLayout(
-    layoutNumber: number,
+    layoutId: string,
     data: { category: Category; posts: Post[] },
-    isLast: boolean
+    isLast: boolean,
+    newsletterCats: Category[]
   ) {
-    switch (layoutNumber) {
-      case 2:
-        return <Layout2 posts={data.posts} newsletterCategories={newsletterCategories} />;
-      case 4:
-        return <Layout4 categoryData={data} />;
-      case 5:
-        return <Layout5 categoryData={data} />;
-      case 6:
-        return <Layout6 posts={data.posts} />;
-      case 7:
-        return <Layout7 categoryData={data} showAdvertisement={isLast} />;
-      case 8:
-        return <Layout8 categoryData={data} />;
-      case 11:
-        return <Layout11 posts={data.posts} />;
-      default:
-        return null;
+    if (!layoutId) return null;
+    const renderer = LAYOUT_COMPONENTS[layoutId as ImplementedLayoutId];
+    if (!renderer) {
+      console.warn(`[Homepage] Unimplemented layout "${layoutId}" for category "${data.category.slug}" — skipping.`);
+      return null;
     }
+    return renderer(data, { isLast, newsletterCategories: newsletterCats });
   }
 
   return (
@@ -320,25 +320,32 @@ export default function Home() {
 
       <ReelsSection reels={homeReels} />
 
-      {categoryPosts.map((data, idx) => {
-        const layoutNumber = layoutOrder[idx % layoutOrder.length];
-        const isLast = idx === categoryPosts.length - 1;
-        const isLastInSequence = idx === layoutOrder.length - 1;
-
-        return (
-          <section
-            key={data.category.slug}
-            className={`mb-8 md:mb-12 ${isLast || isLastInSequence ? '' : 'pb-8 md:pb-12 border-b-2 border-black'} mt-6 md:mt-10`}
-          >
-            <Link to={`/category/${data.category.slug}`}>
-              <h2 className="semafor-section-title hover:text-blue-700 transition-colors">
-                {data.category.name}
-              </h2>
-            </Link>
-            {renderCategoryLayout(layoutNumber, data, isLast && layoutNumber === 7)}
-          </section>
+      {(() => {
+        // Find the index of the last category with an implemented layout
+        const IMPLEMENTED = new Set(["Layout2", "Layout4", "Layout5", "Layout6", "Layout7", "Layout8", "Layout11"]);
+        const lastImplementedIdx = categoryPosts.reduce((last, item, idx) =>
+          IMPLEMENTED.has(item.category.layout) ? idx : last, -1
         );
-      })}
+
+        return categoryPosts.map((data, idx) => {
+          const layoutId = data.category.layout;
+          const isLast = idx === lastImplementedIdx;
+
+          return (
+            <section
+              key={data.category.slug}
+              className={`mb-8 md:mb-12 ${isLast ? '' : 'pb-8 md:pb-12 border-b-2 border-black'} mt-6 md:mt-10`}
+            >
+              <Link to={`/category/${data.category.slug}`}>
+                <h2 className="semafor-section-title hover:text-blue-700 transition-colors">
+                  {data.category.name}
+                </h2>
+              </Link>
+              {renderCategoryLayout(layoutId, data, isLast, newsletterCategories)}
+            </section>
+          );
+        });
+      })()}
     </main>
   );
 }
