@@ -38,7 +38,7 @@ export default function Layout6({ posts }: Layout6Props) {
                 <div className="p-6 flex-grow">
                   <ColoredTitle
                     title={post.title}
-                    coloredWordsCount={2}
+                    coloredWordsCount={0}
                     className="text-2xl font-bold mb-4 hover:text-blue-700 transition-colors text-center leading-tight"
                   />
                   {post.summary && (
@@ -74,7 +74,7 @@ export default function Layout6({ posts }: Layout6Props) {
             <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
               <ColoredTitle
                 title={post.title}
-                coloredWordsCount={2}
+                coloredWordsCount={0}
                 className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
               />
               <p className="text-xs text-gray-700 line-clamp-2">

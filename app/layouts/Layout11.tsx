@@ -42,7 +42,7 @@ export default function Layout11({ posts }: Layout11Props) {
                   <div className="text-center">
                     <ColoredTitle
                       title={leftPost.title}
-                      coloredWordsCount={2}
+                      coloredWordsCount={0}
                       className="text-2xl font-bold mb-4 hover:text-blue-700 transition-colors leading-tight"
                     />
                     {leftPost.summary && (
@@ -88,7 +88,7 @@ export default function Layout11({ posts }: Layout11Props) {
               <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
                 <ColoredTitle
                   title={post.title}
-                  coloredWordsCount={2}
+                  coloredWordsCount={0}
                   className="text-sm font-bold mb-4 hover:text-blue-700 transition-colors"
                 />
                 {post.summary && (

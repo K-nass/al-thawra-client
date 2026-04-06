@@ -96,7 +96,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
                 <div className="p-3 min-h-[180px] flex flex-col">
                   <ColoredTitle
                     title={post.title}
-                    coloredWordsCount={2}
+                    coloredWordsCount={0}
                     className="semafor-section-title hover:text-blue-700 transition-colors mb-2"
                   />
 
@@ -135,7 +135,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
                     <div className="p-3">
                       <ColoredTitle
                         title={post.title}
-                        coloredWordsCount={2}
+                        coloredWordsCount={0}
                         className="text-lg font-bold mb-2 leading-tight line-clamp-2 hover:text-blue-700 transition-colors"
                       />
 
