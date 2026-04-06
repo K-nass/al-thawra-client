@@ -1,5 +1,6 @@
 .colored-title {
   display: inline;
+  line-height: 1.8;
 }
 
 .colored-title .inline-diamond {
