@@ -69,9 +69,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
     const id = window.setInterval(goNextRight, 9000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canSwapRight, posts.length]);
-  console.log("sliderPosts",sliderPosts);
-  
+  }, [canSwapRight, posts.length]);  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}

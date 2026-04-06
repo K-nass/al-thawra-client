@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import type { Post } from "../services/postsService";
 import type { Category } from "../services/categoriesService";
-import Layout3 from "./Layout3";
+import AdvertisementBanner from "../components/AdvertisementBanner";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
@@ -157,7 +157,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
             </div>
 
             {/* Layout3 - Advertisement Section */}
-            <Layout3
+            <AdvertisementBanner
               category="إعلان"
               title="أتلانتس دبي تقدم دخولاً مجانياً للحديقة المائية بينما تستمر الحرب"
               summary="جاءت هذه البادرة الحسنة بعد أقل من أسبوعين من قيام طائرة إيرانية بدون طيار بضرب فندق فيرمونت ذا بالم على بعد حوالي ثلاثة أميال، مما أدى إلى إصابة أربعة أشخاص."
