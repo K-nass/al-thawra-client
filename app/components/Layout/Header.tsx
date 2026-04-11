@@ -201,7 +201,7 @@ export function Header({ categories = [], ceoName }: HeaderProps) {
             {/* <span className="flex items-center gap-1 px-2 py- rounded-sm fix-numbers">
               رئيس مجلس الإدارة/رئيس التحرير:سام عبد الله الغبارى
             </span> */}
-            <img src="/sam-title.png" width={200} />
+            <img src="/رئيس مجلس الادارة رئيس التحرير (1).png" width={250} height={250} />
           </div>
           <div className="flex items-center gap-4">
             <button
