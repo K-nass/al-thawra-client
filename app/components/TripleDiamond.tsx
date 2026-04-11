@@ -7,12 +7,19 @@ interface TripleDiamondProps {
 
 export const TripleDiamond: React.FC<TripleDiamondProps> = ({
   size,
+  className = "",
 }) => {
   return (
     <img 
       src="/3-dots.png" 
       alt="Triple Diamond" 
-      style={{width:"25px"}}
+      className={className}
+      style={{
+        width: size ? `${size / 25}em` : "1em",
+        height: "auto",
+        display: "inline-block",
+        verticalAlign: "middle"
+      }}
     />
   );
 };
