@@ -79,13 +79,13 @@ class PostsService {
       const apiParams: any = {
         PageNumber: params?.pageNumber || 1,
         PageSize: params?.pageSize || 15,
+        Status: params?.status ?? "Published",
       };
 
       // Add optional filters with correct casing
       if (params?.categorySlug) apiParams.CategorySlug = params.categorySlug;
       if (params?.authorName) apiParams.AuthorName = params.authorName;
       apiParams.HasAuthor = params?.hasAuthor ?? false;
-      if (params?.status) apiParams.Status = params.status;
       if (params?.isFeatured !== undefined) apiParams.IsFeatured = params.isFeatured;
       if (params?.isBreaking !== undefined) apiParams.IsBreaking = params.isBreaking;
       if (params?.isSlider !== undefined) apiParams.IsSlider = params.isSlider;
@@ -179,21 +179,6 @@ class PostsService {
     }
   }
 
-  /**
-   * Get urgent news posts
-   */
-  async getUrgentPosts(pageSize: number = 15): Promise<Post[]> {
-    try {
-      const response = await this.getPosts({
-        isArgent: true,
-        pageSize,
-      });
-      return response.items;
-    } catch (error: any) {
-
-      throw error;
-    }
-  }
 
   /**
    * Get chief editor posts

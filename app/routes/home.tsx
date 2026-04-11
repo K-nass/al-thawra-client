@@ -1,7 +1,6 @@
 import type { Route } from "./+types/home";
 import { Link, useLoaderData, useNavigation, useOutletContext } from "react-router";
 import { useState, useEffect } from "react";
-import { NewsletterSubscription } from "../components/NewsletterSubscription";
 import { Spinner } from "../components/Spinner";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
@@ -13,36 +12,35 @@ import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import { ReelsSection, type HomepageReel } from "~/components/Reels/Home";
 import HeroSliderLayout from "~/layouts/HeroSliderLayout";
-import NewsletterGridLayout from "~/layouts/NewsletterGridLayout";
+import DualSwiperLayout from "~/layouts/DualSwiperLayout";
 import BalancedColumnsLayout from "~/layouts/BalancedColumnsLayout";
 import FeaturedWithRowLayout from "~/layouts/FeaturedWithRowLayout";
 import DualFeaturedLayout from "~/layouts/DualFeaturedLayout";
 import TripleColumnLayout from "~/layouts/TripleColumnLayout";
 import InvertedSplitLayout from "~/layouts/InvertedSplitLayout";
 import SplitHeroLayout from "~/layouts/SplitHeroLayout";
-import { ColoredTitle } from "~/components/ColoredTitle";
 
 type CategoryData = { category: Category; posts: Post[] };
 
 const LAYOUT_COMPONENTS: Record<string, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
-  "hero-slider":       (data, { newsletterCategories }) => <HeroSliderLayout sliderPosts={data.posts} urgentPosts={[]} rightDirectionPosts={[]} leftDirectionPosts={[]} chiefEditor={null} chiefEditorPosts={[]} />,
-  "newsletter-grid":   (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
-  "balanced-columns":  (data) => <BalancedColumnsLayout categoryData={data} />,
+  "hero-slider":       (data, { newsletterCategories }) => <HeroSliderLayout sliderPosts={data.posts} rightDirectionPosts={[]} leftDirectionPosts={[]} chiefEditor={null} chiefEditorPosts={[]} />,
+  "dual_swiper": (data) => <DualSwiperLayout posts={data.posts} />,
+  "balanced-columns": (data) => <BalancedColumnsLayout categoryData={data} />,
   "featured-with-row": (data) => <FeaturedWithRowLayout categoryData={data} />,
-  "dual-featured":     (data) => <DualFeaturedLayout posts={data.posts} />,
-  "split-hero":        (data) => <SplitHeroLayout posts={data.posts} />,
-  "triple-column":     (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
-  "inverted-split":    (data) => <InvertedSplitLayout categoryData={data} />,
+  "dual-featured": (data) => <DualFeaturedLayout posts={data.posts} />,
+  "split-hero": (data) => <SplitHeroLayout posts={data.posts} />,
+  "triple-column": (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  "inverted-split": (data) => <InvertedSplitLayout categoryData={data} />,
   // Legacy numeric identifiers for backward compatibility
-  Layout1:  (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
-  Layout2:  (data, { newsletterCategories }) => <NewsletterGridLayout posts={data.posts} newsletterCategories={newsletterCategories} />,
-  Layout3:  (data) => <DualFeaturedLayout posts={data.posts} />,
-  Layout4:  (data) => <BalancedColumnsLayout categoryData={data} />,
-  Layout5:  (data) => <FeaturedWithRowLayout categoryData={data} />,
-  Layout6:  (data) => <DualFeaturedLayout posts={data.posts} />,
-  Layout7:  (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
-  Layout8:  (data) => <InvertedSplitLayout categoryData={data} />,
-  Layout9:  (data) => <FeaturedWithRowLayout categoryData={data} />,
+  Layout1: (data) => <DualSwiperLayout posts={data.posts} />,
+  Layout2: (data) => <DualSwiperLayout posts={data.posts} />,
+  Layout3: (data) => <DualFeaturedLayout posts={data.posts} />,
+  Layout4: (data) => <BalancedColumnsLayout categoryData={data} />,
+  Layout5: (data) => <FeaturedWithRowLayout categoryData={data} />,
+  Layout6: (data) => <DualFeaturedLayout posts={data.posts} />,
+  Layout7: (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  Layout8: (data) => <InvertedSplitLayout categoryData={data} />,
+  Layout9: (data) => <FeaturedWithRowLayout categoryData={data} />,
   Layout10: (data) => <SplitHeroLayout posts={data.posts} />,
   Layout11: (data) => <SplitHeroLayout posts={data.posts} />,
   Layout12: (data) => <BalancedColumnsLayout categoryData={data} />,
@@ -104,13 +102,6 @@ export async function loader({ }: Route.LoaderArgs) {
     ).catch(() => {
       return null;
     });
-
-    // Fetch urgent news
-    const urgentPosts = await cache.getOrFetch(
-      "posts:urgent:15",
-      () => postsService.getUrgentPosts(15),
-      CacheTTL.SHORT
-    ).catch(() => []);
 
     // Fetch "right direction" articles for Layout1 left sidebar
     const rightDirectionPosts = await cache.getOrFetch(
@@ -184,8 +175,8 @@ export async function loader({ }: Route.LoaderArgs) {
 
     // Fetch newsletter categories for Layout2
     const newsletterCategories = await cache.getOrFetch(
-      "categories:newsletter:Arabic",
-      () => categoriesService.getActiveCategories("Arabic"),
+      "categories:newsletter",
+      () => categoriesService.getActiveCategories(),
       CacheTTL.SHORT
     ).catch(() => []);
 
@@ -193,7 +184,6 @@ export async function loader({ }: Route.LoaderArgs) {
       sliderPosts,
       writersPosts,
       latestMagazine,
-      urgentPosts,
       rightDirectionPosts,
       leftDirectionPosts,
       homeReels,
@@ -206,7 +196,6 @@ export async function loader({ }: Route.LoaderArgs) {
       sliderPosts: [],
       writersPosts: [],
       latestMagazine: null,
-      urgentPosts: [],
       rightDirectionPosts: [],
       leftDirectionPosts: [],
       homeReels: [],
@@ -219,8 +208,8 @@ export async function loader({ }: Route.LoaderArgs) {
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts, newsletterCategories } = useLoaderData<typeof loader>();
-    
+  const { sliderPosts, writersPosts, latestMagazine, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts, newsletterCategories } = useLoaderData<typeof loader>();
+
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 
@@ -242,12 +231,12 @@ export default function Home() {
       for (const category of homepageCategories) {
         try {
           const posts = await cache.getOrFetch(
-            `posts:category:${category.slug}:15:Article`,
+            `posts:category:${category.slug}:15`,
             async () => {
               const response = await postsService.getPostsByCategory(
                 category.slug,
                 { pageSize: 15 },
-                "Article"
+                undefined
               );
               console.log(`[Homepage] Fetched ${response.items.length} posts for category "${category.name}" (${category.slug})`);
               return response.items;
@@ -324,11 +313,18 @@ export default function Home() {
     return renderer(data, { isLast, newsletterCategories: newsletterCats });
   }
 
+  // Sort slider posts by their category's order field
+  const categoryOrderMap = new Map(categories.map((cat: Category) => [cat.slug, cat.order]));
+  const sortedSliderPosts = [...sliderPosts].sort((a, b) => {
+    const orderA = categoryOrderMap.get(a.categorySlug) ?? Infinity;
+    const orderB = categoryOrderMap.get(b.categorySlug) ?? Infinity;
+    return orderA - orderB;
+  });
+
   return (
     <main className="semafor-container py-4 md:py-8">
       <HeroSliderLayout
-        sliderPosts={sliderPosts}
-        urgentPosts={urgentPosts}
+        sliderPosts={sortedSliderPosts}
         rightDirectionPosts={rightDirectionPosts}
         leftDirectionPosts={leftDirectionPosts}
         chiefEditor={chiefEditor}
@@ -340,7 +336,7 @@ export default function Home() {
       {(() => {
         // Find the index of the last category with an implemented layout
         const IMPLEMENTED = new Set([
-          "hero-slider", "newsletter-grid", "balanced-columns", 
+          "hero-slider", "newsletter-grid", "balanced-columns",
           "featured-with-row", "dual-featured", "split-hero", "triple-column", "inverted-split",
           // Legacy numeric identifiers
           "Layout1", "Layout2", "Layout3", "Layout4", "Layout5", "Layout6",

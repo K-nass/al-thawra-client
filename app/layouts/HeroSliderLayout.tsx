@@ -13,14 +13,13 @@ import ColoredTitle from "~/components/ColoredTitle";
 
 interface HeroSliderLayoutProps {
   sliderPosts: Post[];
-  urgentPosts: Post[];
   rightDirectionPosts: Post[];
   leftDirectionPosts: Post[];
   chiefEditor: any;
   chiefEditorPosts: Post[];
 }
 
-export default function HeroSliderLayout({ sliderPosts, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: HeroSliderLayoutProps) {
+export default function HeroSliderLayout({ sliderPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: HeroSliderLayoutProps) {
   const getFirstChar = (value?: string) => (value && value.trim().length > 0 ? value.trim()[0] : "ك");
 
   const posts = rightDirectionPosts || [];
@@ -70,10 +69,8 @@ export default function HeroSliderLayout({ sliderPosts, urgentPosts, rightDirect
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwapRight, posts.length]);
-  console.log("sliderPosts",sliderPosts);
-  
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px] bg-red-500">
       {/* Left Sidebar - Featured Content */}
       <aside className="lg:col-span-3 order-2 lg:order-1 h-full">
         <div className="h-full flex flex-col">
