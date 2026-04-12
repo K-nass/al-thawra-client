@@ -443,25 +443,57 @@ function FlipBookViewer({
   /* ================================================================
      NATIVE DOM GESTURE LISTENERS
      ================================================================
-     Attached once. Never recreated. Read only from refs.
-     Dead zone (4px) cleanly separates clicks from drags.
+     Architecture:
+     - DESKTOP: pointer events for drag-pan, wheel for zoom
+     - MOBILE:  touch events handle EVERYTHING (1-finger pan when
+       zoomed, 2-finger pinch-zoom). Pointer events are disabled
+       on touch devices to prevent conflicts with react-pageflip.
+     - All listeners use capture:true on mobile so we intercept
+       BEFORE react-pageflip's internal handlers.
+     - Dead zone (4px) separates taps from deliberate drags.
      ================================================================ */
   useEffect(() => {
     const el = bookAreaRef.current;
     if (!el) return;
-    // TS: after the guard, `el` is guaranteed non-null. Alias to a const
-    // so nested function closures also see it as `HTMLDivElement` (not `null`).
     const target: HTMLDivElement = el;
 
-    const DEAD_ZONE = 4; // pixels — click/double-click never exceeds this
+    const DEAD_ZONE = 4;
 
+    // Helper: compute pan limits for a given scale
+    function getPanLimits(scale: number) {
+      const bc = bookConfigRef.current;
+      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+      return {
+        maxX: Math.max(0, (contentW * scale - window.innerWidth) / 2),
+        maxY: Math.max(0, (bc.height * scale - window.innerHeight) / 2),
+      };
+    }
+
+    function clampPan(x: number, y: number, scale: number) {
+      if (scale <= 1) return { x: 0, y: 0 };
+      const { maxX, maxY } = getPanLimits(scale);
+      return {
+        x: Math.max(-maxX, Math.min(maxX, x)),
+        y: Math.max(-maxY, Math.min(maxY, y)),
+      };
+    }
+
+    // Flush transform ref to React state
+    function syncReact(scale?: number) {
+      const t = transform.current;
+      setPan({ x: t.x, y: t.y });
+      if (scale !== undefined) setZoomLevel(scale);
+    }
+
+    /* ---- DESKTOP: Pointer events for drag-pan ---- */
     function onPointerDown(e: PointerEvent) {
-      if (e.button !== 0) return;               // left button only
-      if (transform.current.scale <= 1) return;  // only pan when zoomed
+      if (e.pointerType === 'touch') return;       // touch handled separately
+      if (e.button !== 0) return;
+      if (transform.current.scale <= 1) return;
 
       const d = drag.current;
       d.active = true;
-      d.panning = false;   // haven't moved past threshold yet
+      d.panning = false;
       d.startX = e.clientX;
       d.startY = e.clientY;
       d.startTX = transform.current.x;
@@ -469,16 +501,13 @@ function FlipBookViewer({
     }
 
     function onPointerMove(e: PointerEvent) {
+      if (e.pointerType === 'touch') return;
       const d = drag.current;
       if (!d.active) return;
 
       const dx = e.clientX - d.startX;
       const dy = e.clientY - d.startY;
 
-      // DEAD ZONE: don't activate panning until the pointer moves enough.
-      // This is what prevents double-click from triggering a pan gesture.
-      // A click/double-click has near-zero movement, so it never crosses
-      // this threshold. A deliberate drag crosses it in 1-2 frames.
       if (!d.panning) {
         if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
         d.panning = true;
@@ -486,24 +515,18 @@ function FlipBookViewer({
         try { target.setPointerCapture(e.pointerId); } catch {}
       }
 
-      // Compute clamped position
       const t = transform.current;
-      const bc = bookConfigRef.current;
-      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
-      const maxX = Math.max(0, (contentW * t.scale - window.innerWidth) / 2);
-      const maxY = Math.max(0, (bc.height * t.scale - window.innerHeight) / 2);
-
-      t.x = Math.max(-maxX, Math.min(maxX, d.startTX + dx));
-      t.y = Math.max(-maxY, Math.min(maxY, d.startTY + dy));
-
-      setPan({ x: t.x, y: t.y });
+      const clamped = clampPan(d.startTX + dx, d.startTY + dy, t.scale);
+      t.x = clamped.x;
+      t.y = clamped.y;
+      syncReact();
     }
 
     function onPointerUp(e: PointerEvent) {
+      if (e.pointerType === 'touch') return;
       const d = drag.current;
       if (!d.active) return;
       d.active = false;
-
       if (d.panning) {
         d.panning = false;
         setIsPanning(false);
@@ -511,17 +534,14 @@ function FlipBookViewer({
       }
     }
 
-    // Wheel zoom — zoom centered on cursor position
+    /* ---- DESKTOP: Wheel zoom ---- */
     function onWheel(e: WheelEvent) {
       e.preventDefault();
       const t = transform.current;
-
       const delta = e.deltaY > 0 ? -0.15 : 0.15;
       const newScale = Math.max(1, Math.min(4, t.scale + delta));
       if (newScale === t.scale) return;
 
-      // Zoom toward cursor: keep the point under the cursor stationary
-      // Math: newTranslate = cursorOffset - (cursorOffset - oldTranslate) * (newScale / oldScale)
       const rect = target.getBoundingClientRect();
       const cx = e.clientX - rect.left - rect.width / 2;
       const cy = e.clientY - rect.top - rect.height / 2;
@@ -530,103 +550,132 @@ function FlipBookViewer({
       let newX = cx - (cx - t.x) * ratio;
       let newY = cy - (cy - t.y) * ratio;
 
-      // Clamp
-      if (newScale <= 1) {
-        newX = 0; newY = 0;
-      } else {
-        const bc = bookConfigRef.current;
-        const contentW = bc.width * (isMobileRef.current ? 1 : 2);
-        const maxX = Math.max(0, (contentW * newScale - window.innerWidth) / 2);
-        const maxY = Math.max(0, (bc.height * newScale - window.innerHeight) / 2);
-        newX = Math.max(-maxX, Math.min(maxX, newX));
-        newY = Math.max(-maxY, Math.min(maxY, newY));
-      }
-
-      t.x = newX; t.y = newY; t.scale = newScale;
-      setPan({ x: newX, y: newY });
-      setZoomLevel(newScale);
+      const clamped = clampPan(newX, newY, newScale);
+      t.x = clamped.x; t.y = clamped.y; t.scale = newScale;
+      syncReact(newScale);
     }
 
+    /* ---- MOBILE: Unified touch gesture system ---- */
+    // Handles BOTH 1-finger pan (when zoomed) and 2-finger pinch-zoom.
+    // Using touch events with capture:true takes priority over react-pageflip.
+    let gesture: 'none' | 'pan' | 'pinch' = 'none';
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTX = 0;
+    let touchStartTY = 0;
+    let pinchDist0 = 0;
+    let pinchScale0 = 1;
+    let pinchMidX0 = 0;
+    let pinchMidY0 = 0;
+    let pinchTX0 = 0;
+    let pinchTY0 = 0;
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length >= 2) {
+        // --- PINCH START ---
+        e.preventDefault();
+        e.stopPropagation();
+        gesture = 'pinch';
+        const [a, b] = [e.touches[0], e.touches[1]];
+        pinchDist0 = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+        pinchScale0 = transform.current.scale;
+        pinchMidX0 = (a.clientX + b.clientX) / 2;
+        pinchMidY0 = (a.clientY + b.clientY) / 2;
+        pinchTX0 = transform.current.x;
+        pinchTY0 = transform.current.y;
+      } else if (e.touches.length === 1 && transform.current.scale > 1) {
+        // --- PAN START (only when zoomed) ---
+        gesture = 'none'; // will become 'pan' after dead zone
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTX = transform.current.x;
+        touchStartTY = transform.current.y;
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (e.touches.length >= 2 && (gesture === 'pinch' || gesture === 'none')) {
+        // --- PINCH MOVE ---
+        e.preventDefault();
+        e.stopPropagation();
+        gesture = 'pinch';
+        const [a, b] = [e.touches[0], e.touches[1]];
+        const dist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+        const newScale = Math.max(1, Math.min(4, pinchScale0 * (dist / pinchDist0)));
+
+        // Zoom at initial midpoint
+        const rect = target.getBoundingClientRect();
+        const cx = pinchMidX0 - rect.left - rect.width / 2;
+        const cy = pinchMidY0 - rect.top - rect.height / 2;
+        const ratio = newScale / pinchScale0;
+        let newX = cx - (cx - pinchTX0) * ratio;
+        let newY = cy - (cy - pinchTY0) * ratio;
+
+        // Add pan from midpoint drift
+        const midX = (a.clientX + b.clientX) / 2;
+        const midY = (a.clientY + b.clientY) / 2;
+        newX += midX - pinchMidX0;
+        newY += midY - pinchMidY0;
+
+        const clamped = clampPan(newX, newY, newScale);
+        const t = transform.current;
+        t.x = clamped.x; t.y = clamped.y; t.scale = newScale;
+        syncReact(newScale);
+
+      } else if (e.touches.length === 1 && transform.current.scale > 1) {
+        // --- 1-FINGER PAN MOVE (when zoomed) ---
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+
+        if (gesture !== 'pan') {
+          // Dead zone
+          if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
+          gesture = 'pan';
+          setIsPanning(true);
+          // Once we start panning, prevent page flip
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        if (gesture === 'pan') {
+          e.preventDefault();
+          e.stopPropagation();
+          const t = transform.current;
+          const clamped = clampPan(touchStartTX + dx, touchStartTY + dy, t.scale);
+          t.x = clamped.x;
+          t.y = clamped.y;
+          syncReact();
+        }
+      }
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (e.touches.length === 0) {
+        if (gesture === 'pan') {
+          setIsPanning(false);
+        }
+        gesture = 'none';
+      } else if (e.touches.length === 1 && gesture === 'pinch') {
+        // Pinch ended, one finger remains — re-anchor for potential pan
+        gesture = 'none';
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTX = transform.current.x;
+        touchStartTY = transform.current.y;
+      }
+    }
+
+    // Desktop listeners
     target.addEventListener('pointerdown', onPointerDown);
     target.addEventListener('pointermove', onPointerMove);
     target.addEventListener('pointerup', onPointerUp);
     target.addEventListener('pointercancel', onPointerUp);
     target.addEventListener('wheel', onWheel, { passive: false });
 
-    /* ---- Pinch-to-zoom (touch) ---- */
-    // Must use touch events (not pointer) to detect multi-finger gestures.
-    // capture:true intercepts before react-pageflip to prevent page flips
-    // when the user is pinch-zooming on top of the PDF.
-    let pinchActive = false;
-    let initialPinchDist = 0;
-    let initialPinchScale = 1;
-    let initialPinchX = 0;
-    let initialPinchY = 0;
-    let initialPinchTX = 0;
-    let initialPinchTY = 0;
-
-    function onTouchStart(e: TouchEvent) {
-      if (e.touches.length >= 2) {
-        e.preventDefault(); // prevent page flip + browser zoom
-        const [t1, t2] = [e.touches[0], e.touches[1]];
-        initialPinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-        initialPinchScale = transform.current.scale;
-        initialPinchX = (t1.clientX + t2.clientX) / 2;
-        initialPinchY = (t1.clientY + t2.clientY) / 2;
-        initialPinchTX = transform.current.x;
-        initialPinchTY = transform.current.y;
-        pinchActive = true;
-      }
-    }
-
-    function onTouchMove(e: TouchEvent) {
-      if (!pinchActive || e.touches.length < 2) return;
-      e.preventDefault();
-
-      const [t1, t2] = [e.touches[0], e.touches[1]];
-      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const scaleRatio = dist / initialPinchDist;
-      const newScale = Math.max(1, Math.min(4, initialPinchScale * scaleRatio));
-
-      // Zoom centered on pinch midpoint
-      const rect = target.getBoundingClientRect();
-      const cx = initialPinchX - rect.left - rect.width / 2;
-      const cy = initialPinchY - rect.top - rect.height / 2;
-      const ratio = newScale / initialPinchScale;
-
-      let newX = cx - (cx - initialPinchTX) * ratio;
-      let newY = cy - (cy - initialPinchTY) * ratio;
-
-      // Also apply pan from finger movement
-      const midX = (t1.clientX + t2.clientX) / 2;
-      const midY = (t1.clientY + t2.clientY) / 2;
-      newX += midX - initialPinchX;
-      newY += midY - initialPinchY;
-
-      // Clamp
-      if (newScale <= 1) {
-        newX = 0; newY = 0;
-      } else {
-        const bc = bookConfigRef.current;
-        const contentW = bc.width * (isMobileRef.current ? 1 : 2);
-        const maxX = Math.max(0, (contentW * newScale - window.innerWidth) / 2);
-        const maxY = Math.max(0, (bc.height * newScale - window.innerHeight) / 2);
-        newX = Math.max(-maxX, Math.min(maxX, newX));
-        newY = Math.max(-maxY, Math.min(maxY, newY));
-      }
-
-      const t = transform.current;
-      t.x = newX; t.y = newY; t.scale = newScale;
-      setPan({ x: newX, y: newY });
-      setZoomLevel(newScale);
-    }
-
-    function onTouchEnd(e: TouchEvent) {
-      if (e.touches.length < 2) {
-        pinchActive = false;
-      }
-    }
-
+    // Mobile listeners — capture:true to intercept before react-pageflip
     target.addEventListener('touchstart', onTouchStart, { capture: true, passive: false });
     target.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
     target.addEventListener('touchend', onTouchEnd, { capture: true });
@@ -641,7 +690,7 @@ function FlipBookViewer({
       target.removeEventListener('touchmove', onTouchMove, { capture: true } as EventListenerOptions);
       target.removeEventListener('touchend', onTouchEnd, { capture: true } as EventListenerOptions);
     };
-  }, []); // Empty deps — listeners are stable, read only from refs
+  }, []);
 
   /* ---- Fullscreen ---- */
   useEffect(() => {
@@ -782,8 +831,9 @@ function FlipBookViewer({
             width: isMobile ? bookConfig.width : bookConfig.width * 2,
             height: bookConfig.height,
             pointerEvents: isZoomed ? 'none' : 'auto',
+            willChange: isZoomed ? 'transform' : 'auto',
             transform: isZoomed
-              ? `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`
+              ? `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomLevel})`
               : isMobile
               ? 'none'
               : `translateX(${
@@ -803,12 +853,12 @@ function FlipBookViewer({
               height={bookConfig.height}
               size="fixed"
               showCover={true}
-              drawShadow={true}
-              maxShadowOpacity={0.5}
-              flippingTime={700}
+              drawShadow={!isMobile}
+              maxShadowOpacity={isMobile ? 0 : 0.5}
+              flippingTime={isMobile ? 400 : 700}
               usePortrait={isMobile}
               autoSize={true}
-              mobileScrollSupport={true}
+              mobileScrollSupport={false}
               startZIndex={0}
               startPage={0}
               className={`mv-flipbook ${isZoomed ? 'mv-flipbook-zoomed' : ''}`}
@@ -825,9 +875,8 @@ function FlipBookViewer({
             <div className="mv-book-placeholder" />
           )}
 
-          {/* Center gutter shadow to simulate depth at the spine.
-              Only visible when a full spread is showing (not on the first cover page). */}
-          {FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
+          {/* Center gutter shadow — desktop only (no spine in single-page mobile mode) */}
+          {!isMobile && FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
             <div
               className={`mv-gutter ${isFlipping ? 'mv-gutter-hidden' : ''}`}
               aria-hidden="true"
