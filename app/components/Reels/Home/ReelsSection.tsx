@@ -8,7 +8,6 @@ interface ReelsSectionProps {
 }
 
 export function ReelsSection({ reels }: ReelsSectionProps) {
-  // Don't render the section if there are no reels
   if (!reels || reels.length === 0) return null;
 
   return (
@@ -17,8 +16,11 @@ export function ReelsSection({ reels }: ReelsSectionProps) {
       aria-label="شاهد فيديوهات اليوم"
     >
       <div className="homepage-reels-header">
-        <Link to="/reels" className="homepage-reels-title hover:text-blue-700 transition-colors">
+        <Link to="/reels" className="homepage-reels-title">
           شاهد فيديوهات اليوم
+        </Link>
+        <Link to="/reels" className="homepage-reels-see-all" aria-label="عرض كل الريلز">
+          عرض الكل
         </Link>
       </div>
 

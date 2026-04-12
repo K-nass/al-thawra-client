@@ -21,14 +21,12 @@ export async function loader({ request }: { request: Request }) {
   try {
     const data = await reelsService.getReels(cursor, 5);
 
-    // If a specific reelId is requested and it's the initial load
     if (reelId && !cursor) {
       try {
         const specificReel = await reelsService.getReelById(reelId);
         const filteredReels = data.reels.filter((r) => r.id !== reelId);
         return { ...data, reels: [specificReel, ...filteredReels] };
       } catch {
-        // Fallback: check if it's in the feed
         const found = data.reels.find((r) => r.id === reelId);
         if (found) {
           const filtered = data.reels.filter((r) => r.id !== reelId);
@@ -113,20 +111,20 @@ export default function ReelsPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleMute]);
 
-  // ---- Empty State ----
+  // ---- Empty / Error State ----
   if (reels.length === 0 && !isLoadingMore) {
     return (
       <div className="reels-page">
+        <div className="reels-rail-bg" aria-hidden="true" />
         <div className="reels-container">
           <div className="reels-state-screen">
-            {/* Back button */}
             <button
               className="reels-back-btn"
               onClick={handleGoBack}
               aria-label="رجوع"
               style={{ position: "absolute", top: 16, right: 16 }}
             >
-              <ArrowRight size={20} />
+              <ArrowRight size={18} />
             </button>
 
             <div className="reels-state-icon">
@@ -151,10 +149,11 @@ export default function ReelsPage() {
     );
   }
 
-  // ---- Loading State (initial) ----
+  // ---- Initial Loading State ----
   if (reels.length === 0 && isLoadingMore) {
     return (
       <div className="reels-page">
+        <div className="reels-rail-bg" aria-hidden="true" />
         <div className="reels-container">
           <ReelSkeleton />
         </div>
@@ -165,6 +164,9 @@ export default function ReelsPage() {
   // ---- Main Feed ----
   return (
     <div className="reels-page">
+      {/* Ambient dark rail (desktop) */}
+      <div className="reels-rail-bg" aria-hidden="true" />
+
       <div className="reels-container">
         {/* Header */}
         <div className="reels-header">
@@ -173,11 +175,11 @@ export default function ReelsPage() {
             onClick={handleGoBack}
             aria-label="رجوع"
           >
-            <ArrowRight size={20} />
+            <ArrowRight size={18} />
           </button>
           <span className="reels-title">ريلز</span>
           {/* Spacer for centering */}
-          <div style={{ width: 40 }} />
+          <div style={{ width: 38 }} aria-hidden="true" />
         </div>
 
         {/* Swiper Feed */}
@@ -203,10 +205,11 @@ export default function ReelsPage() {
           }}
           spaceBetween={0}
           slidesPerView={1}
-          speed={400}
+          speed={420}
           cssMode={false}
           resistance
           resistanceRatio={0.85}
+          touchReleaseOnEdges
         >
           {reels.map((reel, index) => (
             <SwiperSlide
@@ -234,27 +237,36 @@ export default function ReelsPage() {
             </SwiperSlide>
           )}
         </Swiper>
-
-        {/* Desktop Navigation Arrows */}
-        <div className="reels-nav-arrows">
-          <button
-            className="reels-nav-btn"
-            onClick={() => swiperRef.current?.slidePrev()}
-            disabled={activeIndex === 0}
-            aria-label="الريل السابق"
-          >
-            <ChevronUp />
-          </button>
-          <button
-            className="reels-nav-btn"
-            onClick={() => swiperRef.current?.slideNext()}
-            disabled={!hasMore && activeIndex === reels.length - 1}
-            aria-label="الريل التالي"
-          >
-            <ChevronDown />
-          </button>
-        </div>
       </div>
+
+      {/* Desktop: side-rail navigation arrows (fixed, beside video column) */}
+      <nav className="reels-nav-arrows" aria-label="التنقل بين الريلز">
+        <button
+          className="reels-nav-btn"
+          onClick={() => swiperRef.current?.slidePrev()}
+          disabled={activeIndex === 0}
+          aria-label="الريل السابق"
+        >
+          <ChevronUp />
+        </button>
+        <button
+          className="reels-nav-btn"
+          onClick={() => swiperRef.current?.slideNext()}
+          disabled={!hasMore && activeIndex === reels.length - 1}
+          aria-label="الريل التالي"
+        >
+          <ChevronDown />
+        </button>
+      </nav>
+
+      {/* Desktop: reel counter */}
+      {reels.length > 0 && (
+        <div className="reels-counter" aria-live="polite" aria-atomic="true">
+          <span className="reels-counter-text" aria-label={`الريل ${activeIndex + 1} من ${reels.length}`}>
+            {activeIndex + 1} / {reels.length}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
