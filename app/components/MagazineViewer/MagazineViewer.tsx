@@ -92,7 +92,7 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
 
         const pdfjsLib = await import('pdfjs-dist');
         pdfjsLib.GlobalWorkerOptions.workerSrc =
-          'https://unpkg.com/pdfjs-dist@5.5.207/build/pdf.worker.min.mjs';
+          'https://unpkg.com/pdfjs-dist@4.9.155/build/pdf.worker.min.mjs';
 
         const resolvedUrl = `/api/pdf/proxy?url=${encodeURIComponent(pdfUrl)}`;
         const loadingTask = pdfjsLib.getDocument({
@@ -129,7 +129,7 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
           const ctx = canvas.getContext('2d');
           if (!ctx) throw new Error('Canvas 2D context unavailable');
 
-          await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
 
           const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
           renderedPages.push(dataUrl);
