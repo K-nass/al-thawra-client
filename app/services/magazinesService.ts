@@ -62,8 +62,6 @@ class MagazinesService {
    */
   async getMagazineByDate(date: string): Promise<Magazine | null> {
     try {
-
-
       // Ensure date is in RFC 3339 format (ISO 8601) if it's just YYYY-MM-DD
       let apiDate = date;
       const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -71,13 +69,26 @@ class MagazinesService {
         apiDate = `${date}T00:00:00Z`;
       }
 
+      console.log(`[MagazinesService] Fetching magazine for date: ${date} (API format: ${apiDate})`);
+
       const response = await axios.get<Magazine>(`${this.baseUrl}/by-date`, {
         params: {
           Date: apiDate,
         },
       });
+
+      console.log(`[MagazinesService] API Response:`, {
+        status: response.status,
+        data: response.data,
+      });
+
       return response.data;
     } catch (error: any) {
+      console.error(`[MagazinesService] Error fetching magazine by date:`, {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
       return null;
     }
   }
