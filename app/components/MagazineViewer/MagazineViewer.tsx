@@ -258,10 +258,12 @@ function FlipBookViewer({
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isFlipping, setIsFlipping] = useState(false);
 
-  // Focus & Pan state
+  // Pan state — use a ref for isPanning so pointermove handler is never stale
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
+  const isPanningRef = useRef(false);
   const panStart = useRef({ x: 0, y: 0 });
+  const panLimitsRef = useRef({ maxX: 0, maxY: 0 });
 
   // Track viewport size for fixed-dimension book sizing
   const [winSize, setWinSize] = useState({ w: 0, h: 0 });
@@ -318,6 +320,19 @@ function FlipBookViewer({
 
     return { width: pageW, height: pageH };
   }, [winSize.w, winSize.h, pageWidth, pageHeight]);
+
+  // Keep pan limits ref in sync so pointermove never reads stale closure values
+  // MUST be after bookConfig useMemo to avoid temporal dead zone
+  useEffect(() => {
+    const scaledW = bookConfig.width * 2 * zoomLevel;
+    const scaledH = bookConfig.height * zoomLevel;
+    const vpW = winSize.w || window.innerWidth;
+    const vpH = winSize.h || window.innerHeight;
+    panLimitsRef.current = {
+      maxX: Math.max(0, (scaledW - vpW) / 2),
+      maxY: Math.max(0, (scaledH - vpH) / 2),
+    };
+  }, [bookConfig.width, bookConfig.height, zoomLevel, winSize.w, winSize.h]);
 
   /* ---- Events ---- */
   const handleFlip = useCallback((e: any) => {
@@ -386,6 +401,8 @@ function FlipBookViewer({
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     if (zoomLevel <= 1) return;
+    // Set ref synchronously so pointermove responds immediately (no re-render wait)
+    isPanningRef.current = true;
     setIsPanning(true);
     panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
     if (e.currentTarget.setPointerCapture) {
@@ -393,15 +410,20 @@ function FlipBookViewer({
     }
   }, [zoomLevel, pan.x, pan.y]);
 
+  // Empty deps: reads only from refs, so never stale and never recreated mid-gesture
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isPanning) return;
+    if (!isPanningRef.current) return;
+    const rawX = e.clientX - panStart.current.x;
+    const rawY = e.clientY - panStart.current.y;
+    const { maxX, maxY } = panLimitsRef.current;
     setPan({
-      x: e.clientX - panStart.current.x,
-      y: e.clientY - panStart.current.y,
+      x: Math.max(-maxX, Math.min(maxX, rawX)),
+      y: Math.max(-maxY, Math.min(maxY, rawY)),
     });
-  }, [isPanning]);
+  }, []);
 
   const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    isPanningRef.current = false;
     setIsPanning(false);
     if (e.currentTarget.releasePointerCapture) {
       e.currentTarget.releasePointerCapture(e.pointerId);
@@ -582,6 +604,7 @@ function FlipBookViewer({
               onChangeState={handleStateChange}
               onInit={handleInit}
               useMouseEvents={zoomLevel === 1}
+              clickEventForward={false}
             >
               {pageElements}
             </FlipBookComp>
