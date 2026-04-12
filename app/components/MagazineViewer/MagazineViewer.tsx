@@ -301,10 +301,6 @@ function FlipBookViewer({
   const bookAreaRef = useRef<HTMLDivElement>(null);
   const bookConfigRef = useRef({ width: 0, height: 0 });
 
-  // React state — projections of ref data for triggering re-renders
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
-
   // Viewport size
   const [winSize, setWinSize] = useState({ w: 0, h: 0 });
   useEffect(() => {
@@ -313,6 +309,15 @@ function FlipBookViewer({
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
+
+  // Mobile detection — single-page portrait mode below 768px
+  const isMobile = winSize.w > 0 && winSize.w < 768;
+  const isMobileRef = useRef(isMobile);
+  isMobileRef.current = isMobile; // sync during render for native listeners
+
+  // React state — projections of ref data for triggering re-renders
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
 
   /* ---- Dynamic import (SSR safe) ---- */
   useEffect(() => {
@@ -331,21 +336,36 @@ function FlipBookViewer({
   const bookConfig = useMemo(() => {
     const TOOLBAR_H = 52;
     const PADDING_V = 24;
-    const PADDING_H = 112;
-    const availH = Math.max((winSize.h || window.innerHeight) - TOOLBAR_H - PADDING_V, 400);
-    const availW = Math.max((winSize.w || window.innerWidth) - PADDING_H, 600);
+    const PADDING_H = isMobile ? 24 : 112;
+    const availH = Math.max((winSize.h || window.innerHeight) - TOOLBAR_H - PADDING_V, 300);
+    const availW = Math.max((winSize.w || window.innerWidth) - PADDING_H, 300);
     const aspect = pageWidth > 0 && pageHeight > 0 ? pageWidth / pageHeight : 0.7;
-    let pageH = Math.round(availH);
-    let pageW = Math.round(pageH * aspect);
-    if (pageW * 2 > availW) {
-      pageW = Math.round(availW / 2);
+
+    let pageW: number;
+    let pageH: number;
+
+    if (isMobile) {
+      // Single page: fit to full available width
+      pageW = Math.round(availW);
       pageH = Math.round(pageW / aspect);
+      if (pageH > availH) {
+        pageH = Math.round(availH);
+        pageW = Math.round(pageH * aspect);
+      }
+    } else {
+      // Two-page spread: each page fits half the available width
+      pageH = Math.round(availH);
+      pageW = Math.round(pageH * aspect);
+      if (pageW * 2 > availW) {
+        pageW = Math.round(availW / 2);
+        pageH = Math.round(pageW / aspect);
+      }
     }
+
     const config = { width: pageW, height: pageH };
-    // Sync ref immediately during render — native listeners always read current values
     bookConfigRef.current = config;
     return config;
-  }, [winSize.w, winSize.h, pageWidth, pageHeight]);
+  }, [winSize.w, winSize.h, pageWidth, pageHeight, isMobile]);
 
   /* ---- react-pageflip callbacks ---- */
   const handleFlip = useCallback((e: any) => setCurrentPage(e.data as number), []);
@@ -378,7 +398,8 @@ function FlipBookViewer({
       t.x = 0; t.y = 0; t.scale = 1;
     } else {
       const bc = bookConfigRef.current;
-      const maxX = Math.max(0, (bc.width * 2 * s - window.innerWidth) / 2);
+      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+      const maxX = Math.max(0, (contentW * s - window.innerWidth) / 2);
       const maxY = Math.max(0, (bc.height * s - window.innerHeight) / 2);
       t.x = Math.max(-maxX, Math.min(maxX, t.x));
       t.y = Math.max(-maxY, Math.min(maxY, t.y));
@@ -468,7 +489,8 @@ function FlipBookViewer({
       // Compute clamped position
       const t = transform.current;
       const bc = bookConfigRef.current;
-      const maxX = Math.max(0, (bc.width * 2 * t.scale - window.innerWidth) / 2);
+      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+      const maxX = Math.max(0, (contentW * t.scale - window.innerWidth) / 2);
       const maxY = Math.max(0, (bc.height * t.scale - window.innerHeight) / 2);
 
       t.x = Math.max(-maxX, Math.min(maxX, d.startTX + dx));
@@ -513,7 +535,8 @@ function FlipBookViewer({
         newX = 0; newY = 0;
       } else {
         const bc = bookConfigRef.current;
-        const maxX = Math.max(0, (bc.width * 2 * newScale - window.innerWidth) / 2);
+        const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+        const maxX = Math.max(0, (contentW * newScale - window.innerWidth) / 2);
         const maxY = Math.max(0, (bc.height * newScale - window.innerHeight) / 2);
         newX = Math.max(-maxX, Math.min(maxX, newX));
         newY = Math.max(-maxY, Math.min(maxY, newY));
@@ -530,12 +553,93 @@ function FlipBookViewer({
     target.addEventListener('pointercancel', onPointerUp);
     target.addEventListener('wheel', onWheel, { passive: false });
 
+    /* ---- Pinch-to-zoom (touch) ---- */
+    // Must use touch events (not pointer) to detect multi-finger gestures.
+    // capture:true intercepts before react-pageflip to prevent page flips
+    // when the user is pinch-zooming on top of the PDF.
+    let pinchActive = false;
+    let initialPinchDist = 0;
+    let initialPinchScale = 1;
+    let initialPinchX = 0;
+    let initialPinchY = 0;
+    let initialPinchTX = 0;
+    let initialPinchTY = 0;
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length >= 2) {
+        e.preventDefault(); // prevent page flip + browser zoom
+        const [t1, t2] = [e.touches[0], e.touches[1]];
+        initialPinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        initialPinchScale = transform.current.scale;
+        initialPinchX = (t1.clientX + t2.clientX) / 2;
+        initialPinchY = (t1.clientY + t2.clientY) / 2;
+        initialPinchTX = transform.current.x;
+        initialPinchTY = transform.current.y;
+        pinchActive = true;
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (!pinchActive || e.touches.length < 2) return;
+      e.preventDefault();
+
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      const scaleRatio = dist / initialPinchDist;
+      const newScale = Math.max(1, Math.min(4, initialPinchScale * scaleRatio));
+
+      // Zoom centered on pinch midpoint
+      const rect = target.getBoundingClientRect();
+      const cx = initialPinchX - rect.left - rect.width / 2;
+      const cy = initialPinchY - rect.top - rect.height / 2;
+      const ratio = newScale / initialPinchScale;
+
+      let newX = cx - (cx - initialPinchTX) * ratio;
+      let newY = cy - (cy - initialPinchTY) * ratio;
+
+      // Also apply pan from finger movement
+      const midX = (t1.clientX + t2.clientX) / 2;
+      const midY = (t1.clientY + t2.clientY) / 2;
+      newX += midX - initialPinchX;
+      newY += midY - initialPinchY;
+
+      // Clamp
+      if (newScale <= 1) {
+        newX = 0; newY = 0;
+      } else {
+        const bc = bookConfigRef.current;
+        const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+        const maxX = Math.max(0, (contentW * newScale - window.innerWidth) / 2);
+        const maxY = Math.max(0, (bc.height * newScale - window.innerHeight) / 2);
+        newX = Math.max(-maxX, Math.min(maxX, newX));
+        newY = Math.max(-maxY, Math.min(maxY, newY));
+      }
+
+      const t = transform.current;
+      t.x = newX; t.y = newY; t.scale = newScale;
+      setPan({ x: newX, y: newY });
+      setZoomLevel(newScale);
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (e.touches.length < 2) {
+        pinchActive = false;
+      }
+    }
+
+    target.addEventListener('touchstart', onTouchStart, { capture: true, passive: false });
+    target.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
+    target.addEventListener('touchend', onTouchEnd, { capture: true });
+
     return () => {
       target.removeEventListener('pointerdown', onPointerDown);
       target.removeEventListener('pointermove', onPointerMove);
       target.removeEventListener('pointerup', onPointerUp);
       target.removeEventListener('pointercancel', onPointerUp);
       target.removeEventListener('wheel', onWheel);
+      target.removeEventListener('touchstart', onTouchStart, { capture: true } as EventListenerOptions);
+      target.removeEventListener('touchmove', onTouchMove, { capture: true } as EventListenerOptions);
+      target.removeEventListener('touchend', onTouchEnd, { capture: true } as EventListenerOptions);
     };
   }, []); // Empty deps — listeners are stable, read only from refs
 
@@ -675,14 +779,13 @@ function FlipBookViewer({
             currentPage === 0 ? 'mv-on-cover' : ''
           }`}
           style={{
-            width: bookConfig.width * 2,
+            width: isMobile ? bookConfig.width : bookConfig.width * 2,
             height: bookConfig.height,
-            // When zoomed: block ALL pointer events on the book and its children
-            // so react-pageflip's internal DOM listeners can never intercept them.
-            // Events fall through to mv-book-area which owns the pan handlers.
             pointerEvents: isZoomed ? 'none' : 'auto',
             transform: isZoomed
               ? `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`
+              : isMobile
+              ? 'none'
               : `translateX(${
                   currentPage === 0
                     ? -bookConfig.width / 2
@@ -703,7 +806,7 @@ function FlipBookViewer({
               drawShadow={true}
               maxShadowOpacity={0.5}
               flippingTime={700}
-              usePortrait={false}
+              usePortrait={isMobile}
               autoSize={true}
               mobileScrollSupport={true}
               startZIndex={0}
