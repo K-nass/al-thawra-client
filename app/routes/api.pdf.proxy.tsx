@@ -1,6 +1,11 @@
 import type { LoaderFunctionArgs } from "react-router";
 
-const ALLOWED_HOSTS = new Set(["www.ijirmf.com", "pdfobject.com", "elthoura.tryasp.net"]);
+const ALLOWED_HOSTS = new Set([
+  "www.ijirmf.com",
+  "pdfobject.com",
+  "elthoura.tryasp.net",
+  "res.cloudinary.com",
+]);
 
 function buildUrlCandidates(parsed: URL): string[] {
   const original = parsed.toString();
@@ -91,4 +96,3 @@ export async function loader({ request }: LoaderFunctionArgs) {
     );
   }
 }
-
