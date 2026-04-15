@@ -41,26 +41,70 @@ export function ReelVideoPlayer({
     const heartIdRef = useRef(0);
     const rippleIdRef = useRef(0);
 
-    // Autoplay / pause based on active state
+    // Autoplay / pause based on active state (mobile-safe)
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
 
+        let cancelled = false;
+
+        const prepareAndPlay = async () => {
+            if (!video || cancelled) return;
+
+            try {
+                video.muted = isMuted;
+                video.setAttribute("playsinline", "");
+                video.setAttribute("webkit-playsinline", "true");
+            } catch {
+                // ignore
+            }
+
+            try {
+                if (video.readyState === 0) video.load();
+            } catch {
+                // ignore
+            }
+
+            try {
+                // iOS Safari can throw if we seek before metadata.
+                if (video.currentTime !== 0) video.currentTime = 0;
+            } catch {
+                // ignore
+            }
+
+            try {
+                await video.play();
+                if (!cancelled) setIsPlaying(true);
+            } catch {
+                if (!cancelled) setIsPlaying(false);
+            }
+        };
+
         if (isActive) {
             setHasError(false);
-            const timer = setTimeout(() => {
-                video.currentTime = 0;
-                video
-                    .play()
-                    .then(() => setIsPlaying(true))
-                    .catch(() => setIsPlaying(false));
-            }, 200);
-            return () => clearTimeout(timer);
-        } else {
-            video.pause();
-            setIsPlaying(false);
+            setProgress(0);
+            setShowPauseIcon(false);
+
+            const onCanPlay = () => prepareAndPlay();
+            video.addEventListener("canplay", onCanPlay);
+
+            const timer = window.setTimeout(() => {
+                prepareAndPlay();
+            }, 50);
+
+            return () => {
+                cancelled = true;
+                window.clearTimeout(timer);
+                video.removeEventListener("canplay", onCanPlay);
+            };
         }
-    }, [isActive]);
+
+        video.pause();
+        setIsPlaying(false);
+        return () => {
+            cancelled = true;
+        };
+    }, [isActive, isMuted]);
 
     // Sync muted state
     useEffect(() => {
@@ -146,6 +190,13 @@ export function ReelVideoPlayer({
     );
 
     const handleError = () => {
+        const mediaErr = videoRef.current?.error;
+        if (mediaErr) {
+            console.error("[Reels] Video error:", {
+                code: mediaErr.code,
+                message: (mediaErr as any).message,
+            });
+        }
         setHasError(true);
         setIsPlaying(false);
     };
@@ -170,8 +221,10 @@ export function ReelVideoPlayer({
                 className="reel-video"
                 loop
                 playsInline
+                autoPlay={isActive}
                 muted={isMuted}
                 preload={isActive ? "auto" : "metadata"}
+                disablePictureInPicture
                 onClick={handleTap}
                 onError={handleError}
                 aria-label={reel.caption || "فيديو ريل"}
