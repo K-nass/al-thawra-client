@@ -70,7 +70,7 @@ export function ReelActions({ reel, onReelUpdate }: ReelActionsProps) {
                 className="reel-action-btn"
                 onClick={handleLike}
                 aria-label={reel.isLikedByCurrentUser ? "إلغاء الإعجاب" : "إعجاب"}
-                aria-pressed={reel.isLikedByCurrentUser}
+                aria-pressed={reel.isLikedByCurrentUser ?? false}
                 disabled={isLiking}
             >
                 <div className={`reel-action-icon${reel.isLikedByCurrentUser ? " liked" : ""}`}>

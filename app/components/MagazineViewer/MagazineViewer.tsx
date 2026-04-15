@@ -38,6 +38,7 @@ import {
   ZoomOut,
   RotateCcw,
   Info,
+  MoreHorizontal,
   X,
   Mouse,
   Move,
@@ -47,6 +48,7 @@ import {
 
 import { ViewerLoadingState } from './ViewerLoadingState';
 import { ThumbnailSidebar } from './ThumbnailSidebar';
+import { getPdfjs } from '~/lib/pdfjs';
 
 import './magazine-viewer.css';
 
@@ -90,14 +92,12 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
         setProgress(0);
         setPages([]);
 
-        const pdfjsLib = await import('pdfjs-dist');
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          'https://unpkg.com/pdfjs-dist@4.9.155/build/pdf.worker.min.mjs';
+        const pdfjsLib = await getPdfjs();
 
         const resolvedUrl = `/api/pdf/proxy?url=${encodeURIComponent(pdfUrl)}`;
         const loadingTask = pdfjsLib.getDocument({
           url: resolvedUrl,
-          disableRange: true,
+          disableRange: false,
           disableAutoFetch: false,
         });
 
@@ -274,6 +274,7 @@ function FlipBookViewer({
   const [isBookReady, setIsBookReady] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
 
   /* ================================================================
@@ -311,9 +312,24 @@ function FlipBookViewer({
   }, []);
 
   // Mobile detection — single-page portrait mode below 768px
-  const isMobile = winSize.w > 0 && winSize.w < 768;
-  const isMobileRef = useRef(isMobile);
-  isMobileRef.current = isMobile; // sync during render for native listeners
+  const viewportW =
+    winSize.w || (typeof window !== 'undefined' ? window.innerWidth : 0);
+  const viewportH =
+    winSize.h || (typeof window !== 'undefined' ? window.innerHeight : 0);
+
+  // Responsive flags:
+  // - `isMobile`: compact toolbar / UI for phones + small tablets + emulated mobile viewports
+  // - `isSinglePage`: force portrait (single-page) book mode when width/height is tight
+  const isMobile = viewportW > 0 && viewportW <= 1024;
+  const isSinglePage = viewportW > 0 && (viewportW < 980 || viewportH < 600);
+  const isPhone = viewportW > 0 && viewportW <= 767;
+
+  const isSinglePageRef = useRef(isSinglePage);
+  isSinglePageRef.current = isSinglePage; // sync during render for native listeners
+
+  useEffect(() => {
+    if (!isMobile) setIsMobileMenuOpen(false);
+  }, [isMobile]);
 
   // React state — projections of ref data for triggering re-renders
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -334,17 +350,21 @@ function FlipBookViewer({
 
   /* ---- Book configuration ---- */
   const bookConfig = useMemo(() => {
-    const TOOLBAR_H = 52;
-    const PADDING_V = 24;
-    const PADDING_H = isMobile ? 24 : 112;
-    const availH = Math.max((winSize.h || window.innerHeight) - TOOLBAR_H - PADDING_V, 300);
-    const availW = Math.max((winSize.w || window.innerWidth) - PADDING_H, 300);
+    // Keep these values in sync with `magazine-viewer.css` breakpoints/padding.
+    const padding = isPhone
+      ? { t: 0, b: 44, l: 0, r: 0 } // @media (max-width: 767px) => padding: 0 0 44px
+      : viewportW <= 1024
+        ? { t: 8, b: 48, l: 44, r: 44 } // @media (max-width: 1024px) => padding: 8px 44px 48px
+        : { t: 12, b: 52, l: 56, r: 56 }; // default => padding: 12px 56px 52px
+
+    const availH = Math.max(viewportH - padding.t - padding.b, 300);
+    const availW = Math.max(viewportW - padding.l - padding.r, 300);
     const aspect = pageWidth > 0 && pageHeight > 0 ? pageWidth / pageHeight : 0.7;
 
     let pageW: number;
     let pageH: number;
 
-    if (isMobile) {
+    if (isSinglePage) {
       // Single page: fit to full available width
       pageW = Math.round(availW);
       pageH = Math.round(pageW / aspect);
@@ -365,7 +385,7 @@ function FlipBookViewer({
     const config = { width: pageW, height: pageH };
     bookConfigRef.current = config;
     return config;
-  }, [winSize.w, winSize.h, pageWidth, pageHeight, isMobile]);
+  }, [viewportW, viewportH, pageWidth, pageHeight, isPhone, isSinglePage]);
 
   /* ---- react-pageflip callbacks ---- */
   const handleFlip = useCallback((e: any) => setCurrentPage(e.data as number), []);
@@ -398,7 +418,7 @@ function FlipBookViewer({
       t.x = 0; t.y = 0; t.scale = 1;
     } else {
       const bc = bookConfigRef.current;
-      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+      const contentW = bc.width * (isSinglePageRef.current ? 1 : 2);
       const maxX = Math.max(0, (contentW * s - window.innerWidth) / 2);
       const maxY = Math.max(0, (bc.height * s - window.innerHeight) / 2);
       t.x = Math.max(-maxX, Math.min(maxX, t.x));
@@ -462,7 +482,7 @@ function FlipBookViewer({
     // Helper: compute pan limits for a given scale
     function getPanLimits(scale: number) {
       const bc = bookConfigRef.current;
-      const contentW = bc.width * (isMobileRef.current ? 1 : 2);
+      const contentW = bc.width * (isSinglePageRef.current ? 1 : 2);
       return {
         maxX: Math.max(0, (contentW * scale - window.innerWidth) / 2),
         maxY: Math.max(0, (bc.height * scale - window.innerHeight) / 2),
@@ -828,13 +848,13 @@ function FlipBookViewer({
             currentPage === 0 ? 'mv-on-cover' : ''
           }`}
           style={{
-            width: isMobile ? bookConfig.width : bookConfig.width * 2,
+            width: isSinglePage ? bookConfig.width : bookConfig.width * 2,
             height: bookConfig.height,
             pointerEvents: isZoomed ? 'none' : 'auto',
             willChange: isZoomed ? 'transform' : 'auto',
             transform: isZoomed
               ? `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomLevel})`
-              : isMobile
+              : isSinglePage
               ? 'none'
               : `translateX(${
                   currentPage === 0
@@ -855,8 +875,8 @@ function FlipBookViewer({
               showCover={true}
               drawShadow={!isMobile}
               maxShadowOpacity={isMobile ? 0 : 0.5}
-              flippingTime={isMobile ? 400 : 700}
-              usePortrait={isMobile}
+              flippingTime={isMobile ? 520 : 850}
+              usePortrait={isSinglePage}
               autoSize={true}
               mobileScrollSupport={false}
               startZIndex={0}
@@ -876,7 +896,7 @@ function FlipBookViewer({
           )}
 
           {/* Center gutter shadow — desktop only (no spine in single-page mobile mode) */}
-          {!isMobile && FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
+          {!isSinglePage && FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
             <div
               className={`mv-gutter ${isFlipping ? 'mv-gutter-hidden' : ''}`}
               aria-hidden="true"
@@ -890,13 +910,15 @@ function FlipBookViewer({
          ================================================================ */}
       <div className="mv-toolbar" id="mv-toolbar">
         {/* Brand */}
-        <Link to="/" className="mv-tb-brand" aria-label="العودة للرئيسية">
-          <span className="mv-tb-brand-name">الثورة</span>
-          <span className="mv-tb-brand-issue">العدد {issueNumber}</span>
-        </Link>
+        {!isMobile && (
+          <Link to="/" className="mv-tb-brand" aria-label="العودة للرئيسية">
+            <span className="mv-tb-brand-name">الثورة</span>
+            <span className="mv-tb-brand-issue">العدد {issueNumber}</span>
+          </Link>
+        )}
 
         {/* Controls */}
-        <div className="mv-tb-controls">
+        <div className={`mv-tb-controls ${isMobile ? 'mv-tb-controls-mobile' : ''}`}>
           {/* Thumbnails */}
           <button onClick={toggleSidebar} className={`mv-tb-btn ${isSidebarOpen ? 'mv-tb-btn-on' : ''}`} aria-label="الصور المصغرة" title="الصور المصغرة" type="button">
             <PanelLeft size={16} />
@@ -905,9 +927,13 @@ function FlipBookViewer({
           <span className="mv-tb-sep" />
 
           {/* Navigation */}
-          <button onClick={goToFirst} disabled={!canPrev} className="mv-tb-btn" aria-label="الأولى" title="الصفحة الأولى" type="button">
-            <ChevronsRight size={16} />
-          </button>
+          <span className="mv-tb-desktop">
+            {!isMobile && (
+              <button onClick={goToFirst} disabled={!canPrev} className="mv-tb-btn" aria-label="الأولى" title="الصفحة الأولى" type="button">
+                <ChevronsRight size={16} />
+              </button>
+            )}
+          </span>
           <button onClick={flipPrev} disabled={!canPrev} className="mv-tb-btn" aria-label="السابقة" type="button">
             <ChevronRight size={16} />
           </button>
@@ -930,62 +956,166 @@ function FlipBookViewer({
           <button onClick={flipNext} disabled={!canNext} className="mv-tb-btn" aria-label="التالية" type="button">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={goToLast} disabled={!canNext} className="mv-tb-btn" aria-label="الأخيرة" title="الصفحة الأخيرة" type="button">
-            <ChevronsLeft size={16} />
-          </button>
+          <span className="mv-tb-desktop">
+            {!isMobile && (
+              <button onClick={goToLast} disabled={!canNext} className="mv-tb-btn" aria-label="الأخيرة" title="الصفحة الأخيرة" type="button">
+                <ChevronsLeft size={16} />
+              </button>
+            )}
+          </span>
 
-          <span className="mv-tb-sep" />
+          {!isMobile && (
+            <>
+              <span className="mv-tb-sep" />
 
-          {/* Slider */}
-          <input
-            type="range"
-            className="mv-tb-slider"
-            min={0}
-            max={totalPages - 1}
-            value={currentPage}
-            onChange={handleSlider}
-            aria-label="شريط التنقل"
-            style={{ direction: 'ltr' }}
-          />
+              {/* Slider */}
+              <input
+                type="range"
+                className="mv-tb-slider"
+                min={0}
+                max={totalPages - 1}
+                value={currentPage}
+                onChange={handleSlider}
+                aria-label="شريط التنقل"
+                style={{ direction: 'ltr' }}
+              />
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Zoom */}
-          <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-tb-btn" aria-label="تصغير" title="تصغير" type="button">
-            <ZoomOut size={16} />
-          </button>
-          <button onClick={resetZoom} className="mv-tb-btn" aria-label="إعادة الحجم" title="إعادة الحجم الأصلي" type="button">
-            <RotateCcw size={14} />
-          </button>
-          <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-tb-btn" aria-label="تكبير" title="تكبير" type="button">
-            <ZoomIn size={16} />
-          </button>
+              {/* Zoom */}
+              <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-tb-btn" aria-label="تصغير" title="تصغير" type="button">
+                <ZoomOut size={16} />
+              </button>
+              <button onClick={resetZoom} className="mv-tb-btn" aria-label="إعادة الحجم" title="إعادة الحجم الأصلي" type="button">
+                <RotateCcw size={14} />
+              </button>
+              <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-tb-btn" aria-label="تكبير" title="تكبير" type="button">
+                <ZoomIn size={16} />
+              </button>
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Actions */}
-          <button onClick={handleDownload} className="mv-tb-btn" aria-label="تحميل" title="تحميل PDF" type="button">
-            <FileDown size={16} />
-          </button>
-          <button onClick={handlePrint} className="mv-tb-btn" aria-label="طباعة" title="طباعة" type="button">
-            <Printer size={16} />
-          </button>
+              {/* Actions */}
+              <button onClick={handleDownload} className="mv-tb-btn" aria-label="تحميل" title="تحميل PDF" type="button">
+                <FileDown size={16} />
+              </button>
+              <button onClick={handlePrint} className="mv-tb-btn" aria-label="طباعة" title="طباعة" type="button">
+                <Printer size={16} />
+              </button>
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Fullscreen */}
-          <button onClick={toggleFullscreen} className="mv-tb-btn" aria-label={isFullscreen ? 'خروج' : 'ملء الشاشة'} title={isFullscreen ? 'خروج' : 'ملء الشاشة'} type="button">
-            {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-          </button>
+              {/* Fullscreen */}
+              <button onClick={toggleFullscreen} className="mv-tb-btn" aria-label={isFullscreen ? 'خروج' : 'ملء الشاشة'} title={isFullscreen ? 'خروج' : 'ملء الشاشة'} type="button">
+                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+              </button>
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Info */}
-          <button onClick={() => setIsInfoOpen(true)} className="mv-tb-btn" aria-label="دليل الاستخدام" title="دليل الاستخدام" type="button">
-            <Info size={16} />
-          </button>
+              {/* Info */}
+              <button onClick={() => setIsInfoOpen(true)} className="mv-tb-btn" aria-label="دليل الاستخدام" title="دليل الاستخدام" type="button">
+                <Info size={16} />
+              </button>
+            </>
+          )}
+
+          {isMobile && (
+            <>
+              <span className="mv-tb-sep" />
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="mv-tb-btn"
+                aria-label="المزيد"
+                title="المزيد"
+                type="button"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Mobile: bottom-sheet for secondary controls */}
+      {isMobile && isMobileMenuOpen && (
+        <div className="mv-sheet-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div
+            className="mv-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="أدوات عارض المجلة"
+            dir="rtl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mv-sheet-header">
+              <span className="mv-sheet-title">أدوات</span>
+              <button className="mv-sheet-close" onClick={() => setIsMobileMenuOpen(false)} type="button" aria-label="إغلاق">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mv-sheet-body">
+              <div className="mv-sheet-slider-wrap" role="group" aria-label="شريط التنقل">
+                <input
+                  type="range"
+                  className="mv-sheet-slider"
+                  min={0}
+                  max={totalPages - 1}
+                  value={currentPage}
+                  onChange={handleSlider}
+                  aria-label="شريط التنقل"
+                  style={{ direction: 'ltr' }}
+                />
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="التنقل">
+                <button onClick={() => { setIsMobileMenuOpen(false); goToFirst(); }} disabled={!canPrev} className="mv-sheet-btn" type="button">
+                  <ChevronsRight size={18} />
+                  <span>الأولى</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); goToLast(); }} disabled={!canNext} className="mv-sheet-btn" type="button">
+                  <ChevronsLeft size={18} />
+                  <span>الأخيرة</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); toggleFullscreen(); }} className="mv-sheet-btn" type="button">
+                  {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+                  <span>{isFullscreen ? 'خروج' : 'ملء الشاشة'}</span>
+                </button>
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="التكبير">
+                <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-sheet-btn" type="button">
+                  <ZoomOut size={18} />
+                  <span>تصغير</span>
+                </button>
+                <button onClick={resetZoom} className="mv-sheet-btn" type="button">
+                  <RotateCcw size={18} />
+                  <span>إعادة</span>
+                </button>
+                <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-sheet-btn" type="button">
+                  <ZoomIn size={18} />
+                  <span>تكبير</span>
+                </button>
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="إجراءات">
+                <button onClick={() => { setIsMobileMenuOpen(false); handleDownload(); }} className="mv-sheet-btn" type="button">
+                  <FileDown size={18} />
+                  <span>تحميل</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); handlePrint(); }} className="mv-sheet-btn" type="button">
+                  <Printer size={18} />
+                  <span>طباعة</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); setIsInfoOpen(true); }} className="mv-sheet-btn" type="button">
+                  <Info size={18} />
+                  <span>دليل</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* ---- Info Modal ---- */}
       {isInfoOpen && (
         <div className="mv-info-overlay" onClick={() => setIsInfoOpen(false)}>
