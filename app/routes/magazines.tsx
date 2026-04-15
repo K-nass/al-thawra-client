@@ -41,6 +41,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const from = url.searchParams.get("from") || "";
   const to = url.searchParams.get("to") || "";
   const searchPhrase = url.searchParams.get("search") || "";
+  const isUnfilteredFirstPage =
+    pageNumber === 1 && !from && !to && !searchPhrase;
+  const unfilteredFirstPageTTL = 60 * 1000; // 1 minute
 
   // Validate pageSize - must be one of [15, 30, 60, 90]
   const validPageSizes = [15, 30, 60, 90];
@@ -59,11 +62,12 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Generate cache key based on params
     const cacheKey = cache.generateKey("magazines", params);
 
-    // Fetch with caching
+    // Keep caching for first load, but with a short TTL so newly published
+    // issues appear quickly in the archive.
     const response = await cache.getOrFetch(
       cacheKey,
       () => axiosInstance.get<MagazinesResponse>("/magazines", { params }),
-      CacheTTL.MEDIUM
+      isUnfilteredFirstPage ? unfilteredFirstPageTTL : CacheTTL.MEDIUM
     );
 
     return {
