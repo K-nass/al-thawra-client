@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { useLoaderData, useSearchParams, Link } from "react-router";
 import type { Route } from "./+types/magazines";
 import axiosInstance from "~/lib/axios";
-import { FileText, Calendar, Download, ChevronLeft, ChevronRight } from "lucide-react";
+import { FileText, Calendar, ChevronLeft, ChevronRight } from "lucide-react";
 import { cache, CacheTTL } from "~/lib/cache";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "~/components/ScrollAnimation";
 import { generateMetaTags } from "~/utils/seo";
+import { PdfFirstPageThumbnail } from "~/components/PdfFirstPageThumbnail";
 
 interface Magazine {
   issueNumber: string;
@@ -27,7 +27,8 @@ interface MagazinesResponse {
 export function meta({}: Route.MetaArgs) {
   return generateMetaTags({
     title: "المجلات",
-    description: "تصفح مجموعة متنوعة من المجلات الإلكترونية من الثورة. محتوى متخصص في مختلف المجالات",
+    description:
+      "تصفح مجموعة متنوعة من المجلات الإلكترونية من الثورة. محتوى متخصص في مختلف المجالات",
     url: "/magazines",
     type: "website",
   });
@@ -40,6 +41,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   const from = url.searchParams.get("from") || "";
   const to = url.searchParams.get("to") || "";
   const searchPhrase = url.searchParams.get("search") || "";
+  const isUnfilteredFirstPage =
+    pageNumber === 1 && !from && !to && !searchPhrase;
+  const unfilteredFirstPageTTL = 60 * 1000; // 1 minute
 
   // Validate pageSize - must be one of [15, 30, 60, 90]
   const validPageSizes = [15, 30, 60, 90];
@@ -58,11 +62,12 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Generate cache key based on params
     const cacheKey = cache.generateKey("magazines", params);
 
-    // Fetch with caching
+    // Keep caching for first load, but with a short TTL so newly published
+    // issues appear quickly in the archive.
     const response = await cache.getOrFetch(
       cacheKey,
       () => axiosInstance.get<MagazinesResponse>("/magazines", { params }),
-      CacheTTL.MEDIUM
+      isUnfilteredFirstPage ? unfilteredFirstPageTTL : CacheTTL.MEDIUM
     );
 
     return {
@@ -74,7 +79,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       itemsFrom: response.data.itemsFrom,
       itemsTo: response.data.itemsTo,
     };
-  } catch (error: any) {
+  } catch {
     // Return empty data on error
     return {
       magazines: [],
@@ -89,7 +94,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export default function MagazinesPage() {
-  const { magazines, pageNumber, totalPages, totalCount, itemsFrom, itemsTo } =
+  const { magazines, pageNumber, totalPages, itemsFrom, itemsTo } =
     useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -116,17 +121,13 @@ export default function MagazinesPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             أرشيف الثورة
           </h1>
-          <p className="text-gray-700 text-lg">
-            تصفح جميع أعداد صحيفة الثورة
-          </p>
+          <p className="text-gray-700 text-lg">تصفح جميع أعداد صحيفة الثورة</p>
         </div>
       </ScrollAnimation>
 
       {/* Date Filter */}
       <div className="max-w-7xl mx-auto px-4 py-6 border-b border-dashed border-black/10">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
-          تصفية حسب التاريخ
-        </h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">تصفية حسب التاريخ</h2>
         <div className="flex flex-wrap gap-4 items-end">
           <div className="flex-1 min-w-[200px]">
             <label htmlFor="from-date" className="block text-sm font-medium text-gray-700 mb-2">
@@ -150,6 +151,7 @@ export default function MagazinesPage() {
               className="w-full px-4 py-2 border border-dashed border-black/10 rounded-lg bg-transparent text-gray-900 focus:outline-none"
             />
           </div>
+
           <div className="flex-1 min-w-[200px]">
             <label htmlFor="to-date" className="block text-sm font-medium text-gray-700 mb-2">
               إلى تاريخ
@@ -172,6 +174,7 @@ export default function MagazinesPage() {
               className="w-full px-4 py-2 border border-dashed border-black/10 rounded-lg bg-transparent text-gray-900 focus:outline-none"
             />
           </div>
+
           {(searchParams.get("from") || searchParams.get("to")) && (
             <button
               onClick={() => {
@@ -200,21 +203,16 @@ export default function MagazinesPage() {
                   <div className="group border border-dashed border-black/10 rounded-lg overflow-hidden hover:shadow-lg transition-all">
                     {/* Thumbnail */}
                     <div className="relative aspect-[3/4] bg-gray-100">
-                      {magazine.thumbnailUrl ? (
-                        <img
-                          src={magazine.thumbnailUrl}
-                          alt={`العدد ${magazine.issueNumber}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <FileText className="w-16 h-16 text-gray-400" />
-                        </div>
-                      )}
+                      <PdfFirstPageThumbnail
+                        pdfUrl={magazine.pdfUrl}
+                        alt={`العدد ${magazine.issueNumber}`}
+                        className="w-full h-full object-cover"
+                      />
+
                       {/* Overlay on hover */}
                       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <Link
-                          to={`/magazines/date/${magazine.createdAt.split('T')[0]}`}
+                          to={`/magazines/date/${magazine.createdAt.split("T")[0]}`}
                           className="flex flex-col items-center gap-2 text-white"
                         >
                           <FileText className="w-8 h-8" />
@@ -244,9 +242,7 @@ export default function MagazinesPage() {
           <div className="inline-flex items-center justify-center w-20 h-20 border border-dashed border-black/10 rounded-lg mb-4">
             <FileText className="w-10 h-10 text-gray-400" />
           </div>
-          <p className="text-gray-600 text-lg">
-            لا توجد أعداد متاحة حالياً
-          </p>
+          <p className="text-gray-600 text-lg">لا توجد أعداد متاحة حالياً</p>
         </div>
       )}
 
@@ -282,8 +278,8 @@ export default function MagazinesPage() {
                     onClick={() => handlePageChange(pageNum)}
                     className={`px-4 py-2 border border-dashed rounded-lg font-medium transition-all ${
                       pageNum === pageNumber
-                        ? 'border-black/30 bg-black/5 text-gray-900'
-                        : 'border-black/20 text-gray-700 hover:bg-black/5'
+                        ? "border-black/30 bg-black/5 text-gray-900"
+                        : "border-black/20 text-gray-700 hover:bg-black/5"
                     }`}
                   >
                     {pageNum}
@@ -301,6 +297,11 @@ export default function MagazinesPage() {
               <ChevronLeft className="w-5 h-5" />
             </button>
           </div>
+
+          {/* a11y: range summary */}
+          <p className="sr-only" aria-live="polite">
+            {itemsFrom} - {itemsTo}
+          </p>
         </div>
       )}
     </div>
