@@ -32,7 +32,7 @@ export function Footer({ pages = [], categories = [] }: FooterProps) {
               />
             </Link>
             <p className="text-sm text-gray-600 mb-4">
-              منصة إخبارية شاملة
+              المؤسسة الصحفية الحكومية الأولى في الجمهورية اليمنية تأسست عام ١٩٦٢م، وتصدر عنها صحف: الثورة، الوحدة، الرياضة، ومجلة معين.
             </p>
             <p className="text-xs text-gray-500">
               © {currentYear} الثورة
