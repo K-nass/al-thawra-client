@@ -43,12 +43,12 @@ export async function loader() {
 
   try {
     categories = await cache.getOrFetch(
-      "categories:menu:Arabic",
+      "categories:menu:Arabic:v2",
       () => categoriesService.getMenuCategories("Arabic"),
       CacheTTL.LONG
     );
   } catch (error) {
-    // Error fetching categories
+    console.error("[root loader] Failed to fetch menu categories:", error);
   }
 
   try {

@@ -50,9 +50,10 @@ class CategoriesService {
       const response = await axios.get<Category[]>(this.baseUrl, {
         params: apiParams,
       });
+      console.log("Fetched categories:", response.data);
       return response.data;
     } catch (error: any) {
-
+      console.error("Error fetching categories:", error);
       throw error;
     }
   }
@@ -96,13 +97,12 @@ class CategoriesService {
     try {
       const categories = await this.getCategories({
         isActive: true,
-        withSub: true,
         language,
       });
       // Filter categories that should show on menu
       return categories.filter(cat => cat.showOnMenu);
     } catch (error: any) {
-
+      console.error("Error in getMenuCategories:", error);
       throw error;
     }
   }
