@@ -13,7 +13,7 @@ export default function DualSwiperLayout({ posts }: { posts: Post[] }) {
     const secondRowPosts = posts.slice(4, 8);
 
     return (
-        <div className="min-h-[600px] md:min-h-[700px] space-y-4 bg-red-500">
+        <div className="min-h-[600px] md:min-h-[700px] space-y-4">
             {/* First Row: Articles Swiper */}
             <Swiper
                 spaceBetween={16}

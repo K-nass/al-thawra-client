@@ -70,7 +70,7 @@ export default function HeroSliderLayout({ sliderPosts, rightDirectionPosts, lef
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwapRight, posts.length]);
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px] bg-red-500">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}
       <aside className="lg:col-span-3 order-2 lg:order-1 h-full">
         <div className="h-full flex flex-col">

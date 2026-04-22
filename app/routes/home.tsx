@@ -19,11 +19,11 @@ import DualFeaturedLayout from "~/layouts/DualFeaturedLayout";
 import TripleColumnLayout from "~/layouts/TripleColumnLayout";
 import InvertedSplitLayout from "~/layouts/InvertedSplitLayout";
 import SplitHeroLayout from "~/layouts/SplitHeroLayout";
+import NewsletterSubscriptionSidebar from "~/components/NewsletterSubscriptionSidebar";
 
 type CategoryData = { category: Category; posts: Post[] };
 
 const LAYOUT_COMPONENTS: Record<string, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
-  "hero-slider":       (data, { newsletterCategories }) => <HeroSliderLayout sliderPosts={data.posts} rightDirectionPosts={[]} leftDirectionPosts={[]} chiefEditor={null} chiefEditorPosts={[]} />,
   "dual_swiper": (data) => <DualSwiperLayout posts={data.posts} />,
   "balanced-columns": (data) => <BalancedColumnsLayout categoryData={data} />,
   "featured-with-row": (data) => <FeaturedWithRowLayout categoryData={data} />,
@@ -32,19 +32,19 @@ const LAYOUT_COMPONENTS: Record<string, (data: CategoryData, props: { isLast: bo
   "triple-column": (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
   "inverted-split": (data) => <InvertedSplitLayout categoryData={data} />,
   // Legacy numeric identifiers for backward compatibility
-  Layout1: (data) => <DualSwiperLayout posts={data.posts} />,
-  Layout2: (data) => <DualSwiperLayout posts={data.posts} />,
-  Layout3: (data) => <DualFeaturedLayout posts={data.posts} />,
-  Layout4: (data) => <BalancedColumnsLayout categoryData={data} />,
-  Layout5: (data) => <FeaturedWithRowLayout categoryData={data} />,
-  Layout6: (data) => <DualFeaturedLayout posts={data.posts} />,
-  Layout7: (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
-  Layout8: (data) => <InvertedSplitLayout categoryData={data} />,
-  Layout9: (data) => <FeaturedWithRowLayout categoryData={data} />,
-  Layout10: (data) => <SplitHeroLayout posts={data.posts} />,
-  Layout11: (data) => <SplitHeroLayout posts={data.posts} />,
-  Layout12: (data) => <BalancedColumnsLayout categoryData={data} />,
-  Layout13: (data) => <DualFeaturedLayout posts={data.posts} />,
+  // Layout1: (data) => <DualSwiperLayout posts={data.posts} />,
+  // Layout2: (data) => <DualSwiperLayout posts={data.posts} />,
+  // Layout3: (data) => <DualFeaturedLayout posts={data.posts} />,
+  // Layout4: (data) => <BalancedColumnsLayout categoryData={data} />,
+  // Layout5: (data) => <FeaturedWithRowLayout categoryData={data} />,
+  // Layout6: (data) => <DualFeaturedLayout posts={data.posts} />,
+  // Layout7: (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  // Layout8: (data) => <InvertedSplitLayout categoryData={data} />,
+  // Layout9: (data) => <FeaturedWithRowLayout categoryData={data} />,
+  // Layout10: (data) => <SplitHeroLayout posts={data.posts} />,
+  // Layout11: (data) => <SplitHeroLayout posts={data.posts} />,
+  // Layout12: (data) => <BalancedColumnsLayout categoryData={data} />,
+  // Layout13: (data) => <DualFeaturedLayout posts={data.posts} />,
 };
 
 export function meta({ }: Route.MetaArgs) {
@@ -217,6 +217,46 @@ export default function Home() {
   const [categoryPosts, setCategoryPosts] = useState<Array<{ category: Category; posts: Post[] }>>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
+  function normalizeLayoutId(layoutId: unknown): string | null {
+    if (typeof layoutId === "number" && Number.isFinite(layoutId)) {
+      return `Layout${layoutId}`;
+    }
+    if (typeof layoutId !== "string") return null;
+    const trimmed = layoutId.trim();
+    if (!trimmed) return null;
+
+    // Keep legacy LayoutX identifiers as-is.
+    if (/^Layout\d+$/i.test(trimmed)) return trimmed;
+
+    // Normalize common CMS variants.
+    const normalized = trimmed.toLowerCase();
+    const aliasMap: Record<string, string> = {
+      "dual-swiper": "dual_swiper",
+      dualswiper: "dual_swiper",
+      "balanced-columns": "balanced-columns",
+      balancedcolumns: "balanced-columns",
+      balanced_columns: "balanced-columns",
+      "featured-with-row": "featured-with-row",
+      featuredwithrow: "featured-with-row",
+      featured_with_row: "featured-with-row",
+      "dual-featured": "dual-featured",
+      dualfeatured: "dual-featured",
+      dual_featured: "dual-featured",
+      "split-hero": "split-hero",
+      splithero: "split-hero",
+      split_hero: "split-hero",
+      "triple-column": "triple-column",
+      triplecolumn: "triple-column",
+      triple_column: "triple-column",
+      "inverted-split": "inverted-split",
+      invertedsplit: "inverted-split",
+      inverted_split: "inverted-split",
+      dual_swiper: "dual_swiper",
+    };
+
+    return aliasMap[normalized] ?? trimmed;
+  }
+
   // Fetch posts for categories
   useEffect(() => {
     async function fetchCategoryPosts() {
@@ -299,17 +339,28 @@ export default function Home() {
   }
 
   function renderCategoryLayout(
-    layoutId: string,
+    layoutId: unknown,
     data: { category: Category; posts: Post[] },
     isLast: boolean,
     newsletterCats: Category[]
   ) {
-    if (!layoutId) return null;
-    const renderer = LAYOUT_COMPONENTS[layoutId];
-    if (!renderer) {
-      console.warn(`[Homepage] Unimplemented layout "${layoutId}" for category "${data.category.slug}" — skipping.`);
-      return null;
+    const normalizedLayoutId = normalizeLayoutId(layoutId);
+    const defaultLayoutId = "featured-with-row";
+
+    const renderer =
+      (normalizedLayoutId && LAYOUT_COMPONENTS[normalizedLayoutId]) ||
+      LAYOUT_COMPONENTS[defaultLayoutId];
+
+    if (!normalizedLayoutId) {
+      console.warn(
+        `[Homepage] Missing layout for category "${data.category.slug}" — using default "${defaultLayoutId}".`
+      );
+    } else if (!LAYOUT_COMPONENTS[normalizedLayoutId]) {
+      console.warn(
+        `[Homepage] Unimplemented layout "${normalizedLayoutId}" for category "${data.category.slug}" — using default "${defaultLayoutId}".`
+      );
     }
+
     return renderer(data, { isLast, newsletterCategories: newsletterCats });
   }
 
@@ -320,7 +371,8 @@ export default function Home() {
     const orderB = categoryOrderMap.get(b.categorySlug) ?? Infinity;
     return orderA - orderB;
   });
-
+  console.log("home reels",homeReels);
+  
   return (
     <main className="semafor-container py-4 md:py-8">
       <HeroSliderLayout
@@ -328,26 +380,26 @@ export default function Home() {
         rightDirectionPosts={rightDirectionPosts}
         leftDirectionPosts={leftDirectionPosts}
         chiefEditor={chiefEditor}
-        chiefEditorPosts={chiefEditorPosts}
+        chiefEditorPosts={chiefEditorPosts}  
       />
 
       <ReelsSection reels={homeReels} />
+      {/* TODO:make this sidebar left  */}
+      <NewsletterSubscriptionSidebar />
 
       {(() => {
         // Find the index of the last category with an implemented layout
         const IMPLEMENTED = new Set([
           "hero-slider", "newsletter-grid", "balanced-columns",
-          "featured-with-row", "dual-featured", "split-hero", "triple-column", "inverted-split",
-          // Legacy numeric identifiers
-          "Layout1", "Layout2", "Layout3", "Layout4", "Layout5", "Layout6",
-          "Layout7", "Layout8", "Layout9", "Layout10", "Layout11", "Layout12", "Layout13"
+          "featured-with-row", "dual-featured", "split-hero", "triple-column", "inverted-split"
         ]);
-        const lastImplementedIdx = categoryPosts.reduce((last, item, idx) =>
-          IMPLEMENTED.has(item.category.layout) ? idx : last, -1
-        );
+        const lastImplementedIdx = categoryPosts.reduce((last, item, idx) => {
+          const id = normalizeLayoutId(item.category.layout);
+          return id && IMPLEMENTED.has(id) ? idx : last;
+        }, -1);
 
         return categoryPosts.map((data, idx) => {
-          const layoutId = data.category.layout;
+          const layoutId = normalizeLayoutId(data.category.layout) ?? "featured-with-row";
           const isLast = idx === lastImplementedIdx;
 
           return (
