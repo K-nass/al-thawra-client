@@ -11,13 +11,13 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout7Props {
+interface TripleColumnLayoutProps {
   categoryData: CategoryWithPosts;
   showAdvertisement?: boolean;
   advertisementImage?: string;
 }
 
-export default function Layout7({ categoryData, showAdvertisement = false, advertisementImage }: Layout7Props) {
+export default function TripleColumnLayout({ categoryData, showAdvertisement = false, advertisementImage }: TripleColumnLayoutProps) {
   const { posts } = categoryData;
 
   return (

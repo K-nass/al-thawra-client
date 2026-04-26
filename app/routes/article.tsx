@@ -149,23 +149,27 @@ function InlineArticle({ article }: { article: ArticleResponse }) {
   }, [article]);
 
   return (
-    <article ref={ref} className="border-t border-dashed border-black/10 mt-8">
+   <article ref={ref} className="border-t border-dashed border-black/10 mt-8">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <PostHeader
           category={article.categoryName}
-          categoryHref={`/category/${article.categorySlug}`}
+          categoryHref={`{/category/${article.categorySlug}`}
           title={article.title}
         />
         <PostMeta
           date={formattedDate}
           commentsCount={0}
           authorName={article.authorName}
-          authorHref={article.authorId ? `/author/${article.authorId}` : undefined}
+          authorHref={
+            article.authorId ? `/author/${article.authorId}}` : undefined
+          }
           title={article.title}
         />
-        {article.image && article.image !== "null" && article.image !== "undefined" && (
-          <PostImage src={article.image} alt={article.imageDescription} />
-        )}
+        {article.image &&
+          article.image !== "null" &&
+          article.image !== "undefined" && (
+            <PostImage src={article.image} alt={article.imageDescription} />
+          )}
         <PostContent content={article.content} />
       </div>
     </article>
@@ -372,10 +376,19 @@ export default function ArticlePage({
             content={article.content}
             registerHref="/register"
             loginHref="/login"
-            authorCard={
+           authorCard={
               <AuthorCard
-                name="سام عبد الغبارى"
-                image="/images/سام.png"
+                name={article.authorName || article.createdBy}
+                image={
+                  article.authorImage &&
+                  article.authorImage !== "null" &&
+                  article.authorImage !== "undefined"
+                    ? article.authorImage
+                    : undefined
+                }
+                href={
+                  article.authorId ? `/author/${article.authorId}` : undefined
+                }
               />
             }
           />

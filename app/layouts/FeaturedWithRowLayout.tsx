@@ -11,11 +11,11 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout5Props {
+interface FeaturedWithRowLayoutProps {
   categoryData: CategoryWithPosts;
 }
 
-export default function Layout5({ categoryData }: Layout5Props) {
+export default function FeaturedWithRowLayout({ categoryData }: FeaturedWithRowLayoutProps) {
   const { category, posts } = categoryData;
 
   // Handle empty or undefined posts

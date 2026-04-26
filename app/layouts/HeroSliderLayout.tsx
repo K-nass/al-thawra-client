@@ -1,26 +1,25 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import type { Post } from "../services/postsService";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay, EffectFade } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
-import 'swiper/css/effect-fade';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 import ColoredTitle from "~/components/ColoredTitle";
 
-interface Layout1Props {
+interface HeroSliderLayoutProps {
   sliderPosts: Post[];
-  urgentPosts: Post[];
   rightDirectionPosts: Post[];
   leftDirectionPosts: Post[];
   chiefEditor: any;
   chiefEditorPosts: Post[];
 }
 
-export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: Layout1Props) {
+export default function HeroSliderLayout({ sliderPosts, rightDirectionPosts, leftDirectionPosts, chiefEditor, chiefEditorPosts }: HeroSliderLayoutProps) {
   const getFirstChar = (value?: string) => (value && value.trim().length > 0 ? value.trim()[0] : "ك");
 
   const posts = rightDirectionPosts || [];
@@ -69,7 +68,7 @@ export default function Layout1({ sliderPosts, urgentPosts, rightDirectionPosts,
     const id = window.setInterval(goNextRight, 9000);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canSwapRight, posts.length]);  
+  }, [canSwapRight, posts.length]);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-4 lg:border-b-2 semafor-section-title min-h-[400px] lg:min-h-[600px]">
       {/* Left Sidebar - Featured Content */}

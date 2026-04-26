@@ -1,6 +1,9 @@
 // Simple in-memory cache for API requests
 // This cache persists during the server runtime
 
+// Set to false to temporarily disable caching (data will always be fetched fresh)
+const CACHE_ENABLED = false;
+
 interface CacheEntry<T> {
   data: T;
   timestamp: number;
@@ -17,6 +20,7 @@ class Cache {
    * Get cached data if it exists and hasn't expired
    */
   get<T>(key: string, ttl?: number): T | null {
+    if (!CACHE_ENABLED) return null;
     const entry = this.store.get(key);
     if (!entry) {
       return null;
@@ -113,8 +117,9 @@ class Cache {
     fetchFn: () => Promise<T>,
     ttl?: number,
     url?: string,
-    validateAlways: boolean = false // Always validate with ETag, even if cache is fresh
+    validateAlways: boolean = false
   ): Promise<T> {
+    if (!CACHE_ENABLED) return fetchFn();
     const entry = this.store.get(key);
     const expirationTime = ttl || this.defaultTTL;
     
@@ -165,10 +170,14 @@ class Cache {
    */
   async getOrFetchWithETag<T>(
     key: string,
-    fetchFn: () => Promise<any>, // axios response
+    fetchFn: () => Promise<any>,
     ttl?: number,
     url?: string
   ): Promise<T> {
+    if (!CACHE_ENABLED) {
+      const response = await fetchFn();
+      return response.data as T;
+    }
     // Check cache first
     const entry = this.store.get(key);
     const expirationTime = ttl || this.defaultTTL;

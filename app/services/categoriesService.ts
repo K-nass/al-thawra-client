@@ -9,6 +9,8 @@ export interface Category {
   description: string;
   colorHex: string;
   order: number;
+  layout: string | number;
+  layoutName?: string | null;
   isActive: boolean;
   showOnMenu: boolean;
   showOnHomepage: boolean;
@@ -19,6 +21,8 @@ export interface Category {
   subCategoriesCount: number;
   subCategories: Category[];
 }
+
+export type ImplementedLayoutId = "Layout2" | "Layout4" | "Layout5" | "Layout6" | "Layout7" | "Layout8" | "Layout11";
 
 // Query parameters for fetching categories
 export interface CategoryQueryParams {
@@ -31,6 +35,26 @@ export interface CategoryQueryParams {
 
 class CategoriesService {
   private readonly baseUrl = "/categories";
+
+  private normalizeCategory(category: Category): Category {
+    const layoutName =
+      typeof category.layoutName === "string" ? category.layoutName.trim() : "";
+
+    let normalizedLayout: string | number = category.layout;
+    if (layoutName) {
+      normalizedLayout = layoutName;
+    } else if (typeof category.layout === "number" && Number.isFinite(category.layout)) {
+      normalizedLayout = `Layout${category.layout}`;
+    }
+
+    return {
+      ...category,
+      layout: normalizedLayout,
+      subCategories: Array.isArray(category.subCategories)
+        ? category.subCategories.map((sub) => this.normalizeCategory(sub))
+        : [],
+    };
+  }
 
   /**
    * Get all categories with optional filters
@@ -50,8 +74,7 @@ class CategoriesService {
       const response = await axios.get<Category[]>(this.baseUrl, {
         params: apiParams,
       });
-      console.log("Fetched categories:", response.data);
-      return response.data;
+      return (response.data || []).map((cat) => this.normalizeCategory(cat));
     } catch (error: any) {
       console.error("Error fetching categories:", error);
       throw error;
@@ -118,7 +141,7 @@ class CategoriesService {
       const response = await axios.get<Category>(`${this.baseUrl}/${slug}`, {
         params,
       });
-      return response.data;
+      return this.normalizeCategory(response.data);
     } catch (error: any) {
 
       throw error;

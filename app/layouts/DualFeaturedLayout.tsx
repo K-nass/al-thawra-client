@@ -4,11 +4,11 @@ import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
 
-interface Layout6Props {
+interface DualFeaturedLayoutProps {
   posts: Post[];
 }
 
-export default function Layout6({ posts }: Layout6Props) {
+export default function DualFeaturedLayout({ posts }: DualFeaturedLayoutProps) {
   // Handle empty or undefined posts
   const safePosts = posts || [];
 

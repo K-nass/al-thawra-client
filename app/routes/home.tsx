@@ -1,7 +1,6 @@
 import type { Route } from "./+types/home";
 import { Link, useLoaderData, useNavigation, useOutletContext } from "react-router";
 import { useState, useEffect } from "react";
-import { NewsletterSubscription } from "../components/NewsletterSubscription";
 import { Spinner } from "../components/Spinner";
 import { postsService, type Post } from "../services/postsService";
 import { categoriesService, type Category } from "../services/categoriesService";
@@ -12,15 +11,41 @@ import { cache, CacheTTL } from "../lib/cache";
 import { generateMetaTags } from "~/utils/seo";
 import { EmptyState } from "~/components/EmptyState";
 import { ReelsSection, type HomepageReel } from "~/components/Reels/Home";
-import Layout1 from "~/layouts/Layout1";
-import Layout2 from "~/layouts/Layout2";
-import Layout4 from "~/layouts/Layout4";
-import Layout5 from "~/layouts/Layout5";
-import Layout6 from "~/layouts/Layout6";
-import Layout7 from "~/layouts/Layout7";
-import Layout8 from "~/layouts/Layout8";
-import Layout11 from "~/layouts/Layout11";
-import { ColoredTitle } from "~/components/ColoredTitle";
+import HeroSliderLayout from "~/layouts/HeroSliderLayout";
+import DualSwiperLayout from "~/layouts/DualSwiperLayout";
+import BalancedColumnsLayout from "~/layouts/BalancedColumnsLayout";
+import FeaturedWithRowLayout from "~/layouts/FeaturedWithRowLayout";
+import DualFeaturedLayout from "~/layouts/DualFeaturedLayout";
+import TripleColumnLayout from "~/layouts/TripleColumnLayout";
+import InvertedSplitLayout from "~/layouts/InvertedSplitLayout";
+import SplitHeroLayout from "~/layouts/SplitHeroLayout";
+import NewsletterSubscriptionSidebar from "~/components/NewsletterSubscriptionSidebar";
+
+type CategoryData = { category: Category; posts: Post[] };
+
+const LAYOUT_COMPONENTS: Record<string, (data: CategoryData, props: { isLast: boolean; newsletterCategories: Category[] }) => React.ReactNode> = {
+  "dual_swiper": (data) => <DualSwiperLayout posts={data.posts} />,
+  "balanced-columns": (data) => <BalancedColumnsLayout categoryData={data} />,
+  "featured-with-row": (data) => <FeaturedWithRowLayout categoryData={data} />,
+  "dual-featured": (data) => <DualFeaturedLayout posts={data.posts} />,
+  "split-hero": (data) => <SplitHeroLayout posts={data.posts} />,
+  "triple-column": (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  "inverted-split": (data) => <InvertedSplitLayout categoryData={data} />,
+  // Legacy numeric identifiers for backward compatibility
+  // Layout1: (data) => <DualSwiperLayout posts={data.posts} />,
+  // Layout2: (data) => <DualSwiperLayout posts={data.posts} />,
+  // Layout3: (data) => <DualFeaturedLayout posts={data.posts} />,
+  // Layout4: (data) => <BalancedColumnsLayout categoryData={data} />,
+  // Layout5: (data) => <FeaturedWithRowLayout categoryData={data} />,
+  // Layout6: (data) => <DualFeaturedLayout posts={data.posts} />,
+  // Layout7: (data, { isLast }) => <TripleColumnLayout categoryData={data} showAdvertisement={isLast} />,
+  // Layout8: (data) => <InvertedSplitLayout categoryData={data} />,
+  // Layout9: (data) => <FeaturedWithRowLayout categoryData={data} />,
+  // Layout10: (data) => <SplitHeroLayout posts={data.posts} />,
+  // Layout11: (data) => <SplitHeroLayout posts={data.posts} />,
+  // Layout12: (data) => <BalancedColumnsLayout categoryData={data} />,
+  // Layout13: (data) => <DualFeaturedLayout posts={data.posts} />,
+};
 
 export function meta({ }: Route.MetaArgs) {
   return generateMetaTags({
@@ -77,13 +102,6 @@ export async function loader({ }: Route.LoaderArgs) {
     ).catch(() => {
       return null;
     });
-
-    // Fetch urgent news
-    const urgentPosts = await cache.getOrFetch(
-      "posts:urgent:15",
-      () => postsService.getUrgentPosts(15),
-      CacheTTL.SHORT
-    ).catch(() => []);
 
     // Fetch "right direction" articles for Layout1 left sidebar
     const rightDirectionPosts = await cache.getOrFetch(
@@ -157,8 +175,8 @@ export async function loader({ }: Route.LoaderArgs) {
 
     // Fetch newsletter categories for Layout2
     const newsletterCategories = await cache.getOrFetch(
-      "categories:newsletter:Arabic",
-      () => categoriesService.getActiveCategories("Arabic"),
+      "categories:newsletter",
+      () => categoriesService.getActiveCategories(),
       CacheTTL.SHORT
     ).catch(() => []);
 
@@ -166,7 +184,6 @@ export async function loader({ }: Route.LoaderArgs) {
       sliderPosts,
       writersPosts,
       latestMagazine,
-      urgentPosts,
       rightDirectionPosts,
       leftDirectionPosts,
       homeReels,
@@ -179,7 +196,6 @@ export async function loader({ }: Route.LoaderArgs) {
       sliderPosts: [],
       writersPosts: [],
       latestMagazine: null,
-      urgentPosts: [],
       rightDirectionPosts: [],
       leftDirectionPosts: [],
       homeReels: [],
@@ -192,8 +208,8 @@ export async function loader({ }: Route.LoaderArgs) {
 
 export default function Home() {
   // Get data from loader
-  const { sliderPosts, writersPosts, latestMagazine, urgentPosts, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts, newsletterCategories } = useLoaderData<typeof loader>();
-    
+  const { sliderPosts, writersPosts, latestMagazine, rightDirectionPosts, leftDirectionPosts, homeReels, chiefEditor, chiefEditorPosts, newsletterCategories } = useLoaderData<typeof loader>();
+
   // Get categories from parent via outlet context (cleaner than useRouteLoaderData)
   const { categories } = useOutletContext<{ categories: Category[] }>();
 
@@ -201,27 +217,68 @@ export default function Home() {
   const [categoryPosts, setCategoryPosts] = useState<Array<{ category: Category; posts: Post[] }>>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
 
+  function normalizeLayoutId(layoutId: unknown): string | null {
+    if (typeof layoutId === "number" && Number.isFinite(layoutId)) {
+      return `Layout${layoutId}`;
+    }
+    if (typeof layoutId !== "string") return null;
+    const trimmed = layoutId.trim();
+    if (!trimmed) return null;
+
+    // Keep legacy LayoutX identifiers as-is.
+    if (/^Layout\d+$/i.test(trimmed)) return trimmed;
+
+    // Normalize common CMS variants.
+    const normalized = trimmed.toLowerCase();
+    const aliasMap: Record<string, string> = {
+      "dual-swiper": "dual_swiper",
+      dualswiper: "dual_swiper",
+      "balanced-columns": "balanced-columns",
+      balancedcolumns: "balanced-columns",
+      balanced_columns: "balanced-columns",
+      "featured-with-row": "featured-with-row",
+      featuredwithrow: "featured-with-row",
+      featured_with_row: "featured-with-row",
+      "dual-featured": "dual-featured",
+      dualfeatured: "dual-featured",
+      dual_featured: "dual-featured",
+      "split-hero": "split-hero",
+      splithero: "split-hero",
+      split_hero: "split-hero",
+      "triple-column": "triple-column",
+      triplecolumn: "triple-column",
+      triple_column: "triple-column",
+      "inverted-split": "inverted-split",
+      invertedsplit: "inverted-split",
+      inverted_split: "inverted-split",
+      dual_swiper: "dual_swiper",
+    };
+
+    return aliasMap[normalized] ?? trimmed;
+  }
+
   // Fetch posts for categories
   useEffect(() => {
     async function fetchCategoryPosts() {
       setIsLoadingCategories(true);
 
-      // Sort and limit categories to match layout order (10 layout slots)
-      const limitedCategories = categories
-        .sort((a: Category, b: Category) => a.order - b.order)
-        .slice(0, 10);
+      // Filter by showOnHomepage, sort by order ascending then name alphabetically
+      const homepageCategories = categories
+        .filter((cat: Category) => cat.showOnHomepage)
+        .sort((a: Category, b: Category) => a.order - b.order || a.name.localeCompare(b.name));
 
       const results = [];
-      for (const category of limitedCategories) {
+      for (const category of homepageCategories) {
         try {
           const posts = await cache.getOrFetch(
-            `posts:category:${category.slug}:15:Article`,
+            `posts:category:${category.slug}:15`,
             async () => {
               const response = await postsService.getPostsByCategory(
                 category.slug,
                 { pageSize: 15 },
-                "Article"
+                undefined
               );
+              console.log(`[Homepage] Fetched ${response.items.length} posts for category "${category.name}" (${category.slug})`);
               return response.items;
             },
             CacheTTL.SHORT
@@ -232,9 +289,11 @@ export default function Home() {
               category,
               posts,
             });
+          } else {
+            console.warn(`[Homepage] No posts found for category "${category.name}" (${category.slug})`);
           }
         } catch (error) {
-          // Error fetching posts for category
+          console.error(`[Homepage] Error fetching posts for category "${category.name}" (${category.slug}):`, error);
         }
       }
 
@@ -279,66 +338,85 @@ export default function Home() {
     );
   }
 
-  // Layout order for category sections: 2, 4, 5, 6, 7, 8, 6, 7, 11, 7(with ad)
-  const layoutOrder = [2, 4, 5, 6, 7, 8, 6, 7, 11, 7] as const;
-
   function renderCategoryLayout(
-    layoutNumber: number,
+    layoutId: unknown,
     data: { category: Category; posts: Post[] },
-    isLast: boolean
+    isLast: boolean,
+    newsletterCats: Category[]
   ) {
-    switch (layoutNumber) {
-      case 2:
-        return <Layout2 posts={data.posts} newsletterCategories={newsletterCategories} />;
-      case 4:
-        return <Layout4 categoryData={data} />;
-      case 5:
-        return <Layout5 categoryData={data} />;
-      case 6:
-        return <Layout6 posts={data.posts} />;
-      case 7:
-        return <Layout7 categoryData={data} showAdvertisement={isLast} />;
-      case 8:
-        return <Layout8 categoryData={data} />;
-      case 11:
-        return <Layout11 posts={data.posts} />;
-      default:
-        return null;
+    const normalizedLayoutId = normalizeLayoutId(layoutId);
+    const defaultLayoutId = "featured-with-row";
+
+    const renderer =
+      (normalizedLayoutId && LAYOUT_COMPONENTS[normalizedLayoutId]) ||
+      LAYOUT_COMPONENTS[defaultLayoutId];
+
+    if (!normalizedLayoutId) {
+      console.warn(
+        `[Homepage] Missing layout for category "${data.category.slug}" — using default "${defaultLayoutId}".`
+      );
+    } else if (!LAYOUT_COMPONENTS[normalizedLayoutId]) {
+      console.warn(
+        `[Homepage] Unimplemented layout "${normalizedLayoutId}" for category "${data.category.slug}" — using default "${defaultLayoutId}".`
+      );
     }
+
+    return renderer(data, { isLast, newsletterCategories: newsletterCats });
   }
 
+  // Sort slider posts by their category's order field
+  const categoryOrderMap = new Map(categories.map((cat: Category) => [cat.slug, cat.order]));
+  const sortedSliderPosts = [...sliderPosts].sort((a, b) => {
+    const orderA = categoryOrderMap.get(a.categorySlug) ?? Infinity;
+    const orderB = categoryOrderMap.get(b.categorySlug) ?? Infinity;
+    return orderA - orderB;
+  });
+  console.log("home reels",homeReels);
+  
   return (
     <main className="semafor-container py-4 md:py-8">
-      <Layout1
-        sliderPosts={sliderPosts}
-        urgentPosts={urgentPosts}
+      <HeroSliderLayout
+        sliderPosts={sortedSliderPosts}
         rightDirectionPosts={rightDirectionPosts}
         leftDirectionPosts={leftDirectionPosts}
         chiefEditor={chiefEditor}
-        chiefEditorPosts={chiefEditorPosts}
+        chiefEditorPosts={chiefEditorPosts}  
       />
 
       <ReelsSection reels={homeReels} />
+      {/* TODO:make this sidebar left  */}
+      <NewsletterSubscriptionSidebar />
 
-      {categoryPosts.map((data, idx) => {
-        const layoutNumber = layoutOrder[idx % layoutOrder.length];
-        const isLast = idx === categoryPosts.length - 1;
-        const isLastInSequence = idx === layoutOrder.length - 1;
+      {(() => {
+        // Find the index of the last category with an implemented layout
+        const IMPLEMENTED = new Set([
+          "hero-slider", "newsletter-grid", "balanced-columns",
+          "featured-with-row", "dual-featured", "split-hero", "triple-column", "inverted-split"
+        ]);
+        const lastImplementedIdx = categoryPosts.reduce((last, item, idx) => {
+          const id = normalizeLayoutId(item.category.layout);
+          return id && IMPLEMENTED.has(id) ? idx : last;
+        }, -1);
 
-        return (
-          <section
-            key={data.category.slug}
-            className={`mb-8 md:mb-12 ${isLast || isLastInSequence ? '' : 'pb-8 md:pb-12 border-b-2 border-black'} mt-6 md:mt-10`}
-          >
-            <Link to={`/category/${data.category.slug}`}>
-              <h2 className="semafor-section-title hover:text-blue-700 transition-colors">
-                {data.category.name}
-              </h2>
-            </Link>
-            {renderCategoryLayout(layoutNumber, data, isLast && layoutNumber === 7)}
-          </section>
-        );
-      })}
+        return categoryPosts.map((data, idx) => {
+          const layoutId = normalizeLayoutId(data.category.layout) ?? "featured-with-row";
+          const isLast = idx === lastImplementedIdx;
+
+          return (
+            <section
+              key={data.category.slug}
+              className={`mb-8 md:mb-12 ${isLast ? '' : 'pb-8 md:pb-12 border-b-2 border-black'} mt-6 md:mt-10`}
+            >
+              <Link to={`/category/${data.category.slug}`}>
+                <h2 className="semafor-section-title hover:text-blue-700 transition-colors">
+                  {data.category.name}
+                </h2>
+              </Link>
+              {renderCategoryLayout(layoutId, data, isLast, newsletterCategories)}
+            </section>
+          );
+        });
+      })()}
     </main>
   );
 }
