@@ -66,6 +66,31 @@ export interface PostQueryParams {
   searchPhrase?: string;
 }
 
+// Request payloads for create/update endpoints.
+// Keep permissive to match server-side validation and avoid breaking callers.
+export interface CreatePostData {
+  title?: string;
+  slug?: string;
+  summary?: string;
+  image?: string;
+  imageDescription?: string;
+  direction?: string;
+  status?: string;
+  language?: string;
+  postType?: Post["postType"];
+  isFeatured?: boolean;
+  isBreaking?: boolean;
+  isSlider?: boolean;
+  isRecommended?: boolean;
+  categoryId?: string;
+  tags?: string[];
+  [key: string]: unknown;
+}
+
+export interface UpdatePostData extends Partial<CreatePostData> {
+  [key: string]: unknown;
+}
+
 class PostsService {
   private readonly baseUrl = "/posts/categories/articles";
 
@@ -311,6 +336,32 @@ class PostsService {
           PageSize: params?.pageSize || 15,
         },
       });
+      return response.data;
+    } catch (error: any) {
+
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new post
+   */
+  async createPost(postData: CreatePostData): Promise<Post> {
+    try {
+      const response = await axios.post<Post>(this.baseUrl, postData);
+      return response.data;
+    } catch (error: any) {
+
+      throw error;
+    }
+  }
+
+  /**
+   * Update an existing post
+   */
+  async updatePost(postId: string, postData: UpdatePostData): Promise<Post> {
+    try {
+      const response = await axios.put<Post>(`${this.baseUrl}/${postId}`, postData);
       return response.data;
     } catch (error: any) {
 

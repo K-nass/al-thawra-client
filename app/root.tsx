@@ -48,7 +48,7 @@ export async function loader() {
       CacheTTL.LONG
     );
   } catch (error) {
-    // Error fetching categories
+    console.error("[root loader] Failed to fetch menu categories:", error);
   }
 
   try {

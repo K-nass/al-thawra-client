@@ -1,35 +1,74 @@
-/* ============================================
-   HOMEPAGE REELS — "Watch Today's Videos" Section
-   ============================================ */
+/* ============================================================
+   HOMEPAGE REELS SECTION — Premium Preview Strip
+   Matches the Reels page's visual identity
+   ============================================================ */
 
-/* ---------- Section ---------- */
+/* ---------- Section Wrapper ---------- */
 .homepage-reels-section {
   margin-top: 2rem;
   margin-bottom: 2rem;
 }
 
+/* ---------- Section Header ---------- */
 .homepage-reels-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
+  direction: rtl;
 }
 
 .homepage-reels-title {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #111;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+  font-family: 'Lyon Arabic Text', Georgia, serif;
+}
+
+.homepage-reels-title:hover {
+  color: #333;
+}
+
+/* Accent dot beside title */
+.homepage-reels-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff2d55;
+  flex-shrink: 0;
+  animation: homepage-reel-pulse-dot 2s ease-in-out infinite;
+}
+
+.homepage-reels-see-all {
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  color: #1a1a1a;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #555;
+  text-decoration: none;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  border-bottom: 1.5px solid #ddd;
+  padding-bottom: 1px;
+}
+
+.homepage-reels-see-all:hover {
+  color: #111;
+  border-color: #111;
 }
 
 /* ---------- Scrollable List ---------- */
 .homepage-reels-list {
-  padding-bottom: 4px;
   list-style: none;
   margin: 0;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0 0 8px 0;
 }
 
 .homepage-reels-list .swiper-slide {
@@ -39,38 +78,86 @@
 /* ---------- Card ---------- */
 .homepage-reel-card {
   display: block;
-  width: 100%;
   text-decoration: none;
   color: inherit;
+  border-radius: 10px;
+  overflow: hidden;
   outline-offset: 3px;
-  border-radius: 4px;
+  position: relative;
 }
 
 .homepage-reel-card:focus-visible {
-  outline: 2px solid #1a73e8;
+  outline: 2px solid #ff2d55;
   outline-offset: 3px;
 }
 
-/* ---------- Thumbnail Container ---------- */
+/* ---------- Thumbnail Container (9:16 aspect) ---------- */
 .homepage-reel-thumbnail-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 4px;
+  aspect-ratio: 9 / 16;
+  border-radius: 10px;
   overflow: hidden;
-  background: #e5e5e5;
+  background: #1a1a1a;
+  /* contain all absolutely-positioned children */
+  isolation: isolate;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.18),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.homepage-reel-card:hover .homepage-reel-thumbnail-wrap {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.18);
 }
 
 .homepage-reel-thumbnail-wrap img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .homepage-reel-card:hover .homepage-reel-thumbnail-wrap img {
-  transform: scale(1.04);
+  transform: scale(1.06);
+}
+
+/* ---------- Thumbnail Fallback (no image) ---------- */
+.homepage-reel-thumbnail-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.homepage-reel-thumbnail-fallback svg {
+  width: 32px;
+  height: 32px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* ---------- Gradient Overlay (bottom info readability) ---------- */
+.homepage-reel-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 35%,
+    transparent 65%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ---------- Play Button Overlay ---------- */
@@ -85,26 +172,31 @@
 }
 
 .homepage-reel-play-btn {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.25s ease, transform 0.25s ease;
+  transition: background 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .homepage-reel-card:hover .homepage-reel-play-btn {
-  background: rgba(0, 0, 0, 0.7);
-  transform: scale(1.08);
+  background: rgba(255, 45, 85, 0.85);
+  border-color: transparent;
+  transform: scale(1.12);
 }
 
 .homepage-reel-play-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   color: white;
-  margin-left: 2px; /* visually center the triangle */
+  margin-right: -1px; /* optically center triangle */
 }
 
 /* ---------- Loading Spinner Overlay ---------- */
@@ -114,93 +206,143 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
 
 .homepage-reel-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.25);
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid rgba(255, 255, 255, 0.2);
   border-top-color: white;
   border-radius: 50%;
-  animation: homepage-reel-spin 0.7s linear infinite;
+  animation: homepage-reel-spin 0.65s linear infinite;
 }
 
-@keyframes homepage-reel-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* ---------- Info Overlay (bottom of thumbnail) ---------- */
+.homepage-reel-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 10px 10px 10px;
+  z-index: 3;
+  direction: rtl;
 }
 
-/* ---------- Text Content ---------- */
-.homepage-reel-text {
-  padding-top: 8px;
+.homepage-reel-author {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
 }
 
-.homepage-reel-category {
-  display: block;
+.homepage-reel-author-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+}
+
+.homepage-reel-author-name {
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #666;
-  margin-bottom: 4px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .homepage-reel-card-title {
-  font-size: 15px;
-  font-weight: 600;
-  line-height: 1.35;
-  color: #1a1a1a;
-  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0;
-  transition: color 0.2s ease;
+  font-family: 'Lyon Arabic Text', Georgia, serif;
 }
 
-.homepage-reel-card:hover .homepage-reel-card-title {
-  color: #333;
-}
-
-/* ---------- Author overlay (bottom-left of thumbnail) ---------- */
-.homepage-reel-author {
+/* ---------- Category Badge (top-left) ---------- */
+.homepage-reel-badge {
   position: absolute;
-  bottom: 8px;
-  left: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
   z-index: 3;
+  background: rgba(255, 45, 85, 0.9);
   color: white;
-  font-size: 12px;
-  font-weight: 600;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
-  line-height: 1.3;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  white-space: nowrap;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Duration Label (top-left) ---------- */
+.homepage-reel-duration-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ---------- Animations ---------- */
+@keyframes homepage-reel-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes homepage-reel-pulse-dot {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.35); opacity: 0.6; }
 }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 768px) {
   .homepage-reel-play-btn {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
   }
 
   .homepage-reel-play-btn svg {
-    width: 16px;
-    height: 16px;
+    width: 15px;
+    height: 15px;
   }
 
   .homepage-reel-card-title {
-    font-size: 14px;
+    font-size: 12px;
   }
 
   .homepage-reels-title {
-    font-size: 16px;
+    font-size: 17px;
   }
-}
-
-@media (max-width: 480px) {
 }

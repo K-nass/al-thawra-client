@@ -1,9 +1,8 @@
 import { Link } from "react-router";
-import ArticleImage from "../components/ArticleImage";
+import ArticleImage from "./ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
-import ColoredTitle from "~/components/ColoredTitle";
 
-interface Layout3Props {
+interface AdvertisementBannerProps {
   category?: string;
   title: string;
   summary: string;
@@ -12,14 +11,14 @@ interface Layout3Props {
   link?: string;
 }
 
-export default function Layout3({ 
+export default function AdvertisementBanner({ 
   category, 
   title, 
   summary, 
   image, 
   imageCredit,
   link 
-}: Layout3Props) {
+}: AdvertisementBannerProps) {  
   const content = (
     <div className="bg-[#b8d4e0] p-4">
       {/* Category Label */}
@@ -64,7 +63,6 @@ export default function Layout3({
         {content}
       </Link>
     );
-  }
-
+  }  
   return content;
 }

@@ -1,5 +1,6 @@
 import { Link } from "react-router";
-import { Play } from "lucide-react";
+import { Play, Film } from "lucide-react";
+import { useMemo, useState } from "react";
 
 // ---------- Data Interface ----------
 
@@ -12,6 +13,13 @@ export interface HomepageReel {
   isLoading: boolean;
 }
 
+// ---------- Helpers ----------
+
+function getAuthorInitial(name?: string): string {
+  if (!name) return "ر";
+  return [...name.trim()][0]?.toUpperCase() || "ر";
+}
+
 // ---------- Component ----------
 
 interface HomepageReelCardProps {
@@ -19,27 +27,46 @@ interface HomepageReelCardProps {
 }
 
 export function HomepageReelCard({ reel }: HomepageReelCardProps) {
+  const initial = useMemo(() => getAuthorInitial(reel.author), [reel.author]);
+  const [imgError, setImgError] = useState(false);
+
+  const showImage = reel.thumbnailUrl && !imgError;
+
   return (
     <Link
       to={`/reels?reelId=${reel.id}`}
       className="homepage-reel-card"
       aria-label={`تشغيل الفيديو: ${reel.title}`}
     >
-      {/* Thumbnail */}
       <div className="homepage-reel-thumbnail-wrap">
-        {reel.thumbnailUrl ? (
+
+        {/* Thumbnail image */}
+        {showImage ? (
           <img
-            src={reel.thumbnailUrl}
-            alt=""
+            src={reel.thumbnailUrl!}
+            alt={reel.title}
+            width="100%"
+            height="100%"
             loading="lazy"
             decoding="async"
+            onError={() => setImgError(true)}
           />
         ) : (
-          <div
-            style={{ width: "100%", height: "100%", background: "#ccc" }}
-            aria-hidden="true"
-          />
+          /* Fallback — branded dark gradient */
+          <div className="homepage-reel-thumbnail-fallback" aria-hidden="true">
+            <Film />
+          </div>
         )}
+
+        {/* Bottom gradient for text readability */}
+        <div className="homepage-reel-gradient" aria-hidden="true" />
+
+        {/* Category badge (top-right in RTL) */}
+        {reel.category && (
+          <span className="homepage-reel-badge">{reel.category}</span>
+        )}
+
+        {/* Duration from reel (if available on the type) */}
 
         {/* Play or Loading overlay */}
         {reel.isLoading ? (
@@ -54,20 +81,19 @@ export function HomepageReelCard({ reel }: HomepageReelCardProps) {
           </div>
         )}
 
-        {/* Author overlay */}
-        {reel.author && (
-          <div className="homepage-reel-author">
-            {reel.author}
-          </div>
-        )}
-      </div>
+        {/* Bottom info: author avatar + title */}
+        <div className="homepage-reel-info">
+          {reel.author && (
+            <div className="homepage-reel-author">
+              <div className="homepage-reel-author-avatar" aria-hidden="true">
+                {initial}
+              </div>
+              <span className="homepage-reel-author-name">{reel.author}</span>
+            </div>
+          )}
+          <h3 className="homepage-reel-card-title">{reel.title}</h3>
+        </div>
 
-      {/* Text content */}
-      <div className="homepage-reel-text">
-        {reel.category && (
-          <span className="homepage-reel-category">{reel.category}</span>
-        )}
-        <h3 className="homepage-reel-card-title">{reel.title}</h3>
       </div>
     </Link>
   );

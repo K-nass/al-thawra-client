@@ -18,11 +18,45 @@ export async function loader({ params }: { params: { date: string } }) {
     );
 
     if (!magazine) {
+      console.error(`[Magazine Loader] No magazine found for date: ${date}`);
       throw new Response("Magazine not found", { status: 404 });
+    }
+
+    // Log the magazine data for debugging
+    console.log(`[Magazine Loader] Magazine found:`, {
+      issueNumber: magazine.issueNumber,
+      pdfUrl: magazine.pdfUrl,
+      thumbnailUrl: magazine.thumbnailUrl,
+      createdAt: magazine.createdAt,
+    });
+
+    // Validate PDF URL
+    if (!magazine.pdfUrl) {
+      console.error(`[Magazine Loader] Magazine has no PDF URL`);
+      throw new Response("Magazine PDF URL is missing", { status: 500 });
+    }
+
+    // Test if PDF URL is accessible (HEAD request)
+    try {
+      console.log(`[Magazine Loader] Testing PDF URL accessibility: ${magazine.pdfUrl}`);
+      const pdfTest = await fetch(magazine.pdfUrl, { 
+        method: 'HEAD',
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        }
+      });
+      console.log(`[Magazine Loader] PDF URL test result: ${pdfTest.status} ${pdfTest.statusText}`);
+      
+      if (!pdfTest.ok) {
+        console.warn(`[Magazine Loader] PDF URL is not accessible (${pdfTest.status}), but continuing anyway`);
+      }
+    } catch (testError) {
+      console.warn(`[Magazine Loader] Failed to test PDF URL:`, testError);
     }
 
     return { magazine, date };
   } catch (error) {
+    console.error(`[Magazine Loader] Error loading magazine:`, error);
     throw new Response("Magazine not found", { status: 404 });
   }
 }
@@ -69,6 +103,12 @@ export default function MagazineDatePage() {
         showRefresh={false}
       />
     );
+  }
+
+  // Show a warning in development if PDF URL might not be accessible
+  if (typeof window !== 'undefined' && import.meta.env.DEV) {
+    console.warn('[MagazineViewer] Loading PDF:', magazine.pdfUrl);
+    console.warn('[MagazineViewer] If the PDF fails to load, the file may not exist on the server.');
   }
 
   return <MagazineViewer pdfUrl={magazine.pdfUrl} issueNumber={magazine.issueNumber} date={date} />;

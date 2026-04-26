@@ -70,8 +70,8 @@ export const ColoredTitle: React.FC<ColoredTitleProps> = ({
   
   // Render with inline TripleDiamond
   return (
-    <h2 className={`colored-title ${className}`}>
-      <TripleDiamond size={10} color={color} className="inline-diamond" />
+    <h2 className={`colored-title`}>
+      <TripleDiamond />
       {coloredWords.length > 0 && (
         <span style={{ color }}>{coloredWords.join(' ')}</span>
       )}

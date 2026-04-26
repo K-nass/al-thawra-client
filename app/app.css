@@ -158,6 +158,18 @@ body {
   cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+  .semafor-section-title {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .semafor-section-title {
+    font-size: 18px;
+  }
+}
+
 /* Horizontal dashed border separator */
 .border-dashed-horizontal {
   @apply border-t border-dashed border-black/10 my-8;

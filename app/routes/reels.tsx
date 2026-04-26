@@ -1,7 +1,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Mousewheel, Keyboard, Virtual } from "swiper/modules";
+import { Keyboard, Virtual } from "swiper/modules";
 import type { Swiper as SwiperType } from "swiper";
 import { ArrowRight, ChevronUp, ChevronDown, Film, WifiOff } from "lucide-react";
 import { reelsService, type ReelsResponse, type Reel } from "../services/reelsService";
@@ -21,14 +21,12 @@ export async function loader({ request }: { request: Request }) {
   try {
     const data = await reelsService.getReels(cursor, 5);
 
-    // If a specific reelId is requested and it's the initial load
     if (reelId && !cursor) {
       try {
         const specificReel = await reelsService.getReelById(reelId);
         const filteredReels = data.reels.filter((r) => r.id !== reelId);
         return { ...data, reels: [specificReel, ...filteredReels] };
       } catch {
-        // Fallback: check if it's in the feed
         const found = data.reels.find((r) => r.id === reelId);
         if (found) {
           const filtered = data.reels.filter((r) => r.id !== reelId);
@@ -73,6 +71,7 @@ export default function ReelsPage() {
   } = useReelsFeed();
 
   const swiperRef = useRef<SwiperType>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const handleSlideChange = useCallback(
@@ -113,20 +112,75 @@ export default function ReelsPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleMute]);
 
-  // ---- Empty State ----
+  // Wheel-to-swipe (for desktop mouse/trackpad, even when viewport is "mobile sized")
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (typeof window === "undefined") return;
+
+    let lastTriggerAt = 0;
+    let deltaAccumulator = 0;
+
+    const onWheel = (e: WheelEvent) => {
+      // Handle only when the event originates from inside the reels container.
+      // Some emulations dispatch `wheel` on `window` with a non-element target,
+      // so we also check the element under the pointer.
+      const targetNode = (e.target ?? null) as Node | null;
+      const insideByTarget = !!(targetNode && container.contains(targetNode));
+      const elUnderPointer =
+        typeof document !== "undefined" && "elementFromPoint" in document
+          ? document.elementFromPoint(e.clientX, e.clientY)
+          : null;
+      const insideByPointer = !!(elUnderPointer && container.contains(elUnderPointer));
+      if (!insideByTarget && !insideByPointer) return;
+
+      // Only consider vertical intent
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      // Prevent the page from scrolling while we use the wheel to navigate reels
+      e.preventDefault();
+
+      // Accumulate smaller trackpad deltas
+      deltaAccumulator += e.deltaY;
+
+      const now = Date.now();
+      const cooldownMs = 360;
+      if (now - lastTriggerAt < cooldownMs) return;
+
+      const threshold = 40;
+      if (Math.abs(deltaAccumulator) < threshold) return;
+
+      lastTriggerAt = now;
+      const direction = deltaAccumulator > 0 ? 1 : -1;
+      deltaAccumulator = 0;
+
+      if (direction > 0) swiperRef.current?.slideNext();
+      else swiperRef.current?.slidePrev();
+    };
+
+    container.addEventListener("wheel", onWheel, { passive: false });
+    // Fallback: in some "mobile view" emulations, wheel events can be dispatched on window.
+    window.addEventListener("wheel", onWheel, { passive: false, capture: true } as any);
+    return () => {
+      container.removeEventListener("wheel", onWheel as any);
+      window.removeEventListener("wheel", onWheel as any, true);
+    };
+  }, []);
+
+  // ---- Empty / Error State ----
   if (reels.length === 0 && !isLoadingMore) {
     return (
       <div className="reels-page">
+        <div className="reels-rail-bg" aria-hidden="true" />
         <div className="reels-container">
           <div className="reels-state-screen">
-            {/* Back button */}
             <button
               className="reels-back-btn"
               onClick={handleGoBack}
               aria-label="رجوع"
               style={{ position: "absolute", top: 16, right: 16 }}
             >
-              <ArrowRight size={20} />
+              <ArrowRight size={18} />
             </button>
 
             <div className="reels-state-icon">
@@ -151,10 +205,11 @@ export default function ReelsPage() {
     );
   }
 
-  // ---- Loading State (initial) ----
+  // ---- Initial Loading State ----
   if (reels.length === 0 && isLoadingMore) {
     return (
       <div className="reels-page">
+        <div className="reels-rail-bg" aria-hidden="true" />
         <div className="reels-container">
           <ReelSkeleton />
         </div>
@@ -165,7 +220,10 @@ export default function ReelsPage() {
   // ---- Main Feed ----
   return (
     <div className="reels-page">
-      <div className="reels-container">
+      {/* Ambient dark rail (desktop) */}
+      <div className="reels-rail-bg" aria-hidden="true" />
+
+      <div className="reels-container" ref={containerRef}>
         {/* Header */}
         <div className="reels-header">
           <button
@@ -173,12 +231,32 @@ export default function ReelsPage() {
             onClick={handleGoBack}
             aria-label="رجوع"
           >
-            <ArrowRight size={20} />
+            <ArrowRight size={18} />
           </button>
           <span className="reels-title">ريلز</span>
           {/* Spacer for centering */}
-          <div style={{ width: 40 }} />
+          <div style={{ width: 38 }} aria-hidden="true" />
         </div>
+
+        {/* Navigation arrows (mobile + desktop; positioned by CSS) */}
+        <nav className="reels-nav-arrows" aria-label="التنقل بين الريلز">
+          <button
+            className="reels-nav-btn"
+            onClick={() => swiperRef.current?.slidePrev()}
+            disabled={activeIndex === 0}
+            aria-label="الريل السابق"
+          >
+            <ChevronUp />
+          </button>
+          <button
+            className="reels-nav-btn"
+            onClick={() => swiperRef.current?.slideNext()}
+            disabled={!hasMore && activeIndex === reels.length - 1}
+            aria-label="الريل التالي"
+          >
+            <ChevronDown />
+          </button>
+        </nav>
 
         {/* Swiper Feed */}
         <Swiper
@@ -187,13 +265,11 @@ export default function ReelsPage() {
           }}
           direction="vertical"
           style={{ width: "100%", height: "100%" }}
-          modules={[Mousewheel, Keyboard, Virtual]}
-          mousewheel={{
-            forceToAxis: true,
-            sensitivity: 0.8,
-            thresholdDelta: 40,
-            thresholdTime: 250,
-          }}
+          modules={[Keyboard, Virtual]}
+          touchStartPreventDefault={false}
+          touchMoveStopPropagation={false}
+          preventClicks={false}
+          preventClicksPropagation={false}
           keyboard={{ enabled: true }}
           onSlideChange={handleSlideChange}
           virtual={{
@@ -203,10 +279,11 @@ export default function ReelsPage() {
           }}
           spaceBetween={0}
           slidesPerView={1}
-          speed={400}
+          speed={420}
           cssMode={false}
           resistance
           resistanceRatio={0.85}
+          touchReleaseOnEdges
         >
           {reels.map((reel, index) => (
             <SwiperSlide
@@ -234,27 +311,16 @@ export default function ReelsPage() {
             </SwiperSlide>
           )}
         </Swiper>
-
-        {/* Desktop Navigation Arrows */}
-        <div className="reels-nav-arrows">
-          <button
-            className="reels-nav-btn"
-            onClick={() => swiperRef.current?.slidePrev()}
-            disabled={activeIndex === 0}
-            aria-label="الريل السابق"
-          >
-            <ChevronUp />
-          </button>
-          <button
-            className="reels-nav-btn"
-            onClick={() => swiperRef.current?.slideNext()}
-            disabled={!hasMore && activeIndex === reels.length - 1}
-            aria-label="الريل التالي"
-          >
-            <ChevronDown />
-          </button>
-        </div>
       </div>
+
+      {/* Desktop: reel counter */}
+      {reels.length > 0 && (
+        <div className="reels-counter" aria-live="polite" aria-atomic="true">
+          <span className="reels-counter-text" aria-label={`الريل ${activeIndex + 1} من ${reels.length}`}>
+            {activeIndex + 1} / {reels.length}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

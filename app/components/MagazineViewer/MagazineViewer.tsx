@@ -37,10 +37,18 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Info,
+  MoreHorizontal,
+  X,
+  Mouse,
+  Move,
+  Keyboard,
+  Hand,
 } from 'lucide-react';
 
 import { ViewerLoadingState } from './ViewerLoadingState';
 import { ThumbnailSidebar } from './ThumbnailSidebar';
+import { getPdfjs } from '~/lib/pdfjs';
 
 import './magazine-viewer.css';
 
@@ -84,14 +92,12 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
         setProgress(0);
         setPages([]);
 
-        const pdfjsLib = await import('pdfjs-dist');
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          'https://unpkg.com/pdfjs-dist@5.5.207/build/pdf.worker.min.mjs';
+        const pdfjsLib = await getPdfjs();
 
         const resolvedUrl = `/api/pdf/proxy?url=${encodeURIComponent(pdfUrl)}`;
         const loadingTask = pdfjsLib.getDocument({
           url: resolvedUrl,
-          disableRange: true,
+          disableRange: false,
           disableAutoFetch: false,
         });
 
@@ -123,7 +129,7 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
           const ctx = canvas.getContext('2d');
           if (!ctx) throw new Error('Canvas 2D context unavailable');
 
-          await page.render({ canvas, canvasContext: ctx, viewport }).promise;
+          await page.render({ canvasContext: ctx, viewport }).promise;
 
           const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
           renderedPages.push(dataUrl);
@@ -138,11 +144,22 @@ function usePdfToImages(pdfUrl: string): PdfToImagesResult {
       } catch (err) {
         if (cancelled) return;
         console.error('[MagazineViewer] PDF load error:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'فشل تحميل المجلة. يُرجى المحاولة مرة أخرى.'
-        );
+        
+        // Provide more helpful error messages
+        let errorMessage = 'فشل تحميل المجلة. يُرجى المحاولة مرة أخرى.';
+        
+        if (err instanceof Error) {
+          if (err.message.includes('404') || err.message.includes('not found')) {
+            errorMessage = 'ملف المجلة غير موجود على الخادم. يُرجى التواصل مع الدعم الفني.';
+            console.error('[MagazineViewer] PDF file not found at URL:', pdfUrl);
+          } else if (err.message.includes('500')) {
+            errorMessage = 'خطأ في الخادم أثناء تحميل المجلة. يُرجى المحاولة لاحقاً.';
+          } else {
+            errorMessage = err.message;
+          }
+        }
+        
+        setError(errorMessage);
       }
     }
 
@@ -256,22 +273,67 @@ function FlipBookViewer({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isBookReady, setIsBookReady] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isFlipping, setIsFlipping] = useState(false);
 
-  // Focus & Pan state
-  const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [isPanning, setIsPanning] = useState(false);
-  const panStart = useRef({ x: 0, y: 0 });
+  /* ================================================================
+     TRANSFORM ENGINE — Production-grade zoom + pan
+     ================================================================
+     Architecture:
+     - `transform` ref = single source of truth { x, y, scale }
+     - `drag` ref = gesture tracking with DEAD ZONE to separate
+       clicks/double-clicks from drag gestures
+     - Native DOM listeners (zero React synthetic events for gestures)
+     - Every handler reads ONLY from refs (zero stale closures)
+     - React state (pan, isPanning, zoomLevel) used ONLY to trigger
+       re-renders for CSS — never read by gesture handlers
+     ================================================================ */
 
-  // Track viewport size for fixed-dimension book sizing
+  const transform = useRef({ x: 0, y: 0, scale: 1 });
+  const drag = useRef({
+    active: false,     // pointer is down
+    panning: false,    // moved past dead zone — actually panning
+    startX: 0,         // pointer clientX at gesture start
+    startY: 0,         // pointer clientY at gesture start
+    startTX: 0,        // transform.x at gesture start
+    startTY: 0,        // transform.y at gesture start
+  });
+  const bookAreaRef = useRef<HTMLDivElement>(null);
+  const bookConfigRef = useRef({ width: 0, height: 0 });
+
+  // Viewport size
   const [winSize, setWinSize] = useState({ w: 0, h: 0 });
-
   useEffect(() => {
     const update = () => setWinSize({ w: window.innerWidth, h: window.innerHeight });
     update();
     window.addEventListener('resize', update);
     return () => window.removeEventListener('resize', update);
   }, []);
+
+  // Mobile detection — single-page portrait mode below 768px
+  const viewportW =
+    winSize.w || (typeof window !== 'undefined' ? window.innerWidth : 0);
+  const viewportH =
+    winSize.h || (typeof window !== 'undefined' ? window.innerHeight : 0);
+
+  // Responsive flags:
+  // - `isMobile`: compact toolbar / UI for phones + small tablets + emulated mobile viewports
+  // - `isSinglePage`: force portrait (single-page) book mode when width/height is tight
+  const isMobile = viewportW > 0 && viewportW <= 1024;
+  const isSinglePage = viewportW > 0 && (viewportW < 980 || viewportH < 600);
+  const isPhone = viewportW > 0 && viewportW <= 767;
+
+  const isSinglePageRef = useRef(isSinglePage);
+  isSinglePageRef.current = isSinglePage; // sync during render for native listeners
+
+  useEffect(() => {
+    if (!isMobile) setIsMobileMenuOpen(false);
+  }, [isMobile]);
+
+  // React state — projections of ref data for triggering re-renders
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
 
   /* ---- Dynamic import (SSR safe) ---- */
   useEffect(() => {
@@ -286,126 +348,368 @@ function FlipBookViewer({
     [pages],
   );
 
-  /* ---- Book configuration ----
-     CRITICAL: Use size="fixed" (NOT "stretch") with explicit pixel dimensions.
-     size="stretch" + autoSize=true creates a circular loop:
-       book resizes → container resizes → book resizes → collapses to 1-page width
-     This makes the left page invisible.
-
-     Instead: calculate page dimensions from the actual viewport height and
-     the PDF's aspect ratio so the book fills the screen. */
+  /* ---- Book configuration ---- */
   const bookConfig = useMemo(() => {
-    const TOOLBAR_H = 52;
-    const PADDING_V = 24; // top + bottom padding
-    const PADDING_H = 112; // left + right (arrows)
+    // Keep these values in sync with `magazine-viewer.css` breakpoints/padding.
+    const padding = isPhone
+      ? { t: 0, b: 44, l: 0, r: 0 } // @media (max-width: 767px) => padding: 0 0 44px
+      : viewportW <= 1024
+        ? { t: 8, b: 48, l: 44, r: 44 } // @media (max-width: 1024px) => padding: 8px 44px 48px
+        : { t: 12, b: 52, l: 56, r: 56 }; // default => padding: 12px 56px 52px
 
-    const availH = Math.max((winSize.h || window.innerHeight) - TOOLBAR_H - PADDING_V, 400);
-    const availW = Math.max((winSize.w || window.innerWidth) - PADDING_H, 600);
-
+    const availH = Math.max(viewportH - padding.t - padding.b, 300);
+    const availW = Math.max(viewportW - padding.l - padding.r, 300);
     const aspect = pageWidth > 0 && pageHeight > 0 ? pageWidth / pageHeight : 0.7;
 
-    // Each single page is aspect-ratio locked
-    // In landscape (spread) mode the book is 2 pages wide
-    // Fit by height first, then check if 2*w fits available width
-    let pageH = Math.round(availH);
-    let pageW = Math.round(pageH * aspect);
+    let pageW: number;
+    let pageH: number;
 
-    // If two pages side-by-side are too wide, fit by width instead
-    if (pageW * 2 > availW) {
-      pageW = Math.round(availW / 2);
+    if (isSinglePage) {
+      // Single page: fit to full available width
+      pageW = Math.round(availW);
       pageH = Math.round(pageW / aspect);
+      if (pageH > availH) {
+        pageH = Math.round(availH);
+        pageW = Math.round(pageH * aspect);
+      }
+    } else {
+      // Two-page spread: each page fits half the available width
+      pageH = Math.round(availH);
+      pageW = Math.round(pageH * aspect);
+      if (pageW * 2 > availW) {
+        pageW = Math.round(availW / 2);
+        pageH = Math.round(pageW / aspect);
+      }
     }
 
-    return { width: pageW, height: pageH };
-  }, [winSize.w, winSize.h, pageWidth, pageHeight]);
+    const config = { width: pageW, height: pageH };
+    bookConfigRef.current = config;
+    return config;
+  }, [viewportW, viewportH, pageWidth, pageHeight, isPhone, isSinglePage]);
 
-  /* ---- Events ---- */
-  const handleFlip = useCallback((e: any) => {
-    setCurrentPage(e.data as number);
+  /* ---- react-pageflip callbacks ---- */
+  const handleFlip = useCallback((e: any) => setCurrentPage(e.data as number), []);
+  const handleOrientationChange = useCallback((e: any) => setOrientation(e.data as 'portrait' | 'landscape'), []);
+  const handleInit = useCallback(() => setIsBookReady(true), []);
+  const handleStateChange = useCallback((e: any) => setIsFlipping(e.data !== 'read'), []);
+
+  /* ---- Transform helpers (all read from refs — zero closures) ---- */
+
+  /** Reset pan position in both ref and React state */
+  const resetPan = useCallback(() => {
+    transform.current.x = 0;
+    transform.current.y = 0;
+    setPan({ x: 0, y: 0 });
   }, []);
 
-  const handleOrientationChange = useCallback((e: any) => {
-    setOrientation(e.data as 'portrait' | 'landscape');
+  /** Full reset — zoom + pan */
+  const resetTransform = useCallback(() => {
+    transform.current = { x: 0, y: 0, scale: 1 };
+    setPan({ x: 0, y: 0 });
+    setZoomLevel(1);
   }, []);
 
-  const handleInit = useCallback(() => {
-    setIsBookReady(true);
-  }, []);
+  /** Apply a new zoom level, clamp pan to boundaries, sync React state */
+  const applyZoom = useCallback((newScale: number) => {
+    const t = transform.current;
+    const s = Math.max(1, Math.min(4, newScale));
 
-  const handleStateChange = useCallback((e: any) => {
-    // States: 'read' (static), 'user_fold', 'fold_corner', 'flipping'
-    setIsFlipping(e.data !== 'read');
+    if (s <= 1) {
+      t.x = 0; t.y = 0; t.scale = 1;
+    } else {
+      const bc = bookConfigRef.current;
+      const contentW = bc.width * (isSinglePageRef.current ? 1 : 2);
+      const maxX = Math.max(0, (contentW * s - window.innerWidth) / 2);
+      const maxY = Math.max(0, (bc.height * s - window.innerHeight) / 2);
+      t.x = Math.max(-maxX, Math.min(maxX, t.x));
+      t.y = Math.max(-maxY, Math.min(maxY, t.y));
+      t.scale = s;
+    }
+
+    setPan({ x: t.x, y: t.y });
+    setZoomLevel(t.scale);
   }, []);
 
   /* ---- Navigation ---- */
   const flipNext = useCallback(() => {
     bookRef.current?.pageFlip()?.flipNext('top');
-  }, []);
+    resetPan();
+  }, [resetPan]);
 
   const flipPrev = useCallback(() => {
     bookRef.current?.pageFlip()?.flipPrev('top');
-  }, []);
+    resetPan();
+  }, [resetPan]);
 
-  const goToPage = useCallback(
-    (idx: number) => {
-      const pf = bookRef.current?.pageFlip();
-      if (!pf) return;
-      const clamped = Math.max(0, Math.min(idx, totalPages - 1));
-      pf.turnToPage(clamped);
-      setCurrentPage(clamped);
-    },
-    [totalPages],
-  );
+  const goToPage = useCallback((idx: number) => {
+    const pf = bookRef.current?.pageFlip();
+    if (!pf) return;
+    const clamped = Math.max(0, Math.min(idx, totalPages - 1));
+    pf.turnToPage(clamped);
+    setCurrentPage(clamped);
+    resetPan();
+  }, [totalPages, resetPan]);
 
   const goToFirst = useCallback(() => goToPage(0), [goToPage]);
   const goToLast = useCallback(() => goToPage(totalPages - 1), [goToPage, totalPages]);
 
-  /* ---- Zoom ---- */
-  const zoomIn = useCallback(() => setZoomLevel((z) => Math.min(z + 0.5, 4)), []);
-  const zoomOut = useCallback(() => {
-    setZoomLevel((z) => {
-      const next = Math.max(z - 0.5, 1);
-      if (next === 1) setPan({ x: 0, y: 0 });
-      return next;
-    });
-  }, []);
-  const resetZoom = useCallback(() => {
-    setZoomLevel(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
+  /* ---- Zoom controls ---- */
+  const zoomIn = useCallback(() => applyZoom(transform.current.scale + 0.5), [applyZoom]);
+  const zoomOut = useCallback(() => applyZoom(transform.current.scale - 0.5), [applyZoom]);
+  const resetZoom = useCallback(() => resetTransform(), [resetTransform]);
 
-  const handleDoubleClick = useCallback(() => {
-    setZoomLevel((z) => {
-      if (z > 1) {
-        setPan({ x: 0, y: 0 });
-        return 1;
+
+
+  /* ================================================================
+     NATIVE DOM GESTURE LISTENERS
+     ================================================================
+     Architecture:
+     - DESKTOP: pointer events for drag-pan, wheel for zoom
+     - MOBILE:  touch events handle EVERYTHING (1-finger pan when
+       zoomed, 2-finger pinch-zoom). Pointer events are disabled
+       on touch devices to prevent conflicts with react-pageflip.
+     - All listeners use capture:true on mobile so we intercept
+       BEFORE react-pageflip's internal handlers.
+     - Dead zone (4px) separates taps from deliberate drags.
+     ================================================================ */
+  useEffect(() => {
+    const el = bookAreaRef.current;
+    if (!el) return;
+    const target: HTMLDivElement = el;
+
+    const DEAD_ZONE = 4;
+
+    // Helper: compute pan limits for a given scale
+    function getPanLimits(scale: number) {
+      const bc = bookConfigRef.current;
+      const contentW = bc.width * (isSinglePageRef.current ? 1 : 2);
+      return {
+        maxX: Math.max(0, (contentW * scale - window.innerWidth) / 2),
+        maxY: Math.max(0, (bc.height * scale - window.innerHeight) / 2),
+      };
+    }
+
+    function clampPan(x: number, y: number, scale: number) {
+      if (scale <= 1) return { x: 0, y: 0 };
+      const { maxX, maxY } = getPanLimits(scale);
+      return {
+        x: Math.max(-maxX, Math.min(maxX, x)),
+        y: Math.max(-maxY, Math.min(maxY, y)),
+      };
+    }
+
+    // Flush transform ref to React state
+    function syncReact(scale?: number) {
+      const t = transform.current;
+      setPan({ x: t.x, y: t.y });
+      if (scale !== undefined) setZoomLevel(scale);
+    }
+
+    /* ---- DESKTOP: Pointer events for drag-pan ---- */
+    function onPointerDown(e: PointerEvent) {
+      if (e.pointerType === 'touch') return;       // touch handled separately
+      if (e.button !== 0) return;
+      if (transform.current.scale <= 1) return;
+
+      const d = drag.current;
+      d.active = true;
+      d.panning = false;
+      d.startX = e.clientX;
+      d.startY = e.clientY;
+      d.startTX = transform.current.x;
+      d.startTY = transform.current.y;
+    }
+
+    function onPointerMove(e: PointerEvent) {
+      if (e.pointerType === 'touch') return;
+      const d = drag.current;
+      if (!d.active) return;
+
+      const dx = e.clientX - d.startX;
+      const dy = e.clientY - d.startY;
+
+      if (!d.panning) {
+        if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
+        d.panning = true;
+        setIsPanning(true);
+        try { target.setPointerCapture(e.pointerId); } catch {}
       }
-      return 1.8;
-    });
-  }, []);
 
-  const handlePointerDown = useCallback((e: React.PointerEvent) => {
-    if (zoomLevel <= 1) return;
-    setIsPanning(true);
-    panStart.current = { x: e.clientX - pan.x, y: e.clientY - pan.y };
-    if (e.currentTarget.setPointerCapture) {
-      e.currentTarget.setPointerCapture(e.pointerId);
+      const t = transform.current;
+      const clamped = clampPan(d.startTX + dx, d.startTY + dy, t.scale);
+      t.x = clamped.x;
+      t.y = clamped.y;
+      syncReact();
     }
-  }, [zoomLevel, pan.x, pan.y]);
 
-  const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isPanning) return;
-    setPan({
-      x: e.clientX - panStart.current.x,
-      y: e.clientY - panStart.current.y,
-    });
-  }, [isPanning]);
-
-  const handlePointerUp = useCallback((e: React.PointerEvent) => {
-    setIsPanning(false);
-    if (e.currentTarget.releasePointerCapture) {
-      e.currentTarget.releasePointerCapture(e.pointerId);
+    function onPointerUp(e: PointerEvent) {
+      if (e.pointerType === 'touch') return;
+      const d = drag.current;
+      if (!d.active) return;
+      d.active = false;
+      if (d.panning) {
+        d.panning = false;
+        setIsPanning(false);
+        try { target.releasePointerCapture(e.pointerId); } catch {}
+      }
     }
+
+    /* ---- DESKTOP: Wheel zoom ---- */
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      const t = transform.current;
+      const delta = e.deltaY > 0 ? -0.15 : 0.15;
+      const newScale = Math.max(1, Math.min(4, t.scale + delta));
+      if (newScale === t.scale) return;
+
+      const rect = target.getBoundingClientRect();
+      const cx = e.clientX - rect.left - rect.width / 2;
+      const cy = e.clientY - rect.top - rect.height / 2;
+      const ratio = newScale / t.scale;
+
+      let newX = cx - (cx - t.x) * ratio;
+      let newY = cy - (cy - t.y) * ratio;
+
+      const clamped = clampPan(newX, newY, newScale);
+      t.x = clamped.x; t.y = clamped.y; t.scale = newScale;
+      syncReact(newScale);
+    }
+
+    /* ---- MOBILE: Unified touch gesture system ---- */
+    // Handles BOTH 1-finger pan (when zoomed) and 2-finger pinch-zoom.
+    // Using touch events with capture:true takes priority over react-pageflip.
+    let gesture: 'none' | 'pan' | 'pinch' = 'none';
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTX = 0;
+    let touchStartTY = 0;
+    let pinchDist0 = 0;
+    let pinchScale0 = 1;
+    let pinchMidX0 = 0;
+    let pinchMidY0 = 0;
+    let pinchTX0 = 0;
+    let pinchTY0 = 0;
+
+    function onTouchStart(e: TouchEvent) {
+      if (e.touches.length >= 2) {
+        // --- PINCH START ---
+        e.preventDefault();
+        e.stopPropagation();
+        gesture = 'pinch';
+        const [a, b] = [e.touches[0], e.touches[1]];
+        pinchDist0 = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+        pinchScale0 = transform.current.scale;
+        pinchMidX0 = (a.clientX + b.clientX) / 2;
+        pinchMidY0 = (a.clientY + b.clientY) / 2;
+        pinchTX0 = transform.current.x;
+        pinchTY0 = transform.current.y;
+      } else if (e.touches.length === 1 && transform.current.scale > 1) {
+        // --- PAN START (only when zoomed) ---
+        gesture = 'none'; // will become 'pan' after dead zone
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTX = transform.current.x;
+        touchStartTY = transform.current.y;
+      }
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      if (e.touches.length >= 2 && (gesture === 'pinch' || gesture === 'none')) {
+        // --- PINCH MOVE ---
+        e.preventDefault();
+        e.stopPropagation();
+        gesture = 'pinch';
+        const [a, b] = [e.touches[0], e.touches[1]];
+        const dist = Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+        const newScale = Math.max(1, Math.min(4, pinchScale0 * (dist / pinchDist0)));
+
+        // Zoom at initial midpoint
+        const rect = target.getBoundingClientRect();
+        const cx = pinchMidX0 - rect.left - rect.width / 2;
+        const cy = pinchMidY0 - rect.top - rect.height / 2;
+        const ratio = newScale / pinchScale0;
+        let newX = cx - (cx - pinchTX0) * ratio;
+        let newY = cy - (cy - pinchTY0) * ratio;
+
+        // Add pan from midpoint drift
+        const midX = (a.clientX + b.clientX) / 2;
+        const midY = (a.clientY + b.clientY) / 2;
+        newX += midX - pinchMidX0;
+        newY += midY - pinchMidY0;
+
+        const clamped = clampPan(newX, newY, newScale);
+        const t = transform.current;
+        t.x = clamped.x; t.y = clamped.y; t.scale = newScale;
+        syncReact(newScale);
+
+      } else if (e.touches.length === 1 && transform.current.scale > 1) {
+        // --- 1-FINGER PAN MOVE (when zoomed) ---
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+
+        if (gesture !== 'pan') {
+          // Dead zone
+          if (Math.abs(dx) < DEAD_ZONE && Math.abs(dy) < DEAD_ZONE) return;
+          gesture = 'pan';
+          setIsPanning(true);
+          // Once we start panning, prevent page flip
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        if (gesture === 'pan') {
+          e.preventDefault();
+          e.stopPropagation();
+          const t = transform.current;
+          const clamped = clampPan(touchStartTX + dx, touchStartTY + dy, t.scale);
+          t.x = clamped.x;
+          t.y = clamped.y;
+          syncReact();
+        }
+      }
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (e.touches.length === 0) {
+        if (gesture === 'pan') {
+          setIsPanning(false);
+        }
+        gesture = 'none';
+      } else if (e.touches.length === 1 && gesture === 'pinch') {
+        // Pinch ended, one finger remains — re-anchor for potential pan
+        gesture = 'none';
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        touchStartTX = transform.current.x;
+        touchStartTY = transform.current.y;
+      }
+    }
+
+    // Desktop listeners
+    target.addEventListener('pointerdown', onPointerDown);
+    target.addEventListener('pointermove', onPointerMove);
+    target.addEventListener('pointerup', onPointerUp);
+    target.addEventListener('pointercancel', onPointerUp);
+    target.addEventListener('wheel', onWheel, { passive: false });
+
+    // Mobile listeners — capture:true to intercept before react-pageflip
+    target.addEventListener('touchstart', onTouchStart, { capture: true, passive: false });
+    target.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
+    target.addEventListener('touchend', onTouchEnd, { capture: true });
+
+    return () => {
+      target.removeEventListener('pointerdown', onPointerDown);
+      target.removeEventListener('pointermove', onPointerMove);
+      target.removeEventListener('pointerup', onPointerUp);
+      target.removeEventListener('pointercancel', onPointerUp);
+      target.removeEventListener('wheel', onWheel);
+      target.removeEventListener('touchstart', onTouchStart, { capture: true } as EventListenerOptions);
+      target.removeEventListener('touchmove', onTouchMove, { capture: true } as EventListenerOptions);
+      target.removeEventListener('touchend', onTouchEnd, { capture: true } as EventListenerOptions);
+    };
   }, []);
 
   /* ---- Fullscreen ---- */
@@ -492,8 +796,9 @@ function FlipBookViewer({
 
   const displayPage = currentPage + 1;
   const isZoomed = zoomLevel !== 1;
-  const canPrev = currentPage > 0 && !isZoomed;
-  const canNext = currentPage < totalPages - 1 && !isZoomed;
+  // Navigation is always available regardless of zoom — pan resets on each page turn
+  const canPrev = currentPage > 0;
+  const canNext = currentPage < totalPages - 1;
 
   /* ================================================================
      RENDER
@@ -508,20 +813,16 @@ function FlipBookViewer({
         onGoToPage={goToPage}
       />
 
-      {/* ---- Main book area ---- */}
-      <div 
+      {/* ---- Main book area — pan listeners attached natively via useEffect ---- */}
+      <div
+        ref={bookAreaRef}
         className={`mv-book-area ${isZoomed ? 'mv-zoomed' : ''} ${isPanning ? 'mv-panning' : ''}`}
-        onDoubleClick={handleDoubleClick}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
       >
 
         {/* Side navigation arrows — positioned at viewport edges */}
         <button
           className={`mv-nav-arrow mv-nav-arrow-prev ${canPrev ? '' : 'mv-nav-arrow-disabled'}`}
-          onClick={flipPrev}
+          onClick={(e) => { e.stopPropagation(); flipPrev(); }}
           disabled={!canPrev}
           aria-label="الصفحة السابقة"
           type="button"
@@ -531,7 +832,7 @@ function FlipBookViewer({
 
         <button
           className={`mv-nav-arrow mv-nav-arrow-next ${canNext ? '' : 'mv-nav-arrow-disabled'}`}
-          onClick={flipNext}
+          onClick={(e) => { e.stopPropagation(); flipNext(); }}
           disabled={!canNext}
           aria-label="الصفحة التالية"
           type="button"
@@ -547,10 +848,14 @@ function FlipBookViewer({
             currentPage === 0 ? 'mv-on-cover' : ''
           }`}
           style={{
-            width: bookConfig.width * 2,
+            width: isSinglePage ? bookConfig.width : bookConfig.width * 2,
             height: bookConfig.height,
+            pointerEvents: isZoomed ? 'none' : 'auto',
+            willChange: isZoomed ? 'transform' : 'auto',
             transform: isZoomed
-              ? `translate(${pan.x}px, ${pan.y}px) scale(${zoomLevel})`
+              ? `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoomLevel})`
+              : isSinglePage
+              ? 'none'
               : `translateX(${
                   currentPage === 0
                     ? -bookConfig.width / 2
@@ -568,12 +873,12 @@ function FlipBookViewer({
               height={bookConfig.height}
               size="fixed"
               showCover={true}
-              drawShadow={true}
-              maxShadowOpacity={0.5}
-              flippingTime={700}
-              usePortrait={false}
+              drawShadow={!isMobile}
+              maxShadowOpacity={isMobile ? 0 : 0.5}
+              flippingTime={isMobile ? 520 : 850}
+              usePortrait={isSinglePage}
               autoSize={true}
-              mobileScrollSupport={true}
+              mobileScrollSupport={false}
               startZIndex={0}
               startPage={0}
               className={`mv-flipbook ${isZoomed ? 'mv-flipbook-zoomed' : ''}`}
@@ -582,6 +887,7 @@ function FlipBookViewer({
               onChangeState={handleStateChange}
               onInit={handleInit}
               useMouseEvents={zoomLevel === 1}
+              clickEventForward={false}
             >
               {pageElements}
             </FlipBookComp>
@@ -589,9 +895,8 @@ function FlipBookViewer({
             <div className="mv-book-placeholder" />
           )}
 
-          {/* Center gutter shadow to simulate depth at the spine.
-              Only visible when a full spread is showing (not on the first cover page). */}
-          {FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
+          {/* Center gutter shadow — desktop only (no spine in single-page mobile mode) */}
+          {!isSinglePage && FlipBookComp && bookConfig.width > 0 && currentPage > 0 && (
             <div
               className={`mv-gutter ${isFlipping ? 'mv-gutter-hidden' : ''}`}
               aria-hidden="true"
@@ -605,13 +910,15 @@ function FlipBookViewer({
          ================================================================ */}
       <div className="mv-toolbar" id="mv-toolbar">
         {/* Brand */}
-        <Link to="/" className="mv-tb-brand" aria-label="العودة للرئيسية">
-          <span className="mv-tb-brand-name">الثورة</span>
-          <span className="mv-tb-brand-issue">العدد {issueNumber}</span>
-        </Link>
+        {!isMobile && (
+          <Link to="/" className="mv-tb-brand" aria-label="العودة للرئيسية">
+            <span className="mv-tb-brand-name">الثورة</span>
+            <span className="mv-tb-brand-issue">العدد {issueNumber}</span>
+          </Link>
+        )}
 
         {/* Controls */}
-        <div className="mv-tb-controls">
+        <div className={`mv-tb-controls ${isMobile ? 'mv-tb-controls-mobile' : ''}`}>
           {/* Thumbnails */}
           <button onClick={toggleSidebar} className={`mv-tb-btn ${isSidebarOpen ? 'mv-tb-btn-on' : ''}`} aria-label="الصور المصغرة" title="الصور المصغرة" type="button">
             <PanelLeft size={16} />
@@ -620,9 +927,13 @@ function FlipBookViewer({
           <span className="mv-tb-sep" />
 
           {/* Navigation */}
-          <button onClick={goToFirst} disabled={!canPrev} className="mv-tb-btn" aria-label="الأولى" title="الصفحة الأولى" type="button">
-            <ChevronsRight size={16} />
-          </button>
+          <span className="mv-tb-desktop">
+            {!isMobile && (
+              <button onClick={goToFirst} disabled={!canPrev} className="mv-tb-btn" aria-label="الأولى" title="الصفحة الأولى" type="button">
+                <ChevronsRight size={16} />
+              </button>
+            )}
+          </span>
           <button onClick={flipPrev} disabled={!canPrev} className="mv-tb-btn" aria-label="السابقة" type="button">
             <ChevronRight size={16} />
           </button>
@@ -645,55 +956,240 @@ function FlipBookViewer({
           <button onClick={flipNext} disabled={!canNext} className="mv-tb-btn" aria-label="التالية" type="button">
             <ChevronLeft size={16} />
           </button>
-          <button onClick={goToLast} disabled={!canNext} className="mv-tb-btn" aria-label="الأخيرة" title="الصفحة الأخيرة" type="button">
-            <ChevronsLeft size={16} />
-          </button>
+          <span className="mv-tb-desktop">
+            {!isMobile && (
+              <button onClick={goToLast} disabled={!canNext} className="mv-tb-btn" aria-label="الأخيرة" title="الصفحة الأخيرة" type="button">
+                <ChevronsLeft size={16} />
+              </button>
+            )}
+          </span>
 
-          <span className="mv-tb-sep" />
+          {!isMobile && (
+            <>
+              <span className="mv-tb-sep" />
 
-          {/* Slider */}
-          <input
-            type="range"
-            className="mv-tb-slider"
-            min={0}
-            max={totalPages - 1}
-            value={currentPage}
-            onChange={handleSlider}
-            aria-label="شريط التنقل"
-            style={{ direction: 'ltr' }}
-          />
+              {/* Slider */}
+              <input
+                type="range"
+                className="mv-tb-slider"
+                min={0}
+                max={totalPages - 1}
+                value={currentPage}
+                onChange={handleSlider}
+                aria-label="شريط التنقل"
+                style={{ direction: 'ltr' }}
+              />
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Zoom */}
-          <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-tb-btn" aria-label="تصغير" title="تصغير" type="button">
-            <ZoomOut size={16} />
-          </button>
-          <button onClick={resetZoom} className="mv-tb-btn" aria-label="إعادة الحجم" title="إعادة الحجم الأصلي" type="button">
-            <RotateCcw size={14} />
-          </button>
-          <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-tb-btn" aria-label="تكبير" title="تكبير" type="button">
-            <ZoomIn size={16} />
-          </button>
+              {/* Zoom */}
+              <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-tb-btn" aria-label="تصغير" title="تصغير" type="button">
+                <ZoomOut size={16} />
+              </button>
+              <button onClick={resetZoom} className="mv-tb-btn" aria-label="إعادة الحجم" title="إعادة الحجم الأصلي" type="button">
+                <RotateCcw size={14} />
+              </button>
+              <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-tb-btn" aria-label="تكبير" title="تكبير" type="button">
+                <ZoomIn size={16} />
+              </button>
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Actions */}
-          <button onClick={handleDownload} className="mv-tb-btn" aria-label="تحميل" title="تحميل PDF" type="button">
-            <FileDown size={16} />
-          </button>
-          <button onClick={handlePrint} className="mv-tb-btn" aria-label="طباعة" title="طباعة" type="button">
-            <Printer size={16} />
-          </button>
+              {/* Actions */}
+              <button onClick={handleDownload} className="mv-tb-btn" aria-label="تحميل" title="تحميل PDF" type="button">
+                <FileDown size={16} />
+              </button>
+              <button onClick={handlePrint} className="mv-tb-btn" aria-label="طباعة" title="طباعة" type="button">
+                <Printer size={16} />
+              </button>
 
-          <span className="mv-tb-sep" />
+              <span className="mv-tb-sep" />
 
-          {/* Fullscreen */}
-          <button onClick={toggleFullscreen} className="mv-tb-btn" aria-label={isFullscreen ? 'خروج' : 'ملء الشاشة'} title={isFullscreen ? 'خروج' : 'ملء الشاشة'} type="button">
-            {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
-          </button>
+              {/* Fullscreen */}
+              <button onClick={toggleFullscreen} className="mv-tb-btn" aria-label={isFullscreen ? 'خروج' : 'ملء الشاشة'} title={isFullscreen ? 'خروج' : 'ملء الشاشة'} type="button">
+                {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+              </button>
+
+              <span className="mv-tb-sep" />
+
+              {/* Info */}
+              <button onClick={() => setIsInfoOpen(true)} className="mv-tb-btn" aria-label="دليل الاستخدام" title="دليل الاستخدام" type="button">
+                <Info size={16} />
+              </button>
+            </>
+          )}
+
+          {isMobile && (
+            <>
+              <span className="mv-tb-sep" />
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="mv-tb-btn"
+                aria-label="المزيد"
+                title="المزيد"
+                type="button"
+              >
+                <MoreHorizontal size={16} />
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Mobile: bottom-sheet for secondary controls */}
+      {isMobile && isMobileMenuOpen && (
+        <div className="mv-sheet-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div
+            className="mv-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="أدوات عارض المجلة"
+            dir="rtl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mv-sheet-header">
+              <span className="mv-sheet-title">أدوات</span>
+              <button className="mv-sheet-close" onClick={() => setIsMobileMenuOpen(false)} type="button" aria-label="إغلاق">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mv-sheet-body">
+              <div className="mv-sheet-slider-wrap" role="group" aria-label="شريط التنقل">
+                <input
+                  type="range"
+                  className="mv-sheet-slider"
+                  min={0}
+                  max={totalPages - 1}
+                  value={currentPage}
+                  onChange={handleSlider}
+                  aria-label="شريط التنقل"
+                  style={{ direction: 'ltr' }}
+                />
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="التنقل">
+                <button onClick={() => { setIsMobileMenuOpen(false); goToFirst(); }} disabled={!canPrev} className="mv-sheet-btn" type="button">
+                  <ChevronsRight size={18} />
+                  <span>الأولى</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); goToLast(); }} disabled={!canNext} className="mv-sheet-btn" type="button">
+                  <ChevronsLeft size={18} />
+                  <span>الأخيرة</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); toggleFullscreen(); }} className="mv-sheet-btn" type="button">
+                  {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+                  <span>{isFullscreen ? 'خروج' : 'ملء الشاشة'}</span>
+                </button>
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="التكبير">
+                <button onClick={zoomOut} disabled={zoomLevel <= 0.5} className="mv-sheet-btn" type="button">
+                  <ZoomOut size={18} />
+                  <span>تصغير</span>
+                </button>
+                <button onClick={resetZoom} className="mv-sheet-btn" type="button">
+                  <RotateCcw size={18} />
+                  <span>إعادة</span>
+                </button>
+                <button onClick={zoomIn} disabled={zoomLevel >= 2.5} className="mv-sheet-btn" type="button">
+                  <ZoomIn size={18} />
+                  <span>تكبير</span>
+                </button>
+              </div>
+
+              <div className="mv-sheet-actions" role="group" aria-label="إجراءات">
+                <button onClick={() => { setIsMobileMenuOpen(false); handleDownload(); }} className="mv-sheet-btn" type="button">
+                  <FileDown size={18} />
+                  <span>تحميل</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); handlePrint(); }} className="mv-sheet-btn" type="button">
+                  <Printer size={18} />
+                  <span>طباعة</span>
+                </button>
+                <button onClick={() => { setIsMobileMenuOpen(false); setIsInfoOpen(true); }} className="mv-sheet-btn" type="button">
+                  <Info size={18} />
+                  <span>دليل</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* ---- Info Modal ---- */}
+      {isInfoOpen && (
+        <div className="mv-info-overlay" onClick={() => setIsInfoOpen(false)}>
+          <div className="mv-info-modal" onClick={(e) => e.stopPropagation()} dir="rtl">
+            <div className="mv-info-header">
+              <h3 className="mv-info-title">دليل استخدام عارض المجلة</h3>
+              <button className="mv-info-close" onClick={() => setIsInfoOpen(false)} type="button" aria-label="إغلاق">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="mv-info-body">
+              {/* Navigation */}
+              <div className="mv-info-section">
+                <h4 className="mv-info-section-title">
+                  <Move size={14} />
+                  التنقل
+                </h4>
+                <ul className="mv-info-list">
+                  <li><span className="mv-info-icon"><ChevronRight size={14} /></span> الأسهم الجانبية لتقليب الصفحات</li>
+                  <li><span className="mv-info-icon"><ChevronsRight size={14} /></span> الانتقال للصفحة الأولى / الأخيرة</li>
+                  <li><span className="mv-info-icon"><PanelLeft size={14} /></span> عرض الصور المصغرة للتنقل السريع</li>
+                  <li><span className="mv-info-icon">📄</span> إدخال رقم الصفحة للانتقال المباشر</li>
+                </ul>
+              </div>
+
+              {/* Zoom & Pan */}
+              <div className="mv-info-section">
+                <h4 className="mv-info-section-title">
+                  <Mouse size={14} />
+                  التكبير والتحريك
+                </h4>
+                <ul className="mv-info-list">
+                  <li><span className="mv-info-icon"><ZoomIn size={14} /></span> أزرار التكبير / التصغير في شريط الأدوات</li>
+                  <li><span className="mv-info-icon"><Mouse size={14} /></span> عجلة الماوس للتكبير عند موضع المؤشر</li>
+                  <li><span className="mv-info-icon"><Hand size={14} /></span> اسحب للتحريك أثناء التكبير</li>
+                  <li><span className="mv-info-icon"><RotateCcw size={14} /></span> إعادة العرض للحجم الأصلي</li>
+                </ul>
+              </div>
+
+              {/* Actions */}
+              <div className="mv-info-section">
+                <h4 className="mv-info-section-title">
+                  <FileDown size={14} />
+                  إجراءات
+                </h4>
+                <ul className="mv-info-list">
+                  <li><span className="mv-info-icon"><FileDown size={14} /></span> تحميل المجلة كملف PDF</li>
+                  <li><span className="mv-info-icon"><Printer size={14} /></span> طباعة المجلة</li>
+                  <li><span className="mv-info-icon"><Maximize size={14} /></span> وضع ملء الشاشة</li>
+                </ul>
+              </div>
+
+              {/* Keyboard */}
+              <div className="mv-info-section">
+                <h4 className="mv-info-section-title">
+                  <Keyboard size={14} />
+                  اختصارات اللوحة
+                </h4>
+                <div className="mv-info-shortcuts">
+                  <div className="mv-info-shortcut"><kbd>←</kbd> <span>الصفحة التالية</span></div>
+                  <div className="mv-info-shortcut"><kbd>→</kbd> <span>الصفحة السابقة</span></div>
+                  <div className="mv-info-shortcut"><kbd>Home</kbd> <span>الأولى</span></div>
+                  <div className="mv-info-shortcut"><kbd>End</kbd> <span>الأخيرة</span></div>
+                  <div className="mv-info-shortcut"><kbd>+</kbd> <span>تكبير</span></div>
+                  <div className="mv-info-shortcut"><kbd>-</kbd> <span>تصغير</span></div>
+                  <div className="mv-info-shortcut"><kbd>0</kbd> <span>إعادة الحجم</span></div>
+                  <div className="mv-info-shortcut"><kbd>Esc</kbd> <span>خروج ملء الشاشة</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
