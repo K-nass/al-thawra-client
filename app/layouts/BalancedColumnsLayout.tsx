@@ -3,6 +3,7 @@ import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface CategoryWithPosts {
   category: {
@@ -11,11 +12,11 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout4Props {
+interface BalancedColumnsLayoutProps {
   categoryData: CategoryWithPosts;
 }
 
-export default function Layout4({ categoryData }: Layout4Props) {
+export default function BalancedColumnsLayout({ categoryData }: BalancedColumnsLayoutProps) {
   const { category, posts } = categoryData;
 
   return (
@@ -28,7 +29,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
           {posts.slice(0, 3).map((post, index) => (
             <Link
               key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group"
             >
               <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
@@ -53,7 +54,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
         {posts[3] && (
           <div className="md:col-span-6 md:border-dashed md:border-black/10 flex justify-center">
             <Link
-              to={`/posts/categories/${posts[3].categorySlug}/articles/${posts[3].slug}`}
+              to={buildArticlePath(posts[3])}
               className="block group w-full max-w-lg"
             >
               <article className="semafor-card overflow-hidden h-full flex flex-col">
@@ -88,7 +89,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
           {posts.slice(4, 7).map((post, index) => (
             <Link
               key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group"
             >
               <article className={` ${index < 2 ? ' border-b border-dashed border-black/10' : ''}`}>
@@ -115,7 +116,7 @@ export default function Layout4({ categoryData }: Layout4Props) {
         {posts.slice(7, 11).map((post, index) => (
           <Link
             key={post.id}
-            to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+            to={buildArticlePath(post)}
             className="block group h-full"
           >
             <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
@@ -134,4 +135,3 @@ export default function Layout4({ categoryData }: Layout4Props) {
     </div>
   );
 }
-

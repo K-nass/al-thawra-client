@@ -15,7 +15,6 @@ import { CapturePluginPackage } from '@embedpdf/plugin-capture/react';
 import { PrintPluginPackage } from '@embedpdf/plugin-print/react';
 import { RotatePluginPackage } from '@embedpdf/plugin-rotate/react';
 import { SpreadPluginPackage, SpreadMode } from '@embedpdf/plugin-spread/react';
-import { Rotation } from '@embedpdf/models';
 
 /**
  * Creates the embedpdf plugin registration array for the magazine viewer.
@@ -47,7 +46,7 @@ export function createViewerPlugins(pdfUrl: string) {
       defaultSpreadMode: SpreadMode.None,
     }),
     createPluginRegistration(RotatePluginPackage, {
-      defaultRotation: Rotation.Degree0,
+      defaultRotation: 0,
     }),
     createPluginRegistration(PanPluginPackage, {
       defaultMode: 'never',

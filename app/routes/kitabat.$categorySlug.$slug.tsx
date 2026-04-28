@@ -1,18 +1,17 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { Route } from "./+types/article";
+import type { Route } from "./+types/kitabat.$categorySlug.$slug";
 import { PostHeader } from "../components/Post/PostHeader";
 import { PostMeta } from "../components/Post/PostHeader";
 import { PostImage } from "../components/Post/PostImage";
 import { PostContent } from "../components/Post/PostContent";
-import { AuthorDetailsMini } from "../components/Post/AuthorCard";
+import { AuthorDetailsMini, KitabatAuthorCard } from "../components/Post/AuthorCard";
 import { CommentsSection, PostDetails } from "../components/Post";
-import axiosInstance from "~/lib/axios";
 import { cache, CacheTTL } from "~/lib/cache";
 import { generateMetaTags, generateArticleSchema, generateBreadcrumbSchema } from "~/utils/seo";
-import { postsService, type Post, type PaginatedPostsResponse } from "~/services/postsService";
+import { postsService, type Post } from "~/services/postsService";
+import { writersService, type Writer } from "~/services/writersService";
 import { Link } from "react-router";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
-import { buildArticlePath } from "~/lib/articleRoutes";
 import { buildAuthorArticlesPath } from "~/lib/authorRoutes";
 
 interface ArticleResponse {
@@ -20,6 +19,7 @@ interface ArticleResponse {
   title: string;
   slug: string;
   summary: string;
+  description?: string;
   content: string;
   image: string;
   imageDescription: string;
@@ -40,66 +40,114 @@ interface ArticleResponse {
   authorSlug: string;
   authorImage: string;
   ownerIsAuthor: boolean;
+  ownerIsChiefEditor?: boolean;
+  writerId?: string;
+  hasWriter?: boolean;
   categoryId: string;
   categoryName: string;
   categorySlug: string;
   tags: string[];
-  likedByUsers: string[];
+  likedByUsers?: string[];
 }
 
-// Hook: fetch related posts lazily when sentinel enters viewport
+function pickFirstString(...values: Array<string | null | undefined>) {
+  const value = values.find((item) => typeof item === "string" && item.trim().length > 0);
+  return typeof value === "string" ? value : undefined;
+}
+
+function getWriterSocialLinks(writer: Writer | null | undefined) {
+  const social = writer?.socialAccounts;
+
+  return {
+    facebookUrl: pickFirstString(writer?.facebookUrl, writer?.facebook, social?.facebook, social?.Facebook),
+    twitterUrl: pickFirstString(writer?.twitterUrl, writer?.twitter, social?.twitter, social?.Twitter),
+    instagramUrl: pickFirstString(writer?.instagramUrl, writer?.instagram, social?.instagram, social?.Instagram),
+    linkedinUrl: pickFirstString(writer?.linkedInUrl, writer?.linkedIn, writer?.linkedin, social?.linkedin, social?.LinkedIn),
+    telegramUrl: pickFirstString(writer?.telegramUrl, writer?.telegram, social?.telegram, social?.Telegram),
+    whatsAppUrl: pickFirstString(writer?.whatsAppUrl, writer?.whatsApp, social?.whatsApp, social?.WhatsApp),
+    youtubeUrl: pickFirstString(writer?.youtubeUrl, writer?.youtube, social?.youtube, social?.YouTube),
+  };
+}
+
+function getArticleSummary(article: ArticleResponse) {
+  return cleanPlainText(article.summary || article.description || article.content.substring(0, 155));
+}
+
+function toArticleResponse(post: Post): ArticleResponse {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    summary: post.summary || post.description || "",
+    description: post.description,
+    content: post.content || "",
+    image: post.image,
+    imageDescription: post.imageDescription || "",
+    additionalImages: post.additionalImages || [],
+    status: post.status,
+    language: post.language,
+    isFeatured: post.isFeatured,
+    isBreaking: post.isBreaking,
+    isSlider: post.isSlider,
+    isRecommended: post.isRecommended,
+    viewsCount: post.viewsCount,
+    likesCount: post.likesCount,
+    createdAt: post.createdAt,
+    createdBy: post.createdBy,
+    publishedAt: post.publishedAt,
+    authorId: post.authorId,
+    authorName: post.authorName,
+    authorSlug: post.authorSlug,
+    authorImage: post.authorImage,
+    ownerIsAuthor: post.ownerIsAuthor,
+    ownerIsChiefEditor: post.ownerIsChiefEditor,
+    writerId: post.writerId,
+    hasWriter: post.hasWriter,
+    categoryId: post.categoryId,
+    categoryName: post.categoryName,
+    categorySlug: post.categorySlug,
+    tags: post.tags,
+    likedByUsers: [],
+  };
+}
+
 function useInfiniteArticles(
   categorySlug: string,
-  currentSlug: string,
-  currentCategorySlug: string
+  currentSlug: string
 ) {
-  // Queue of post stubs fetched from the listing endpoint
   const [queue, setQueue] = useState<Post[]>([]);
-  // Full article details loaded so far
   const [articles, setArticles] = useState<ArticleResponse[]>([]);
   const [queueFetched, setQueueFetched] = useState(false);
   const [loadingNext, setLoadingNext] = useState(false);
   const queueIndex = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Fetch the list of related posts once
   useEffect(() => {
     if (queueFetched) return;
     setQueueFetched(true);
-    axiosInstance
-      .get<PaginatedPostsResponse>("/posts/categories/articles", {
-        params: {
-          CategorySlug: categorySlug,
-          PageNumber: 1,
-          PageSize: 15,
-          HasAuthor: false,
-          IsArgent: false,
-          IsChiefEditorPost: false,
-        },
+    postsService
+      .getPosts({
+        hasWriter: true,
+        pageNumber: 1,
+        pageSize: 90,
       })
       .then((res) => {
-        const filtered = res.data.items.filter((p) => p.slug !== currentSlug);
+        const filtered = res.items.filter(
+          (p) => p.categorySlug === categorySlug && p.slug !== currentSlug
+        );
         setQueue(filtered);
       })
-      .catch(() => { });
+      .catch(() => {});
   }, [categorySlug, currentSlug, queueFetched]);
 
-  // Fetch next article details when sentinel enters viewport
   const fetchNext = useCallback(() => {
     const next = queue[queueIndex.current];
     if (!next || loadingNext) return;
 
     setLoadingNext(true);
-    axiosInstance
-      .get<ArticleResponse>(
-        `/posts/categories/${next.categorySlug}/articles/${next.slug}`
-      )
-      .then((res) => {
-        queueIndex.current += 1;
-        setArticles((prev) => [...prev, res.data]);
-      })
-      .catch(() => { })
-      .finally(() => setLoadingNext(false));
+    queueIndex.current += 1;
+    setArticles((prev) => [...prev, toArticleResponse(next)]);
+    setLoadingNext(false);
   }, [queue, loadingNext]);
 
   useEffect(() => {
@@ -120,7 +168,6 @@ function useInfiniteArticles(
   return { articles, loadingNext, sentinelRef };
 }
 
-// A single lazily-loaded article rendered inline
 function InlineArticle({ article }: { article: ArticleResponse }) {
   const ref = useRef<HTMLElement>(null);
   const formattedDate = new Date(article.publishedAt).toLocaleDateString("ar-EG", {
@@ -129,7 +176,6 @@ function InlineArticle({ article }: { article: ArticleResponse }) {
     day: "numeric",
   });
 
-  // Update URL as article scrolls into view
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -151,32 +197,29 @@ function InlineArticle({ article }: { article: ArticleResponse }) {
   }, [article]);
 
   return (
-   <article ref={ref} className="border-t border-dashed border-black/10 mt-8">
+    <article ref={ref} className="border-t border-dashed border-black/10 mt-8">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <PostHeader
           category={article.categoryName}
-          categoryHref={`{/category/${article.categorySlug}`}
+          categoryHref={`/category/${article.categorySlug}`}
           title={article.title}
         />
         <PostMeta
           date={formattedDate}
           commentsCount={0}
           authorName={article.authorName}
-          authorHref={buildAuthorArticlesPath(article.authorSlug, article.authorName)}
+          authorHref={buildAuthorArticlesPath(article.writerId || article.authorSlug, article.authorName)}
           title={article.title}
         />
-        {article.image &&
-          article.image !== "null" &&
-          article.image !== "undefined" && (
-            <PostImage src={article.image} alt={article.imageDescription} />
-          )}
+        {article.image && article.image !== "null" && article.image !== "undefined" && (
+          <PostImage src={article.image} alt={article.imageDescription} />
+        )}
         <PostContent content={article.content} />
       </div>
     </article>
   );
 }
 
-// Most Read sidebar widget
 function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPosts: Post[] }) {
   const [activeTab, setActiveTab] = useState<"today" | "week">("today");
   const posts = activeTab === "today" ? todayPosts : weekPosts;
@@ -185,15 +228,14 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
 
   return (
     <div className="border border-dashed border-black/10 p-4">
-      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold text-gray-900">الأكثر قراءة</h3>
         <div className="flex border border-black/20 overflow-hidden text-sm">
           <button
             onClick={() => setActiveTab("today")}
             className={`px-3 py-1 transition-colors cursor-pointer ${activeTab === "today"
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-600 hover:bg-gray-100"
               }`}
           >
             اليوم
@@ -201,21 +243,19 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
           <button
             onClick={() => setActiveTab("week")}
             className={`px-3 py-1 transition-colors cursor-pointer ${activeTab === "week"
-                ? "bg-gray-900 text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100"
+              ? "bg-gray-900 text-white"
+              : "bg-white text-gray-600 hover:bg-gray-100"
               }`}
           >
             الأسبوع
           </button>
         </div>
       </div>
-
       {posts.length === 0 ? null : (
         <>
-          {/* Featured top post with image */}
           {featured && (
             <Link
-              to={buildArticlePath(featured)}
+              to={`/posts/categories/${featured.categorySlug}/articles/${featured.slug}`}
               className="block mb-4 group"
             >
               {featured.image && featured.image !== "null" && featured.image !== "undefined" ? (
@@ -232,13 +272,11 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
               )}
             </Link>
           )}
-
-          {/* Numbered list */}
           <ol className="space-y-0">
             {(featured ? [featured, ...rest] : posts).map((post, index) => (
               <li key={post.id}>
                 <Link
-                  to={buildArticlePath(post)}
+                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
                   className="flex items-start gap-3 py-3 border-b border-dashed border-black/10 last:border-b-0 group"
                 >
                   <span className="text-2xl font-bold text-gray-900 leading-none mt-0.5 min-w-6 text-center">
@@ -257,20 +295,15 @@ function MostReadSidebar({ todayPosts, weekPosts }: { todayPosts: Post[]; weekPo
   );
 }
 
-// Loader function for SSR with caching
 export const loader = async ({ params }: Route.LoaderArgs) => {
   const { slug, categorySlug } = params;
 
   try {
-    const cacheKey = `article:${categorySlug}:${slug}`;
-
-    const [response, mostReadToday, mostReadWeek] = await Promise.all([
+    const [kitabatPosts, mostReadToday, mostReadWeek] = await Promise.all([
       cache.getOrFetch(
-        cacheKey,
-        () => axiosInstance.get<ArticleResponse>(
-          `/posts/categories/${categorySlug}/articles/${slug}`
-        ),
-        CacheTTL.MEDIUM
+        "posts:kitabat:90",
+        () => postsService.getPosts({ hasWriter: true, pageNumber: 1, pageSize: 90 }),
+        CacheTTL.SHORT
       ),
       cache.getOrFetch(
         "posts:most-read:today",
@@ -284,8 +317,27 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
       ).catch(() => ({ items: [] } as { items: Post[] })),
     ]);
 
+    const articlePost = kitabatPosts.items.find(
+      (item) => item.slug === slug && item.categorySlug === categorySlug
+    );
+
+    if (!articlePost) {
+      throw new Response("Article not found", { status: 404 });
+    }
+
+    const article = toArticleResponse(articlePost);
+
+    const writer = article.writerId
+      ? await cache.getOrFetch(
+        `writer:${article.writerId}`,
+        () => writersService.getWriterById(article.writerId as string),
+        CacheTTL.MEDIUM
+      ).catch(() => null)
+      : null;
+
     return {
-      article: response.data,
+      article,
+      writer,
       mostReadToday: mostReadToday.items.slice(0, 5),
       mostReadWeek: mostReadWeek.items.slice(0, 5),
     };
@@ -296,6 +348,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const article = loaderData?.article;
+  const writer = loaderData?.writer;
 
   if (!article) {
     return [
@@ -307,35 +360,35 @@ export function meta({ loaderData }: Route.MetaArgs) {
   return [
     ...generateMetaTags({
       title: article.title,
-      description: cleanPlainText(article.summary || article.content.substring(0, 155)),
+      description: getArticleSummary(article),
       image: article.image,
-      url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
+      url: `/kitabat/${article.categorySlug}/articles/${article.slug}`,
       type: "article",
       publishedTime: article.publishedAt,
       modifiedTime: article.publishedAt,
-      author: article.authorName,
+      author: writer?.name || article.authorName,
       section: article.categoryName,
       tags: article.tags,
     }),
     {
       "script:ld+json": generateArticleSchema({
         title: article.title,
-        description: cleanPlainText(article.summary),
+        description: getArticleSummary(article),
         image: article.image,
         publishedAt: article.publishedAt,
         updatedAt: article.publishedAt,
-        authorName: article.authorName,
-        authorSlug: article.authorName,
+        authorName: writer?.name || article.authorName,
+        authorSlug: writer?.name || article.authorName,
         categoryName: article.categoryName,
         content: article.content,
-        url: `/posts/categories/${article.categorySlug}/articles/${article.slug}`,
+        url: `/kitabat/${article.categorySlug}/articles/${article.slug}`,
       }),
     },
     {
       "script:ld+json": generateBreadcrumbSchema([
         { name: "الرئيسية", url: "/" },
         { name: article.categoryName, url: `/category/${article.categorySlug}` },
-        { name: article.title, url: `/posts/categories/${article.categorySlug}/articles/${article.slug}` },
+        { name: article.title, url: `/kitabat/${article.categorySlug}/articles/${article.slug}` },
       ]),
     },
   ];
@@ -344,33 +397,39 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export default function ArticlePage({
   loaderData,
 }: Route.ComponentProps) {
-  const { article, mostReadToday, mostReadWeek } = loaderData;
+  const { article, writer, mostReadToday, mostReadWeek } = loaderData;
   const { articles, loadingNext, sentinelRef } = useInfiniteArticles(
     article.categorySlug,
-    article.slug,
-    article.categorySlug
+    article.slug
   );
+  const writerSocialLinks = getWriterSocialLinks(writer);
 
   const formattedDate = new Date(article.publishedAt).toLocaleDateString("ar-EG", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
-  const authorHref = buildAuthorArticlesPath(article.authorSlug, article.authorName);
-  const authorImage =
-    article.authorImage &&
-    article.authorImage !== "null" &&
-    article.authorImage !== "undefined"
-      ? article.authorImage
-      : undefined;
-  const authorName = article.authorName || article.createdBy;
+  const authorName = writer?.name || article.authorName || article.createdBy;
+  const authorHref = buildAuthorArticlesPath(
+    article.writerId || article.authorSlug,
+    authorName
+  );
+  const authorImage = writer?.imageUrl || article.authorImage || undefined;
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Main article column */}
-        <div className="flex-1 min-w-0">
-          {/* Primary article via SSR */}
+    <div className="max-w-7xl mx-auto px-4 lg:px-0">
+      <div className="flex flex-col lg:flex-row gap-8 lg:items-start">
+        <aside className="w-full lg:w-72 shrink-0 order-1 lg:order-1">
+          <KitabatAuthorCard
+            name={writer?.name || article.authorName || article.createdBy}
+            bio={writer?.bio || undefined}
+            image={writer?.imageUrl || article.authorImage || undefined}
+            href={authorHref}
+            {...writerSocialLinks}
+          />
+        </aside>
+
+        <main className="flex-1 min-w-0 order-2 lg:order-2">
           <PostDetails
             category={article.categoryName}
             categoryHref={`/category/${article.categorySlug}`}
@@ -392,32 +451,12 @@ export default function ArticlePage({
               />
             }
           />
+        </main>
 
-          {/* Inline articles loaded on scroll */}
-          {articles.map((a) => (
-            <InlineArticle key={a.id} article={a} />
-          ))}
-
-          {/* Sentinel — triggers next fetch when visible */}
-          <div ref={sentinelRef} className="h-1" />
-
-          {loadingNext && (
-            <div className="flex justify-center py-8">
-              <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-700 rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
-
-        {/* Sticky sidebar */}
-        <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-4">
+        <aside className="w-full lg:w-72 shrink-0 order-3 lg:order-3">
           <MostReadSidebar todayPosts={mostReadToday} weekPosts={mostReadWeek} />
         </aside>
       </div>
-      {/* Comments Section - Login/Register Prompt */}
-      <CommentsSection
-        registerHref="/register"
-        loginHref="/login"
-      />
     </div>
   );
 }

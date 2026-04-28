@@ -3,21 +3,13 @@ import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
-interface CategoryWithPosts {
-  category: {
-    name: string;
-  };
+interface SplitHeroLayoutProps {
   posts: Post[];
 }
 
-interface Layout8Props {
-  categoryData: CategoryWithPosts;
-}
-
-export default function Layout8({ categoryData }: Layout8Props) {
-  const { posts } = categoryData;
-
+export default function SplitHeroLayout({ posts }: SplitHeroLayoutProps) {
   // Handle empty or undefined posts
   const safePosts = posts || [];
 
@@ -26,10 +18,12 @@ export default function Layout8({ categoryData }: Layout8Props) {
     return null;
   }
 
-  // Get first post for left column (image only)
+  // Fill the existing grid sequentially so no post is skipped when a category has few items.
+  // This preserves the layout while avoiding gaps like posts[1] being dropped.
+  // Get first post for left column (text only)
   const leftPost = safePosts[0];
   
-  // Get second post for right column (text only)
+  // Get second post for right column (image only)
   const rightPost = safePosts[1];
   
   // Get posts 3-6 for second row
@@ -37,47 +31,47 @@ export default function Layout8({ categoryData }: Layout8Props) {
 
   return (
     <div className="w-full">
-      {/* Top row - two columns: left (image only), right (text only) */}
+      {/* Top row - two columns: left (text only), right (image only) */}
       <div className="flex justify-center mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl w-full px-4">
-          {/* Left column - Image only */}
+          {/* Left column - Text only with background */}
           {leftPost && (
             <Link
-              to={`/posts/categories/${leftPost.categorySlug}/articles/${leftPost.slug}`}
-              className="block group"
-            >
-              <article className="semafor-card overflow-hidden h-full px-6 pb-6 mt-auto">
-                <div className="w-full h-full aspect-[3/2] overflow-hidden">
-                  <ArticleImage
-                    src={leftPost.image}
-                    alt={leftPost.title}
-                    className="w-full h-full"
-                  />
-                </div>
-              </article>
-            </Link>
-          )}
-
-          {/* Right column - Text only with background */}
-          {rightPost && (
-            <Link
-              to={`/posts/categories/${rightPost.categorySlug}/articles/${rightPost.slug}`}
+              to={buildArticlePath(leftPost)}
               className="block group"
             >
               <article className="semafor-card overflow-hidden flex flex-col h-full hover:bg-[#b8d4e0] transition-colors duration-300">
                 <div className="p-6 flex items-center justify-center h-full">
                   <div className="text-center">
                     <ColoredTitle
-                      title={rightPost.title}
+                      title={leftPost.title}
                       coloredWordsCount={0}
                       className="text-2xl font-bold mb-4 hover:text-blue-700 transition-colors leading-tight"
                     />
-                    {rightPost.summary && (
+                    {leftPost.summary && (
                       <p className="text-base text-gray-700 line-clamp-2 leading-relaxed">
-                        {cleanPlainText(rightPost.summary)}
+                    {cleanPlainText(leftPost.summary)}
                       </p>
                     )}
                   </div>
+                </div>
+              </article>
+            </Link>
+          )}
+
+          {/* Right column - Image only */}
+          {rightPost && (
+            <Link
+              to={buildArticlePath(rightPost)}
+              className="block group"
+            >
+              <article className="semafor-card overflow-hidden h-full px-6 pb-6 mt-auto">
+                <div className="w-full h-full aspect-[3/2] overflow-hidden">
+                  <ArticleImage
+                    src={rightPost.image}
+                    alt={rightPost.title}
+                    className="w-full h-full"
+                  />
                 </div>
               </article>
             </Link>
@@ -91,19 +85,21 @@ export default function Layout8({ categoryData }: Layout8Props) {
           {secondRowPosts.map((post, index) => (
             <Link
               key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group h-full"
             >
-                <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
-                  <ColoredTitle
-                    title={post.title}
-                    coloredWordsCount={0}
-                    className="text-md font-bold mb-2 hover:text-blue-700 transition-colors"
-                  />
-                  <p className="text-xs text-gray-700 line-clamp-2">
-                    {cleanPlainText(post.summary) || ""}
+              <article className={`semafor-card p-3 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
+                <ColoredTitle
+                  title={post.title}
+                  coloredWordsCount={0}
+                  className="text-sm font-bold mb-4 hover:text-blue-700 transition-colors"
+                />
+                {post.summary && (
+                  <p className="text-xs text-gray-700 line-clamp-2 mt-auto">
+                    {cleanPlainText(post.summary)}
                   </p>
-                </article>
+                )}
+              </article>
             </Link>
           ))}
         </div>

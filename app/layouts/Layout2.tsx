@@ -8,6 +8,7 @@ import AdvertisementBanner from "../components/AdvertisementBanner";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface Layout2Props {
   posts: Post[];
@@ -89,7 +90,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
         {firstRowPosts.map((post) => (
           <SwiperSlide key={post.id} style={{ height: 'auto' }}>
             <Link
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group h-full"
             >
               <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">
@@ -128,7 +129,7 @@ export default function Layout2({ posts, newsletterCategories = [] }: Layout2Pro
               {secondRowPosts.map((post) => (
                 <Link
                   key={post.id}
-                  to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                  to={buildArticlePath(post)}
                   className="block group"
                 >
                   <article className="h-full flex flex-col border border-dashed border-black/10 overflow-hidden">

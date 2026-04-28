@@ -1,6 +1,7 @@
 import { PostDetails } from "../components/Post";
 import axiosInstance from "../lib/axios";
 import { cache, CacheTTL } from "../lib/cache";
+import { buildAuthorArticlesPath } from "~/lib/authorRoutes";
 
 interface AudioResponse {
   id: string;
@@ -98,7 +99,7 @@ export default function AudioPage({ loaderData }: { loaderData: { audio: AudioRe
         date={formattedDate}
         commentsCount={0}
         authorName={audio.authorName || undefined}
-        authorHref={audio.authorName ? `/author/${audio.authorName}` : undefined}
+        authorHref={buildAuthorArticlesPath(audio.authorSlug, audio.authorName)}
         imageSrc=""
         imageAlt={audio.title}
         content={audio.content}

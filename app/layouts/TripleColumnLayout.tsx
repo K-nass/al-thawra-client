@@ -3,6 +3,7 @@ import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface CategoryWithPosts {
   category: {
@@ -11,13 +12,13 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout7Props {
+interface TripleColumnLayoutProps {
   categoryData: CategoryWithPosts;
   showAdvertisement?: boolean;
   advertisementImage?: string;
 }
 
-export default function Layout7({ categoryData, showAdvertisement = false, advertisementImage }: Layout7Props) {
+export default function TripleColumnLayout({ categoryData, showAdvertisement = false, advertisementImage }: TripleColumnLayoutProps) {
   const { posts } = categoryData;
 
   return (
@@ -26,7 +27,7 @@ export default function Layout7({ categoryData, showAdvertisement = false, adver
         {posts.slice(0, 3).map((post, index) => (
           <Link
             key={post.id}
-            to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+            to={buildArticlePath(post)}
             className="block group"
           >
             <article className={`semafor-card overflow-hidden flex flex-col h-full pl-4 pr-4 ${index < 2 ? 'border-l border-dashed border-black/10' : ''}`}>

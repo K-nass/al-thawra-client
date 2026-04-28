@@ -4,6 +4,7 @@ import type { ChiefEditor } from "../services/userService";
 import { ScrollAnimation, StaggerContainer, StaggerItem } from "./ScrollAnimation";
 import { Image, User } from "lucide-react";
 import { cleanPlainText } from "../utils/arabicTextUtils";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface SidebarProps {
   trendingPosts: Post[];
@@ -38,7 +39,7 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
 
             {/* Featured post (first one) */}
             <Link
-              to={`/posts/categories/${chiefEditorPosts[0].categorySlug}/articles/${chiefEditorPosts[0].slug}`}
+              to={buildArticlePath(chiefEditorPosts[0])}
             >
               <div>
                 {chiefEditorPosts[0].image ? (
@@ -67,7 +68,7 @@ export function Sidebar({ trendingPosts, chiefEditor, chiefEditorPosts }: Sideba
                   {chiefEditorPosts.slice(1, 6).map((post, index) => (
                     <Link
                       key={post.id}
-                      to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                      to={buildArticlePath(post)}
                     >
                       <span>
                         {index + 1}

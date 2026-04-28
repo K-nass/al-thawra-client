@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Post } from "./PostCard";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface SliderProps {
   posts: Post[];
@@ -27,7 +28,7 @@ export function Slider({ posts, buildLink }: SliderProps) {
   const currentPost = posts[currentIndex];
   const linkHref = buildLink
     ? buildLink(currentPost)
-    : `/posts/categories/${currentPost.categorySlug}/articles/${currentPost.slug}`;
+    : buildArticlePath(currentPost);
 
   const handlePrev = () => {
     if (isTransitioning) return;

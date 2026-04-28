@@ -43,8 +43,8 @@ export async function loader() {
 
   try {
     categories = await cache.getOrFetch(
-      "categories:menu:Arabic:v2",
-      () => categoriesService.getMenuCategories("Arabic"),
+      "categories:menu",
+      () => categoriesService.getMenuCategories(),
       CacheTTL.LONG
     );
   } catch (error) {

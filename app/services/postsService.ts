@@ -6,8 +6,11 @@ export interface Post {
   title: string;
   slug: string;
   summary: string;
+  description?: string;
+  content?: string;
   image: string;
   imageDescription?: string;
+  additionalImages?: string[];
   direction?: string;
   status: string;
   language: string;
@@ -18,6 +21,7 @@ export interface Post {
   isRecommended: boolean;
   viewsCount: number;
   likesCount: number;
+  isUrgent?: boolean;
   createdAt: string;
   createdBy: string;
   publishedAt: string;
@@ -25,6 +29,9 @@ export interface Post {
   authorName: string;
   authorImage: string;
   ownerIsAuthor: boolean;
+  ownerIsChiefEditor?: boolean;
+  writerId?: string;
+  hasWriter?: boolean;
   categoryId: string;
   categoryName: string;
   categorySlug: string;
@@ -50,6 +57,7 @@ export interface PostQueryParams {
   categorySlug?: string;
   authorName?: string;
   hasAuthor?: boolean;
+  hasWriter?: boolean;
   status?: string;
   isFeatured?: boolean;
   isBreaking?: boolean;
@@ -66,6 +74,31 @@ export interface PostQueryParams {
   searchPhrase?: string;
 }
 
+// Request payloads for create/update endpoints.
+// Keep permissive to match server-side validation and avoid breaking callers.
+export interface CreatePostData {
+  title?: string;
+  slug?: string;
+  summary?: string;
+  image?: string;
+  imageDescription?: string;
+  direction?: string;
+  status?: string;
+  language?: string;
+  postType?: Post["postType"];
+  isFeatured?: boolean;
+  isBreaking?: boolean;
+  isSlider?: boolean;
+  isRecommended?: boolean;
+  categoryId?: string;
+  tags?: string[];
+  [key: string]: unknown;
+}
+
+export interface UpdatePostData extends Partial<CreatePostData> {
+  [key: string]: unknown;
+}
+
 class PostsService {
   private readonly baseUrl = "/posts/categories/articles";
 
@@ -79,13 +112,14 @@ class PostsService {
       const apiParams: any = {
         PageNumber: params?.pageNumber || 1,
         PageSize: params?.pageSize || 15,
+        Status: params?.status ?? "Published",
       };
 
       // Add optional filters with correct casing
       if (params?.categorySlug) apiParams.CategorySlug = params.categorySlug;
       if (params?.authorName) apiParams.AuthorName = params.authorName;
       apiParams.HasAuthor = params?.hasAuthor ?? false;
-      if (params?.status) apiParams.Status = params.status;
+      if (params?.hasWriter !== undefined) apiParams.HasWriter = params.hasWriter;
       if (params?.isFeatured !== undefined) apiParams.IsFeatured = params.isFeatured;
       if (params?.isBreaking !== undefined) apiParams.IsBreaking = params.isBreaking;
       if (params?.isSlider !== undefined) apiParams.IsSlider = params.isSlider;
@@ -179,21 +213,6 @@ class PostsService {
     }
   }
 
-  /**
-   * Get urgent news posts
-   */
-  async getUrgentPosts(pageSize: number = 15): Promise<Post[]> {
-    try {
-      const response = await this.getPosts({
-        isArgent: true,
-        pageSize,
-      });
-      return response.items;
-    } catch (error: any) {
-
-      throw error;
-    }
-  }
 
   /**
    * Get chief editor posts
@@ -326,6 +345,32 @@ class PostsService {
           PageSize: params?.pageSize || 15,
         },
       });
+      return response.data;
+    } catch (error: any) {
+
+      throw error;
+    }
+  }
+
+  /**
+   * Create a new post
+   */
+  async createPost(postData: CreatePostData): Promise<Post> {
+    try {
+      const response = await axios.post<Post>(this.baseUrl, postData);
+      return response.data;
+    } catch (error: any) {
+
+      throw error;
+    }
+  }
+
+  /**
+   * Update an existing post
+   */
+  async updatePost(postId: string, postData: UpdatePostData): Promise<Post> {
+    try {
+      const response = await axios.put<Post>(`${this.baseUrl}/${postId}`, postData);
       return response.data;
     } catch (error: any) {
 

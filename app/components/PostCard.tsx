@@ -2,6 +2,8 @@ import { Link } from "react-router";
 import type { Post } from "../services/postsService";
 import ArticleImage from "./ArticleImage";
 import { cleanPlainText } from "../utils/arabicTextUtils";
+import { buildArticlePath } from "~/lib/articleRoutes";
+import { buildAuthorArticlesPath } from "~/lib/authorRoutes";
 
 export type { Post };
 
@@ -21,7 +23,8 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
 
   const linkHref = buildLink
     ? buildLink(post)
-    : `/posts/categories/${post.categorySlug}/articles/${post.slug}`;
+    : buildArticlePath(post);
+  const authorHref = buildAuthorArticlesPath(post.authorSlug, post.authorName);
 
   const isFeatured = variant === 'featured';
   const imageSrc =
@@ -70,7 +73,7 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
 
           {post.authorName && (
             <Link 
-              to={`/author/${post.authorName}`}
+              to={authorHref || "#"}
               className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               {post.authorImage && (
@@ -90,4 +93,3 @@ export function PostCard({ post, buildLink, variant = 'standard' }: PostCardProp
     </article>
   );
 }
-

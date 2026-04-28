@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import type { Post } from "../services/postsService";
 import type { ChiefEditor } from "../services/userService";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface ChiefEditorSidebarProps {
     editor: ChiefEditor;
@@ -48,7 +49,7 @@ export function ChiefEditorSidebar({ editor, posts }: ChiefEditorSidebarProps) {
                 {recentPosts.map((post) => (
                     <Link
                         key={post.id}
-                        to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+                        to={buildArticlePath(post)}
                     >
                         <div />
                         <h4>

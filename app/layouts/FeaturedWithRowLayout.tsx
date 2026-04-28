@@ -3,6 +3,7 @@ import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
 interface CategoryWithPosts {
   category: {
@@ -11,11 +12,11 @@ interface CategoryWithPosts {
   posts: Post[];
 }
 
-interface Layout5Props {
+interface FeaturedWithRowLayoutProps {
   categoryData: CategoryWithPosts;
 }
 
-export default function Layout5({ categoryData }: Layout5Props) {
+export default function FeaturedWithRowLayout({ categoryData }: FeaturedWithRowLayoutProps) {
   const { category, posts } = categoryData;
 
   // Handle empty or undefined posts
@@ -39,7 +40,7 @@ export default function Layout5({ categoryData }: Layout5Props) {
         <div className="flex justify-center mb-6">
           <div className="max-w-5xl w-full px-4">
             <Link
-              to={`/posts/categories/${featuredPost.categorySlug}/articles/${featuredPost.slug}`}
+              to={buildArticlePath(featuredPost)}
               className="block group"
             >
               <article className="semafor-card overflow-hidden">
@@ -80,7 +81,7 @@ export default function Layout5({ categoryData }: Layout5Props) {
           {bottomRowPosts.map((post, index) => (
             <Link
               key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group h-full"
             >
                 <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>

@@ -3,12 +3,13 @@ import type { Post } from "../services/postsService";
 import ArticleImage from "../components/ArticleImage";
 import { cleanPlainText } from "~/utils/arabicTextUtils";
 import ColoredTitle from "~/components/ColoredTitle";
+import { buildArticlePath } from "~/lib/articleRoutes";
 
-interface Layout6Props {
+interface DualFeaturedLayoutProps {
   posts: Post[];
 }
 
-export default function Layout6({ posts }: Layout6Props) {
+export default function DualFeaturedLayout({ posts }: DualFeaturedLayoutProps) {
   // Handle empty or undefined posts
   const safePosts = posts || [];
 
@@ -31,7 +32,7 @@ export default function Layout6({ posts }: Layout6Props) {
           {firstRowPosts.map((post, index) => (
             <Link
               key={post.id}
-              to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+              to={buildArticlePath(post)}
               className="block group"
             >
               <article className="semafor-card overflow-hidden flex flex-col h-full">
@@ -68,7 +69,7 @@ export default function Layout6({ posts }: Layout6Props) {
           {secondRowPosts.map((post, index) => (
           <Link
             key={post.id}
-            to={`/posts/categories/${post.categorySlug}/articles/${post.slug}`}
+            to={buildArticlePath(post)}
             className="block group h-full"
           >
             <article className={`semafor-card p-4 h-full flex flex-col ${index < 3 ? 'border-l border-dashed border-black/10' : ''}`}>
